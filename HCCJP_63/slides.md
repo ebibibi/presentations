@@ -6,23 +6,74 @@ backgroundColor: #fff
 style: |
   section {
     font-family: 'Meiryo', 'Segoe UI', sans-serif;
+    font-size: 36px;
   }
   h1 {
     color: #0078d4;
+    font-size: 1.6em;
   }
   h2 {
     color: #0078d4;
+    font-size: 1.4em;
+  }
+  h3 {
+    font-size: 1.2em;
   }
   .speaker {
-    font-size: 0.9em;
+    font-size: 0.85em;
     color: #666;
   }
   table {
-    font-size: 0.8em;
+    font-size: 0.75em;
   }
   th {
     background-color: #0078d4;
     color: white;
+  }
+  code {
+    font-size: 0.9em;
+  }
+  li {
+    font-size: 0.95em;
+  }
+  /* コンテンツが多いスライド用のクラス */
+  section.small {
+    font-size: 28px;
+  }
+  section.small h1 {
+    font-size: 1.3em;
+  }
+  section.small h2 {
+    font-size: 1.1em;
+  }
+  section.small code {
+    font-size: 0.85em;
+  }
+  /* さらに小さいスライド用のクラス */
+  section.x-small {
+    font-size: 24px;
+  }
+  section.x-small h1 {
+    font-size: 1.2em;
+  }
+  section.x-small h2 {
+    font-size: 1.0em;
+  }
+  section.x-small code {
+    font-size: 0.6em;
+  }
+  section.x-small li {
+    font-size: 0.9em;
+  }
+  /* leadクラス用の大きめのフォント */
+  section.lead h1 {
+    font-size: 2.0em;
+  }
+  section.lead h2 {
+    font-size: 1.6em;
+  }
+  section.lead .speaker {
+    font-size: 1.0em;
   }
 ---
 
@@ -57,6 +108,10 @@ style: |
 - **Claude** - スライド内容の生成
 - **Marp** - Markdownベースのプレゼンテーション
 - **VS Code** - 統合開発環境
+
+---
+
+# 🤖 このスライドについて（続き）
 
 ### ✨ 生成AIの活用例
 - 司会進行用スライドの構成
@@ -109,12 +164,13 @@ https://www.youtube.com/channel/UCrf4bEl7yJnkGYo3F67gA7w
 
 # 本日の注意事項
 
-- 📹 配信は録画されています
-- 💬 チャットでのご質問歓迎
-- 🔇 マイクはミュートでお願いします
-- 📝 Q&Aセッションで匿名質問も可能
+- 📹 配信は録画されています→アーカイブでもいつでも見られます！
+- 💬 チャットでの質問大歓迎！
+- 📝 Q&Aセッションで匿名質問も可能！
 
 ---
+
+<!-- _class: small -->
 
 # 質問方法
 
@@ -137,7 +193,7 @@ https://www.youtube.com/channel/UCrf4bEl7yJnkGYo3F67gA7w
 
 # セッション①【前半】
 
-## Claude Code×Azure, Gemini CLI×Azure
+## Claude Code × Azure,</br> Gemini CLI × Azure
 
 **スピーカー：胡田 昌彦**
 <span class="speaker">日本ビジネスシステムズ株式会社<br>Microsoft MVP for Azure Hybrid, Windows Server</span>
@@ -159,28 +215,154 @@ https://www.youtube.com/channel/UCrf4bEl7yJnkGYo3F67gA7w
 
 ---
 
+# 🤔 なぜCLIツールを選ぶのか？
+
+## GUI vs CLI AIコーディングアシスタント
+
+| ツール | タイプ | 特徴 | 料金 |
+|--------|--------|------|------|
+| **Cline** | VS Code拡張 | GUI、使いやすい | 無料（API料金別） |
+| **GitHub Copilot** | IDE統合 | コード補完特化 | 月額$10 |
+| **Cursor** | 専用エディタ | AI統合IDE | 月額$20 |
+| **Claude Code** | CLI | 高度な自動化 | 月額$20 |
+| **Gemini CLI** | CLI | シンプル・高速 | 無料～ |
+
+### 🚀 CLIツールの利点
+- **自動化しやすい** - スクリプトやCIに組み込み可能
+- **軽量・高速** - GUIのオーバーヘッドなし
+- **柔軟性が高い** - 任意のエディタと併用可能
+
+---
+
+<!-- _class: small-->
+
+# 🆚 Claude Code vs Gemini CLI
+
+## 主な違い
+
+| 項目 | Claude Code | Gemini CLI |
+|------|-------------|------------|
+| **料金** | 有料（月額$20） | **無料**でも利用可能 |
+| **環境** | WSL必須（Windows） | **Windowsで直接動作** |
+| **セットアップ** | 複雑（DNS設定等） | シンプル |
+| **モデル** | Claude Opus 4/Sonnet 4 | Gemini 2.5 Pro/Flash |
+| **コード生成** | 非常に高品質 | 高品質 |
+| **MCP対応** | ✅ | ✅ |
+
+### 💡 選び方のポイント
+- **無料で試したい** → Gemini CLI
+- **本格的に使いたい** → Claude Code
+- **WSL設定が面倒** → Gemini CLI
+
+---
+
+<!-- _class: small -->
+
 # 📥 Step 1: インストール
 
-## Claude Codeのインストール
+## Claude Codeのインストール（Windows WSL版）
 
 ```bash
-# VS Code拡張機能から
-1. 拡張機能マーケットプレイスを開く
-2. "Claude Code" を検索
-3. インストールボタンをクリック
+# WSL2のセットアップ（未インストールの場合）
+wsl --install
+
+# WSL内でNode.jsをインストール
+curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# Claude Codeをインストール
+npm install -g @anthropic-ai/claude-code #おそらく権限のエラーが出ます
 ```
+
+📚 **公式ドキュメント**: https://docs.anthropic.com/en/docs/claude-code
+
+---
+
+<!-- _class: x-small -->
+
+## Claude Codeのインストール（Windows WSL版）
+
+```bash
+# First, save a list of your existing global packages for later migration
+npm list -g --depth=0 > ~/npm-global-packages.txt
+
+# Create a directory for your global packages
+mkdir -p ~/.npm-global
+
+# Configure npm to use the new directory path
+npm config set prefix ~/.npm-global
+
+# Note: Replace ~/.bashrc with ~/.zshrc, ~/.profile, or other appropriate file for your shell
+echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.bashrc
+
+# Apply the new PATH setting
+source ~/.bashrc
+
+# Now reinstall Claude Code in the new location
+npm install -g @anthropic-ai/claude-code
+
+# Optional: Reinstall your previous global packages in the new location
+# Look at ~/npm-global-packages.txt and install packages you want to keep
+```
+
+📚 **公式ドキュメント**: https://docs.anthropic.com/en/docs/claude-code
+
+---
+
+<!-- _class: x-small -->
+
+# ⚠️ 重要！WSL環境でClaude Codeがオフラインになる問題
+
+## 🚨 WSLでClaude Codeがすぐにofflineになる場合の解決方法
+
+### 1. WSL設定ファイルの編集
+```bash
+# /etc/wsl.conf に以下を追加
+[network]
+generateResolvConf = false
+```
+
+### 2. WSLを再起動
+```bash
+wsl --shutdown
+# その後、WSLを再度起動
+```
+
+### 3. DNS設定を手動で追加
+```bash
+# /etc/resolv.conf に適切なDNSサーバーを設定
+echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf
+```
+
+**💡 詳細はこちら → https://note.com/ebibibi/n/n211c76198608**
+
+---
+
+# 💻 WSLとWindowsの連携
+
+## VSCodeとWSLの連携
+
+### 📁 Windows側のプロジェクトフォルダへのアクセス
+```bash
+# Windows側のCドライブにアクセスする場合
+cd /mnt/c
+```
+
+### ⚡ パフォーマンスのために
+- プロジェクトファイルはWSL側（`~/projects/`など）に配置推奨
+- Windows側のファイルアクセスは信じられないくらい遅い
+
+---
 
 ## Gemini CLIのインストール
 
 ```bash
+# あらかじめNode.js (+npm) をインストール(インストーラーで「次へ」と進めるだけでよい)
+
 # npmでインストール
 npm install -g @google/generative-ai-cli
 
-# または、直接ダウンロード
-# https://github.com/google/generative-ai-cli
 ```
-
-**🎬 実演：実際にインストールしてみましょう！**
 
 ---
 
