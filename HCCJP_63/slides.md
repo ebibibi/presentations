@@ -215,22 +215,25 @@ https://www.youtube.com/channel/UCrf4bEl7yJnkGYo3F67gA7w
 
 ---
 
+<!-- _class: small-->
+
 # 🤔 なぜCLIツールを選ぶのか？
 
 ## GUI vs CLI AIコーディングアシスタント
 
-| ツール | タイプ | 特徴 | 料金 |
-|--------|--------|------|------|
-| **Cline** | VS Code拡張 | GUI、使いやすい | 無料（API料金別） |
-| **GitHub Copilot** | IDE統合 | コード補完特化 | 月額$10 |
-| **Cursor** | 専用エディタ | AI統合IDE | 月額$20 |
-| **Claude Code** | CLI | 高度な自動化 | 月額$20 |
-| **Gemini CLI** | CLI | シンプル・高速 | 無料～ |
+| ツール | タイプ | 料金 |
+|--------|--------|------|
+| **Cline** | VS Code拡張 | 無料（API料金別） |
+| **GitHub Copilot** | VS Code統合 | 無料～ |
+| **Cursor** | 専用エディタ | 無料～ |
+| **Claude Code** | CLI | 月額$20～ |
+| **Gemini CLI** | CLI | 無料～ |
 
 ### 🚀 CLIツールの利点
 - **自動化しやすい** - スクリプトやCIに組み込み可能
-- **軽量・高速** - GUIのオーバーヘッドなし
+- **軽量・高速** - GUIのオーバーヘッドなし / 「VSCodeのやり方」で失敗すること無し
 - **柔軟性が高い** - 任意のエディタと併用可能
+
 
 ---
 
@@ -251,8 +254,8 @@ https://www.youtube.com/channel/UCrf4bEl7yJnkGYo3F67gA7w
 
 ### 💡 選び方のポイント
 - **無料で試したい** → Gemini CLI
-- **本格的に使いたい** → Claude Code
 - **WSL設定が面倒** → Gemini CLI
+- **現時点で最強のものが使いたい** → Claude Code
 
 ---
 
@@ -280,7 +283,7 @@ npm install -g @anthropic-ai/claude-code #おそらく権限のエラーが出�
 
 <!-- _class: x-small -->
 
-## Claude Codeのインストール（Windows WSL版）
+## Claude Codeのインストール（Windows WSL版ではこちらを個人的に推奨）
 
 ```bash
 # First, save a list of your existing global packages for later migration
@@ -364,162 +367,124 @@ npm install -g @google/generative-ai-cli
 
 ```
 
+- Claude Codeと比べると超簡単！✨🚀
+
 ---
+<!-- _class: small -->
+## 動画も参考にどうぞ！
+
+### 📹 Claude CodeをWindowsにインストールする方法！
+[![Claude Code](https://img.youtube.com/vi/3NbsOeZMhgE/mqdefault.jpg)](https://www.youtube.com/watch?v=3NbsOeZMhgE)
+
+### 📹 Gemini CLI：Google最強AIが今だけ無料で使える！
+[![Gemini CLI](https://img.youtube.com/vi/Wp5DSo_3bTU/mqdefault.jpg)](https://www.youtube.com/watch?v=Wp5DSo_3bTU)
+
+---
+
+<!-- _class: small -->
 
 # ⚙️ Step 2: 基本設定
 
-## 📝 claude.mdの作成
+## 📝 CLAUDE.mdの作成
+
+- 起動時に自動的に読み込む設定ファイル
+- 既存レポジトリなら /init を実行すれば素敵なものが自動作成される
 
 ```markdown
-# Claude設定ファイル
-
-## プロジェクトのコンテキスト
-このプロジェクトはAzureを使用します。
-
-## 重要な指示
+# 必ず守るべき重要な指示
+- 日本語で応答すること
 - 必ずMicrosoft Learn MCPを参照してから実装すること
-- Azure関連の質問は公式ドキュメントを確認
+- 初回には必ず design.md, progress.md を読み現在の状況を把握すること
+- 進捗は progress.md に記載すること
 ```
 
 ## 📝 gemini.mdの作成
 
-```markdown
-# Gemini設定ファイル
-
-## プロジェクトのコンテキスト
-Azure環境での開発を行います。
-
-## 必須事項
-- Microsoft Learn MCPで最新情報を確認してから実装
-```
-
+- 役割はCLAUDE.mdと一緒です。
+- /init コマンド的なものは現時点ではなさそうです。
 ---
+
+## 他にも山ほどTipsはあります
+多すぎる & みんな試行錯誤中なので、今日は記事紹介のみとしておきます。
+
+- [速習 Claude Code](https://zenn.dev/mizchi/articles/claude-code-cheatsheet)
+- [実務で使っているClaude Codeの開発環境の紹介](https://zenn.dev/gatechnologies/articles/5780de81709e97)
+- [Claude Codeにコマンド一発でMCPサーバを簡単設定](https://zenn.dev/karaage0703/articles/3bd2957807f311)
+- [テストから始めるAgentic Coding 〜Claude Codeと共に行うTDD〜 / Agentic Coding starts with testing \- Speaker Deck](https://speakerdeck.com/rkaga/agentic-coding-starts-with-testing)
+---
+
+<!-- _class: x-small -->
 
 # 🔗 Step 3: Microsoft Learn MCP連携
 
-## MCPの設定方法
+- 必須ではないですけど超お勧めです！
+- MCP連携の設定場所は複数あります。下記はプロジェクトレベルの例。
 
-1. **MCP Server for Microsoft Learn Docsのインストール**
-   ```bash
-   npm install -g @microsoft/mcp-server-learn
-   ```
+## Claude Code
 
-2. **VS Codeでの設定**
-   - 設定 → MCP → サーバー追加
-   - Microsoft Learnサーバーを有効化
-
-3. **動作確認**
-   - `@learn` コマンドでドキュメント検索
-   - Azure関連の最新情報を即座に参照
-
-**🎬 実演：MCPを使ってAzureドキュメントを検索！**
-
----
-
-# 📋 Step 4: AIへの指示設定
-
-## claude.md / gemini.mdへの追加指示
-
-```markdown
-## 開発ルール
-1. Azure関連の実装前に必ず以下を実行：
-   - @learn でMicrosoft公式ドキュメントを検索
-   - 最新のベストプラクティスを確認
-   
-2. 実装の流れ：
-   - ドキュメント確認 → 設計 → 実装
-   
-3. セキュリティ：
-   - Azure Key Vaultの使用を検討
-   - マネージドIDを優先
+```bash
+claude mcp add microsoft_learn_mcp -s project -t http https://learn.microsoft.com/
 ```
 
-**💡 ポイント：AIが自動的に公式ドキュメントを参照するように！**
-
----
-
-# 💭 Step 5: 何を作るか相談
-
-## AIとのブレインストーミング
-
-### 相談例：
-「Azureを使って、今すぐ役立つものを作りたい」
-
-### AIからの提案例：
-- Azure Functionsで自動化ツール
-- Static Web Appsでポートフォリオサイト
-- Cosmos DBを使ったチャットアプリ
-- Azure OpenAIを活用したアシスタント
-
-**🎬 実演：実際にAIと相談してアイデアを出してもらいます！**
-
----
-
-# 📝 Step 6: design.mdの作成
-
-## 決定した内容を文書化
-
-```markdown
-# プロジェクト設計書
-
-## プロジェクト名
-Azure ベースの○○アプリケーション
-
-## 概要
-[AIと決めた内容を記載]
-
-## 使用するAzureサービス
-- Azure Functions
-- Azure Storage
-- Azure Key Vault
-
-## アーキテクチャ
-[簡単な構成図や説明]
-
-## 実装ステップ
-1. リソースグループの作成
-2. 各サービスのデプロイ
-3. 接続設定
+## Gemini CLI
+- .gemini/settings.jsonに下記を記載
 ```
-
----
-
-# 🚀 Step 7: 実装開始！
-
-## AIに実装を依頼
-
-```markdown
-design.mdに基づいて、以下を実装してください：
-1. 必要なAzureリソースの作成スクリプト
-2. 基本的なアプリケーションコード
-3. デプロイ用の設定ファイル
+{
+  "mcpServers": {
+    "microsoft_learn_mcp": {
+      "type": "http",
+      "url": "https://learn.microsoft.com/"
+    }
+  }
+}
 ```
+- ただし、Gemini CLIはきちんとMCP経由ではLearnの記事を読みにいってくれない。(自力で検索する)
 
-## 実装のポイント
-- AIが自動的にMCP経由でドキュメントを参照
-- 最新のベストプラクティスに基づいた実装
-- インフラとコードを同時に生成
+---
+<!-- _class: small -->
+# 📋 Step 4: Azureへの操作はやっぱり既存ツール群
 
-**🎬 実演：実装を開始してもらいます！**
+- 今さらですが…。結局devcontainerを作ってしまうのも楽だと思います。
+
+```
+# Install Azure CLI
+curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /etc/apt/trusted.gpg.d/microsoft.gpg && \
+    echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $(lsb_release -cs) main" > /etc/apt/sources.list.d/azure-cli.list && \
+    apt-get update && \
+    apt-get install -y azure-cli && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install PowerShell 7
+wget -q "https://packages.microsoft.com/config/debian/$(lsb_release -rs)/packages-microsoft-prod.deb" -O packages-microsoft-prod.deb && \
+    dpkg -i packages-microsoft-prod.deb && \
+    apt-get update && \
+    apt-get install -y powershell && \
+    rm packages-microsoft-prod.deb && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Azure PowerShell Module
+pwsh -Command "Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted; Install-Module -Name Az -Scope AllUsers -Force"
+
+# Install Bicep CLI
+curl -Lo bicep https://github.com/Azure/bicep/releases/latest/download/bicep-linux-x64 && \
+    chmod +x ./bicep && \
+    mv ./bicep /usr/local/bin/bicep
+
+```
+---
+
+# 📝 Step 5: AIと協力して作業する！
+個人的に推奨のやり方
+- まずAIと何をどのような技術要素で実装するのかを相談する。
+- 決定事項を design.md にまとめてもらう。
+- 実装計画をAIに立ててもらい progress.md に記載してもらう。
+- AIに実装を依頼し、progress.md に進捗を記載してもらう。
 
 ---
 
-# ⏸️ セッション①前半まとめ
+<!-- _class: lead -->
 
-## ここまでの成果
-
-✅ Claude Code / Gemini CLIのセットアップ完了
-✅ Microsoft Learn MCPとの連携設定
-✅ AIへの適切な指示の設定
-✅ プロジェクトの方向性決定（design.md）
-✅ 実装開始
-
-## 🔜 後半セッションでは...
-- 実装の続き
-- トラブルシューティング
-- デプロイまでの流れ
-
-**では、セッション②の後でお会いしましょう！**
+# 🚀 実際にやってみましょう！
 
 ---
 
@@ -533,19 +498,6 @@ design.mdに基づいて、以下を実装してください：
 <span class="speaker">日本マイクロソフト株式会社</span>
 
 ⏱️ 14:25 - 14:45（20分）
-
----
-
-# セッション②について
-
-## 📊 毎月恒例の最新動向
-
-- Microsoft "Adaptive Cloud"の最新アップデート
-- 先月休会分も含めた**2か月分の情報**
-- Azureの新機能・サービス
-- 今後のロードマップ
-
-お見逃しなく！
 
 ---
 
@@ -563,16 +515,108 @@ design.mdに基づいて、以下を実装してください：
 
 ---
 
-# セッション③について
+<!-- _class: small -->
 
-## 🔧 Edge RAGの実践
+# ⚠️ 何度も失敗するので全てスクリプト化しておくこと！
 
-- Azure Local上での簡単な動作
-- プレビュー版の展開と動作検証
-- **はまりポイントの共有**
-- 実践的なTips
+## 😓 展開の現実的な課題
 
-現場で役立つ情報満載！
+### 失敗の頻度
+- 展開には様々な場所で失敗し、何度もOS再インストールからやり直した
+- **おそらく10回以上**やり直し
+
+### 💡 強い推奨事項
+- **極力自動化することを強く推奨**
+- PowerShellスクリプト化
+- 設定ファイルの事前準備
+- 各種パラメータの外部ファイル管理
+
+### 🛠️ 自動化の対象
+- Active Directory オブジェクト作成
+- ネットワーク設定
+- Azure Arc接続
+- AKSクラスタ作成
+
+---
+
+<!-- _class: small -->
+
+# Active Directory事前準備で入力する認証情報
+
+## わかりにくいコマンド
+```powershell
+New-HciAdObjectsPreCreation -AzureStackLCMUserCredential (Get-Credential) -AsHciOUName "OU=azurelocal,DC=dev1,DC=ebisuda,DC=net"
+```
+
+## 🤔 注意
+- このADの準備段階で入力するクレデンシャルはazurelocalのnodeのローカルの管理者となるイメージ
+- 既存のドメインユーザーを入力するのではないので注意。
+
+---
+
+<!-- _class: x-small -->
+
+# 🚨 AKSクラスタ作成時の注意点
+
+## コントロールプレーンIP指定の問題
+
+### 問題の症状
+- Edge RAGの前提条件となるAKSクラスタがコントロールプレーンIPを指定しないと展開できない状況が発生
+- 本来はコントロールプレーンIPを指定しなくても展開できるはず
+
+### 解決方法
+```bash
+az aksarc create \
+  --control-plane-count 1 \
+  --control-plane-ip 10.1.1.205 \
+  # その他のパラメータ
+```
+
+### 📝 備考
+- サポートに問い合わせをしたが再現しないため未解決
+- しかし、私の環境では何度でも再現した
+- 上記オプションを追加することで解決
+
+---
+
+<!-- _class: small -->
+
+# Edge RAGの要求スペックが高すぎる問題
+
+## 💻 必要なVM構成
+
+### GPUが使用可能な場合
+- **Standard_NC8_A2** × 3ノード + **Standard_D8s_v3** × 3ノード
+
+### CPUのみの場合
+- **Standard_D8s_v3** × 6ノード
+
+| VM サイズ | GPU | GPU メモリ (GiB) | vCPU | メモリ (GiB) |
+|-----------|-----|------------------|------|--------------|
+| Standard_NC8_A2 | 1 | 16 | 8 | 16 |
+
+| VM サイズ | vCPU | メモリ (GB) |
+|-----------|-----|-------------|
+| Standard_D8s_v3 | 8 | 32 |
+
+---
+
+<!-- _class: small -->
+
+# 合計リソース要求量
+
+## 💰 GPU使用時の合計スペック
+- **vCPU**: 48コア（NC8_A2: 24 + D8s_v3: 24）
+- **メモリ**: 120GB（NC8_A2: 24GB + D8s_v3: 96GB）
+- **vGPU**: 3（各16GB GPU メモリ）
+
+## 🖥️ CPU専用時の合計スペック
+- **vCPU**: 48コア（D8s_v3: 8 × 6ノード）
+- **メモリ**: 192GB（D8s_v3: 32GB × 6ノード）
+
+## 😅 現実的な課題
+可用性、冗長性の観点ではよいが、個人で検証するのはきつすぎる。
+外部にLLMを配置するなら、1ノードだけでも動作した。
 
 ---
 
