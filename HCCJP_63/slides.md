@@ -65,6 +65,22 @@ style: |
   section.x-small li {
     font-size: 0.9em;
   }
+  /* さらにほんの少し小さいスライド用のクラス */
+  section.xx-small {
+    font-size: 22px;
+  }
+  section.xx-small h1 {
+    font-size: 1.2em;
+  }
+  section.xx-small h2 {
+    font-size: 1.0em;
+  }
+  section.xx-small code {
+    font-size: 0.6em;
+  }
+  section.xx-small li {
+    font-size: 0.88em;
+  }
   /* leadクラス用の大きめのフォント */
   section.lead h1 {
     font-size: 2.0em;
@@ -100,6 +116,27 @@ style: |
 
 ---
 
+<!-- _class: x-small -->
+
+# 👨‍💻 自己紹介
+
+## 胡田 昌彦（えびすだ まさひこ）
+
+### 📺 現在の活動
+- **YouTubeに注力中！** → https://youtube.com/@ebibibi
+
+### 🏆 資格・認定
+- **Microsoft MVP for Azure Hybrid & Windows Server**（ダブル受賞）
+
+### 📖 著書
+- **「Windowsインフラ管理者入門」** 著者
+
+### 🎵 趣味
+- ベース、ドラム、セッション
+
+
+---
+
 # 🤖 このスライドについて
 
 ## 生成AIで作成しました！
@@ -108,15 +145,6 @@ style: |
 - **Claude** - スライド内容の生成
 - **Marp** - Markdownベースのプレゼンテーション
 - **VS Code** - 統合開発環境
-
----
-
-# 🤖 このスライドについて（続き）
-
-### ✨ 生成AIの活用例
-- 司会進行用スライドの構成
-- デザインとレイアウトの最適化
-- ロゴの効果的な配置
 
 **今日のテーマにぴったり！生成AIの実践例です**
 
@@ -208,7 +236,6 @@ https://www.youtube.com/channel/UCrf4bEl7yJnkGYo3F67gA7w
 
 - 話題沸騰中のClaude CodeとGemini CLI
 - Azure環境構築のTipsと実演
-- Microsoft Learn Docs MCPの活用
 - **無料でも実現可能！**
 
 コンソールベースの生成AIでまるで魔法のような体験を！
@@ -219,7 +246,7 @@ https://www.youtube.com/channel/UCrf4bEl7yJnkGYo3F67gA7w
 
 # 🤔 なぜCLIツールを選ぶのか？
 
-## GUI vs CLI AIコーディングアシスタント
+## GUI vs CLI AIコーディングエージェント
 
 | ツール | タイプ | 料金 |
 |--------|--------|------|
@@ -246,10 +273,10 @@ https://www.youtube.com/channel/UCrf4bEl7yJnkGYo3F67gA7w
 | 項目 | Claude Code | Gemini CLI |
 |------|-------------|------------|
 | **料金** | 有料（月額$20） | **無料**でも利用可能 |
-| **環境** | WSL必須（Windows） | **Windowsで直接動作** |
+| **環境** | Linux / WindowsはWSLを使う等 | **Windowsで直接動作** |
 | **セットアップ** | 複雑（DNS設定等） | シンプル |
 | **モデル** | Claude Opus 4/Sonnet 4 | Gemini 2.5 Pro/Flash |
-| **コード生成** | 非常に高品質 | 高品質 |
+| **コード生成** | 非常に高品質(※主観) | 高品質(※主観) |
 | **MCP対応** | ✅ | ✅ |
 
 ### 💡 選び方のポイント
@@ -368,6 +395,7 @@ npm install -g @google/generative-ai-cli
 ```
 
 - Claude Codeと比べると超簡単！✨🚀
+- googleアカウントは必要です
 
 ---
 <!-- _class: small -->
@@ -391,6 +419,7 @@ npm install -g @google/generative-ai-cli
 - 既存レポジトリなら /init を実行すれば素敵なものが自動作成される
 
 ```markdown
+# CLAUDE.mdの例
 # 必ず守るべき重要な指示
 - 日本語で応答すること
 - 必ずMicrosoft Learn MCPを参照してから実装すること
@@ -405,7 +434,7 @@ npm install -g @google/generative-ai-cli
 ---
 
 ## 他にも山ほどTipsはあります
-多すぎる & みんな試行錯誤中なので、今日は記事紹介のみとしておきます。
+多すぎる & みんな試行錯誤中なので、今日は記事紹介のみとしておきます。(時間がない！)
 
 - [速習 Claude Code](https://zenn.dev/mizchi/articles/claude-code-cheatsheet)
 - [実務で使っているClaude Codeの開発環境の紹介](https://zenn.dev/gatechnologies/articles/5780de81709e97)
@@ -438,7 +467,7 @@ claude mcp add microsoft_learn_mcp -s project -t http https://learn.microsoft.co
   }
 }
 ```
-- ただし、Gemini CLIはきちんとMCP経由ではLearnの記事を読みにいってくれない。(自力で検索する)
+- ただし、Gemini CLIはMCP経由ではLearnの記事を読みにいってくれない。(自力で検索しちゃう)
 
 ---
 <!-- _class: small -->
@@ -515,6 +544,42 @@ curl -Lo bicep https://github.com/Azure/bicep/releases/latest/download/bicep-lin
 
 ---
 
+<!-- _class: xx-small -->
+
+# 🤖 Edge RAGとは？
+
+## Azure Arc対応Kubernetes拡張機能の最新ソリューション
+
+### 📋 概要
+- **オンプレミスデータに生成AIを適用**するRAG（Retrieval Augmented Generation）ソリューション
+- Azure Arc対応Kubernetesクラスター上で動作する拡張機能
+- **プライベートデータを活用**した生成AI体験をエッジで実現
+
+### 🎯 主な特徴
+- **SLM/LLM（小規模/大規模言語モデル）** をローカルで実行（CPU/GPU対応）
+- **エンドツーエンドのデータ取り込みとRAGパイプライン** - 全情報をオンプレミスに保持
+- **RBAC（ロールベースアクセス制御）** による安全なアクセス管理
+- **100以上の言語**に対応、テキスト・画像・ドキュメントをサポート（動画も近日対応予定）
+
+### 💼 活用シーン
+- **規制やコンプライアンス**要件でデータをクラウドに出せない業界
+- **低遅延**が求められるリアルタイム処理
+- **大量のローカルデータ**から洞察を得たい組織
+
+---
+
+<!-- _class: lead -->
+
+# 画面を見てみましょう！
+
+---
+
+<!-- _class: lead -->
+
+# 環境構築で苦労したこと&Tips!
+
+---
+
 <!-- _class: small -->
 
 # ⚠️ 何度も失敗するので全てスクリプト化しておくこと！
@@ -522,8 +587,9 @@ curl -Lo bicep https://github.com/Azure/bicep/releases/latest/download/bicep-lin
 ## 😓 展開の現実的な課題
 
 ### 失敗の頻度
-- 展開には様々な場所で失敗し、何度もOS再インストールからやり直した
+- 展開には様々な場所で失敗し、何度もVM再作成からやり直した
 - **おそらく10回以上**やり直し
+- Nested Hyper-V最高！
 
 ### 💡 強い推奨事項
 - **極力自動化することを強く推奨**
@@ -531,30 +597,26 @@ curl -Lo bicep https://github.com/Azure/bicep/releases/latest/download/bicep-lin
 
 ---
 
-<!-- _class: lead -->
+# 検証環境の最終的なスクリプト構成
 
-# どんなものか見てみましょう！
-
----
-
-<!-- _class: lead -->
-
-# 個人的にハマったポイント
+<p align="center">
+  <img src="image.png" alt="alt text" width="290"/>
+</p>
 
 ---
-
 
 <!-- _class: small -->
 
 # Active Directory事前準備で入力する認証情報
 
-## わかりにくいコマンド
+## 個人的にわかりにくかったコマンド
 ```powershell
 New-HciAdObjectsPreCreation -AzureStackLCMUserCredential (Get-Credential) -AsHciOUName "OU=azurelocal,DC=dev1,DC=ebisuda,DC=net"
 ```
 
 ## 🤔 注意
-- このADの準備段階で入力するクレデンシャルはazurelocalのnodeのローカルの管理者となるイメージ
+- このADの準備段階で入力するクレデンシャルは
+azurelocalのnodeの **ローカルの管理者** となるイメージ
 - 既存のドメインユーザーを入力するのではないので注意。
 
 ---
@@ -570,17 +632,17 @@ New-HciAdObjectsPreCreation -AzureStackLCMUserCredential (Get-Credential) -AsHci
 - 本来はコントロールプレーンIPを指定しなくても展開できるはず
 
 ### 解決方法
+- 下記オプションでIPアドレスを明示することで解決
 ```bash
 az aksarc create \
+  # その他パラメータ省略
   --control-plane-count 1 \
   --control-plane-ip 10.1.1.205 \
-  # その他のパラメータ
 ```
 
 ### 📝 備考
 - サポートに問い合わせをしたが再現しないため未解決
-- しかし、私の環境では何度でも再現した
-- 上記オプションを追加することで解決
+- しかし、私の環境では何度でも再現した(納得いかん！😤)
 
 ---
 
@@ -621,29 +683,28 @@ az aksarc create \
 
 ## 😅 現実的な課題
 可用性、冗長性の観点ではよいが、個人で検証するのはきつすぎる。
-外部にLLMを配置するなら、1ノードだけでも動作した。
+外部にLLMを配置する構成なら、1ノードだけでも動作した。
 
 ---
-# Azure Local（旧Azure Stack HCI）でのリソース管理の落とし穴
+
+<!-- _class: small -->
+
+# Azure Localでのリソース管理の落とし穴
 
 ## 🚨 ノードプール追加時の謎現象
 
 ### 問題の症状
-- Hyper-V管理画面では**CPU、メモリ、ストレージに余裕がある**
-- しかし、ノードプール追加時に**リソース不足エラー**が頻発
-- 空きリソースがあっても実際には使用できない状態
-
-### 現象の詳細
-- **VHDマウント失敗**エラーが表示されることもある
-- 裏側の処理で何らかの問題が発生している模様
-- 一見、リソースに問題がないように見えるため混乱
+- スペック上は**CPU、メモリ、ストレージに余裕がある**
+- しかし、ノードプール追加時に**VHDマウントのためのメモリが不足しているというエラー**が発生
 
 ### 💡 解決方法
 **Azure Localホスト（Hyper-Vノード）の再起動**
-- 単純だが効果的な解決策
-- 再起動後、リソースが正常に利用可能になる
+- Hyper-V的にメモリリソースが解放されない状態があった(原因不明)
+- 再起動後、リソースが正常に利用可能になった
 
 ---
+
+<!-- _class: x-small -->
 
 # Edge RAGの現状評価
 
@@ -651,8 +712,7 @@ az aksarc create \
 
 ### 🔍 現状の印象
 - **プレビューのためまだまだ荒削り**
-- 不安定な動作や予期しないエラーが発生
-- ドキュメントも断片的で試行錯誤が必要
+- リソースが足りない or ギリギリだと様々な問題が発生
 
 ### 🏗️ 本番を見据えた設計
 - **冗長構成が標準**で組み込まれている
@@ -700,25 +760,6 @@ az aksarc create \
 
 ---
 
-# 主催・幹事
-
-## 主催：ハイブリッドクラウド研究会
-
-**主幹事**
-- 日本ビジネスシステムズ株式会社
-
-**幹事**（50音順）
-- NTTコミュニケーションズ株式会社
-- 日商エレクトロニクス株式会社
-- 日本ヒューレット・パッカード株式会社
-- 日本マイクロソフト株式会社
-- VistaNet株式会社
-- 株式会社ネットワールド
-- 三井情報株式会社
-- レノボ・エンタープライズ・ソリューションズ株式会社
-
----
-
 <!-- _class: lead -->
 
 # 次回予告
@@ -734,13 +775,13 @@ https://www.youtube.com/channel/UCrf4bEl7yJnkGYo3F67gA7w
 
 <!-- _class: lead -->
 
-![bg left:30% 80%](../Images/hcc-logo02f.png)
+![bg left:28% 82%](../Images/hcc-logo02f.png)
 
 # ご参加ありがとうございました！
 
 ## また来月お会いしましょう！
 
 🎯 本日の資料は後日公開予定
-📧 お問い合わせはHCCJP事務局まで
+📧 お問い合わせは ebibibi@gmail.com まで
 
 **#HCCJP** でツイートお願いします！
