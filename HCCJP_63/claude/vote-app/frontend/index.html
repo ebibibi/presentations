@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>リアルタイム投票システム</title>
+    <script src="https://cdn.jsdelivr.net/npm/@microsoft/signalr/dist/browser/signalr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .voting-section {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .language-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .vote-btn {
+            background-color: #0078D4;
+            color: white;
+        }
+        .vote-btn:hover {
+            background-color: #005a9e;
+            transform: scale(1.05);
+        }
+        .vote-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+        .chart-container {
+            width: 400px;
+            height: 400px;
+            margin: 40px auto;
+        }
+        .status {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 14px;
+            color: #666;
+        }
+        .connected {
+            color: green;
+        }
+        .disconnected {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>好きなプログラミング言語は？</h1>
+        
+        <div class="voting-section">
+            <div class="language-buttons">
+                <button class="vote-btn" onclick="vote('JavaScript')">JavaScript</button>
+                <button class="vote-btn" onclick="vote('Python')">Python</button>
+                <button class="vote-btn" onclick="vote('C#')">C#</button>
+                <button class="vote-btn" onclick="vote('Java')">Java</button>
+            </div>
+        </div>
+
+        <div class="status">
+            接続状態: <span id="connectionStatus" class="disconnected">切断</span>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="votesChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        // グローバル変数
+        let connection;
+        let chart;
+        const API_BASE_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:7071/api' 
+            : 'https://func-vote-demo-1752212477.azurewebsites.net/api';
+
+        // Chart.js初期化
+        const ctx = document.getElementById('votesChart').getContext('2d');
+        chart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['JavaScript', 'Python', 'C#', 'Java'],
+                datasets: [{
+                    data: [0, 0, 0, 0],
+                    backgroundColor: [
+                        '#F7DF1E', // JavaScript黄色
+                        '#3776AB', // Python青
+                        '#239120', // C#緑
+                        '#007396'  // Java青
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.parsed || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+                                return `${label}: ${value}票 (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // SignalR接続を初期化
+        async function initializeSignalR() {
+            try {
+                // negotiate エンドポイントから接続情報を取得
+                const response = await fetch(`${API_BASE_URL}/negotiate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const connectionInfo = await response.json();
+                
+                // SignalR接続を作成
+                connection = new signalR.HubConnectionBuilder()
+                    .withUrl(connectionInfo.url, {
+                        accessTokenFactory: () => connectionInfo.accessToken
+                    })
+                    .withAutomaticReconnect()
+                    .build();
+
+                // 結果更新のハンドラーを設定
+                connection.on('updateResults', (results) => {
+                    updateChart(results);
+                });
+
+                // 接続開始
+                await connection.start();
+                updateConnectionStatus(true);
+                
+                // 初期データを取得
+                await loadInitialResults();
+                
+            } catch (err) {
+                console.error('SignalR接続エラー:', err);
+                updateConnectionStatus(false);
+            }
+        }
+
+        // 接続状態を更新
+        function updateConnectionStatus(isConnected) {
+            const statusEl = document.getElementById('connectionStatus');
+            statusEl.textContent = isConnected ? '接続中' : '切断';
+            statusEl.className = isConnected ? 'connected' : 'disconnected';
+            
+            // ボタンの有効/無効を切り替え
+            const buttons = document.querySelectorAll('.vote-btn');
+            buttons.forEach(btn => btn.disabled = !isConnected);
+        }
+
+        // 初期結果を読み込む
+        async function loadInitialResults() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/getResults`);
+                const results = await response.json();
+                updateChart(results);
+            } catch (err) {
+                console.error('初期データ取得エラー:', err);
+            }
+        }
+
+        // グラフを更新
+        function updateChart(results) {
+            const values = [
+                results.JavaScript || 0,
+                results.Python || 0,
+                results['C#'] || 0,
+                results.Java || 0
+            ];
+            
+            chart.data.datasets[0].data = values;
+            chart.update();
+        }
+
+        // 投票する
+        async function vote(language) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/sendVote`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ language })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('投票エラー');
+                }
+                
+            } catch (err) {
+                console.error('投票エラー:', err);
+                alert('投票に失敗しました。もう一度お試しください。');
+            }
+        }
+
+        // 再接続時の処理
+        connection?.onreconnecting(() => {
+            updateConnectionStatus(false);
+        });
+
+        connection?.onreconnected(() => {
+            updateConnectionStatus(true);
+            loadInitialResults();
+        });
+
+        // ページ読み込み時に初期化
+        window.addEventListener('load', () => {
+            initializeSignalR();
+        });
+    </script>
+</body>
+</html>
