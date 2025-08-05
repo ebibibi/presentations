@@ -1,0 +1,1 @@
+az deployment group create --resource-group hccjp-bicep-entra-arc --template-file main.bicep
