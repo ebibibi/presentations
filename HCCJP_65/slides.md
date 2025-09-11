@@ -243,7 +243,7 @@ https://www.youtube.com/channel/UCrf4bEl7yJnkGYo3F67gA7w
 
 # 次回予告
 
-## 📅 毎月第2金曜日 14:00〜
+## 📅 2025/10/10 14:00〜
 
 # Microsoft Connected Cache
 WSUSを使わないWindows Update配信で使える新キャッシュサービス！
