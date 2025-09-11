@@ -1,12 +1,42 @@
+# syntax=docker/dockerfile:1.7
 # LeaseLogic Development and Deployment Container
-FROM mcr.microsoft.com/dotnet/sdk:8.0
+FROM ubuntu:22.04
 
 # Set working directory
 WORKDIR /workspace
 
+# Make apt faster and more reliable
+ARG DEBIAN_FRONTEND=noninteractive
+# - Use Ubuntu mirror redirector for archive (fallback/rotation across mirrors)
+# - Keep security on canonical security.ubuntu.com (more reliable)
+# - Add retries/timeouts and force IPv4 (often faster/more reliable in CI)
+ARG APT_ARCHIVE_MIRROR=mirror://mirrors.ubuntu.com/mirrors.txt
+ARG APT_SECURITY_MIRROR=http://security.ubuntu.com/ubuntu/
+RUN set -eux; \
+    sed -i "s|http://archive.ubuntu.com/ubuntu/|${APT_ARCHIVE_MIRROR}|g" /etc/apt/sources.list; \
+    sed -i "s|http://jp.archive.ubuntu.com/ubuntu/|${APT_ARCHIVE_MIRROR}|g" /etc/apt/sources.list || true; \
+    sed -i "s|http://ftp.jaist.ac.jp/pub/Linux/ubuntu/|${APT_ARCHIVE_MIRROR}|g" /etc/apt/sources.list || true; \
+    sed -i "s|http://security.ubuntu.com/ubuntu/|${APT_SECURITY_MIRROR}|g" /etc/apt/sources.list; \
+    printf 'Acquire::Retries "10";\nAcquire::http::Timeout "20";\nAcquire::https::Timeout "20";\nAcquire::ForceIPv4 "true";\nAcquire::Languages "none";\n' > /etc/apt/apt.conf.d/99speed
+
+# Install .NET SDK 8.0
+RUN --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
+    --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends wget ca-certificates gnupg lsb-release apt-transport-https; \
+    wget -q https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb; \
+    dpkg -i packages-microsoft-prod.deb; \
+    rm -f packages-microsoft-prod.deb; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends dotnet-sdk-8.0
+
 # Install essential system packages
-RUN apt-get update && \
-    apt-get install -y \
+# + Japanese fonts & fontconfig for proper PDF/PPTX rendering in headless Chrome
+RUN --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
+    --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
         curl \
         wget \
         unzip \
@@ -21,34 +51,45 @@ RUN apt-get update && \
         sudo \
         emacs \
         libreoffice \
-        && rm -rf /var/lib/apt/lists/*
+        fontconfig \
+        locales \
+        fonts-noto-cjk \
+        fonts-noto-color-emoji \
+        fonts-ipafont-gothic \
+        fonts-ipafont-mincho \
+        && locale-gen ja_JP.UTF-8 && update-locale LANG=ja_JP.UTF-8 && \
+        fc-cache -f -v
 
 # Install Google Chrome
-RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - && \
-    echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list && \
-    apt-get update && \
-    apt-get install -y google-chrome-stable && \
-    rm -rf /var/lib/apt/lists/*
+RUN --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
+    --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    bash -lc 'set -eux; wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -; \
+    echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends google-chrome-stable'
 
 # Install Node.js 20.x
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install -y nodejs && \
-    rm -rf /var/lib/apt/lists/*
+RUN --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
+    --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    bash -lc 'set -eux; curl -fsSL https://deb.nodesource.com/setup_20.x | bash -; \
+    apt-get install -y --no-install-recommends nodejs'
+
+# Global npm packages (installed after Node.js)
+RUN --mount=type=cache,target=/root/.npm \
+    npm install -g @marp-team/marp-cli @openai/codex
 
 # Install Azure CLI
-RUN curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /etc/apt/trusted.gpg.d/microsoft.gpg && \
-    echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $(lsb_release -cs) main" > /etc/apt/sources.list.d/azure-cli.list && \
-    apt-get update && \
-    apt-get install -y azure-cli && \
-    rm -rf /var/lib/apt/lists/*
+RUN --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
+    --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    bash -lc 'set -eux; curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /etc/apt/trusted.gpg.d/microsoft.gpg; \
+    echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $(lsb_release -cs) main" > /etc/apt/sources.list.d/azure-cli.list; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends azure-cli'
 
 # Install PowerShell 7
-RUN wget -q "https://packages.microsoft.com/config/debian/$(lsb_release -rs)/packages-microsoft-prod.deb" -O packages-microsoft-prod.deb && \
-    dpkg -i packages-microsoft-prod.deb && \
-    apt-get update && \
-    apt-get install -y powershell && \
-    rm packages-microsoft-prod.deb && \
-    rm -rf /var/lib/apt/lists/*
+RUN --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
+    --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    apt-get update && apt-get install -y --no-install-recommends powershell
 
 # Install Azure PowerShell Module
 RUN pwsh -Command "Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted; Install-Module -Name Az -Scope AllUsers -Force"
@@ -95,6 +136,8 @@ RUN mkdir -p /root/.config/powershell && \
 
 # Environment variables
 ENV WORKSPACE=/workspace
+ENV LANG=ja_JP.UTF-8
+ENV LC_ALL=ja_JP.UTF-8
 
 # Default command
 CMD ["/bin/bash"]
