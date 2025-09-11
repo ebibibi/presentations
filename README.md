@@ -63,19 +63,48 @@ presentations/
 
 #### Marp CLIを使用する場合
 
+最新のCLIの推奨利用方法に合わせて手順を更新しました（Node.js 18+が必要）。PDF / PPTX / 画像出力には Chrome / Edge / Firefox のいずれかのブラウザが必要です。
+
 ```bash
-# インストール
-npm install -g @marp-team/marp-cli
+# 1) その場だけ使う（推奨）
+npx @marp-team/marp-cli@latest slides.md          # HTMLに変換（同名.htmlを出力）
+npx @marp-team/marp-cli@latest slides.md -o out.html
 
-# HTMLへの変換
-marp slides.md -o slides.html
+# 2) プロジェクトに導入して使う
+npm i -D @marp-team/marp-cli
+npx marp slides.md -o out.html
 
-# PDFへの変換
+# 3) グローバルにインストールして使う（任意）
+npm i -g @marp-team/marp-cli
+marp slides.md -o out.html
+
+# PDF への変換（ブラウザ必須）
+marp --pdf slides.md               # または拡張子で判別: -o slides.pdf
 marp slides.md -o slides.pdf
 
-# サーバーモードで起動（ライブプレビュー）
-marp -s slides.md
+# ローカルファイル（画像等）をPDF/PPTX/画像出力で使う場合の注意
+# セキュリティ保護のため既定ではローカルファイル参照がブロックされます。
+# 必要な場合のみ --allow-local-files を付与してください。
+marp --pdf --allow-local-files slides.md -o slides.pdf
+
+# PowerPoint (PPTX) への変換（ブラウザ必須）
+marp --pptx slides.md               # または: -o slides.pptx
+marp slides.md -o slides.pptx
+
+# ウォッチ（保存のたびに自動変換）
+marp -w slides.md
+
+# プレビューウィンドウを開く（自動ウォッチ有効）
+marp --preview slides.md
+
+# サーバーモード（ディレクトリを渡す）
+# 例: カレントディレクトリを公開してライブプレビュー
+marp -s .
+# 必要に応じてポート指定
+PORT=5000 marp -s .
 ```
+
+参考: セキュリティの都合により、ブラウザを使う出力（PDF / PPTX / 画像）ではローカルファイル参照が既定で無効化されています。ローカル資産を使用したい場合のみ `--allow-local-files` を付けてください。
 
 ## Marpの主な機能
 
@@ -101,3 +130,12 @@ marp -s slides.md
 - [Marp Core Documentation](https://marpit.marp.app/)
 - [Marp CLI](https://github.com/marp-team/marp-cli)
 - [Marp for VS Code](https://marketplace.visualstudio.com/items?itemName=marp-team.marp-vscode)
+
+## トラブルシューティング（Docker）
+
+- PPTX / PDF で日本語が表示されない
+  - 原因: コンテナに日本語フォントが入っていないと、ヘッドレスブラウザ（Chrome）が字形をレンダリングできません。
+  - 対応: Dockerfile に日本語フォント（Noto CJK / IPA）と fontconfig、ロケール設定を追加しました。コンテナを再ビルドしてください。
+    - VS Code Dev Containers: コマンドパレットから「Dev Containers: Rebuild Container」
+    - CLI: `docker build -t presentations:latest .`（使用環境に合わせて）
+  - 補足: 画像などローカル資産を含む PDF/PPTX 変換は `--allow-local-files` が必要です（READMEのMarp CLIセクション参照）。
