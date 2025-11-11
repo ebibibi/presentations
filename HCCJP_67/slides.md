@@ -1,0 +1,272 @@
+---
+marp: true
+theme: gaia
+paginate: true
+backgroundColor: #fff
+style: |
+  section {
+    font-family: 'Meiryo', 'Segoe UI', sans-serif;
+    font-size: 36px;
+  }
+  h1 {
+    color: #0078d4;
+    font-size: 1.6em;
+  }
+  h2 {
+    color: #0078d4;
+    font-size: 1.4em;
+  }
+  h3 {
+    font-size: 1.2em;
+  }
+  .speaker {
+    font-size: 0.85em;
+    color: #666;
+  }
+  table {
+    font-size: 0.75em;
+  }
+  th {
+    background-color: #0078d4;
+    color: white;
+  }
+  code {
+    font-size: 0.9em;
+  }
+  li {
+    font-size: 0.95em;
+  }
+  /* コンテンツが多いスライド用のクラス */
+  section.small {
+    font-size: 28px;
+  }
+  section.small h1 {
+    font-size: 1.3em;
+  }
+  section.small h2 {
+    font-size: 1.1em;
+  }
+  section.small code {
+    font-size: 0.85em;
+  }
+  /* さらに小さいスライド用のクラス */
+  section.x-small {
+    font-size: 24px;
+  }
+  section.x-small h1 {
+    font-size: 1.2em;
+  }
+  section.x-small h2 {
+    font-size: 1.0em;
+  }
+  section.x-small code {
+    font-size: 0.6em;
+  }
+  section.x-small li {
+    font-size: 0.9em;
+  }
+  /* さらにほんの少し小さいスライド用のクラス */
+  section.xx-small {
+    font-size: 22px;
+  }
+  section.xx-small h1 {
+    font-size: 1.2em;
+  }
+  section.xx-small h2 {
+    font-size: 1.0em;
+  }
+  section.xx-small code {
+    font-size: 0.6em;
+  }
+  section.xx-small li {
+    font-size: 0.88em;
+  }
+  /* leadクラス用の大きめのフォント */
+  section.lead h1 {
+    font-size: 2.0em;
+  }
+  section.lead h2 {
+    font-size: 1.6em;
+  }
+  section.lead .speaker {
+    font-size: 1.0em;
+  }
+---
+
+<!-- _class: lead -->
+
+![bg right:30% 80%](../Images/hcc-logo02f.png)
+
+# HCCJP 第67回勉強会
+
+## ハイブリッドクラウド研究会
+
+**2025年11月14日（金）14:00開始**
+
+---
+
+# 本日のテーマ
+
+## ADに依存しないクラスタの世界へ<br>——On-PremからAzure Localまで
+
+---
+
+<!-- _class: lead -->
+
+![bg right:30% 80%](../Images/hcc-logo02f.png)
+
+# オープニング
+
+**司会：胡田 昌彦**
+<span class="speaker">日本ビジネスシステムズ株式会社<br>Microsoft MVP for Cloud and Datacenter Management, Microsoft Azure</span>
+
+---
+
+<!-- _class: x-small -->
+
+# タイムテーブル
+
+| 時刻 | 時間 | セッション | スピーカー |
+|------|------|------------|------------|
+| 14:00 | 5分 | オープニング | 胡田 昌彦（日本ビジネスシステムズ / Microsoft MVP） |
+| 14:05 | 20分 | Microsoft "Adaptive Cloud" Updates | 高添 修 氏（日本マイクロソフト） |
+| 14:25 | 10分 | Q&A | 匿名で何でも質問できます！ |
+| 14:35 | 40分 | ADに依存しないクラスタの世界へ<br>——On-PremからAzure Localまで | 松本 秀太 氏（三井情報）<br>胡田 昌彦（日本ビジネスシステムズ / Microsoft MVP） |
+| 15:15 | 10分 | Q&A | 何でも質問できます！ |
+| 15:25 | - | クロージング | 胡田 昌彦 |
+
+---
+
+![bg right:20% 60%](../Images/hcc-logo02f.png)
+
+# HCCJPとは
+
+## ハイブリッドクラウド研究会
+
+- 毎月第2金曜日 14時から開催
+- Azure + ハイブリッドクラウド関連の最新情報をお届け
+- オンライン配信（YouTube HCCJPチャンネル）
+
+📺チャンネル登録お願いします！
+https://www.youtube.com/channel/UCrf4bEl7yJnkGYo3F67gA7w
+
+---
+
+# 本日の注意事項
+
+- 📹 配信は録画されています（アーカイブ視聴可）
+- 💬 質問・コメント大歓迎！
+- 📝 Q&Aセッションでまとめてお答えします
+
+---
+
+<!-- _class: x-small -->
+
+# 質問・コメント方法
+
+## 💬 YouTubeチャットで質問・コメント大歓迎！
+
+- 右側のライブチャット欄から投稿してください
+- セッション中でもお気軽にどうぞ
+- 固定コメントに各種リンクを掲載します
+
+---
+
+<!-- _class: lead -->
+
+# セッション①
+
+## Microsoft "Adaptive Cloud" Updates
+
+**スピーカー：高添 修 氏**
+<span class="speaker">日本マイクロソフト株式会社</span>
+
+⏱️ 14:05 - 14:25（20分）
+
+---
+<!-- _class: lead -->
+
+# Q&Aセッション
+
+## 💬 質問にお答えします！
+
+- どんな質問でも大歓迎です
+
+⏱️ 14:25 - 14:35（10分）
+
+---
+
+<!-- _class: lead -->
+
+# セッション②
+
+## ADに依存しないクラスタの世界へ<br>——On-PremからAzure Localまで
+
+**スピーカー：**
+**松本 秀太 氏** <span class="speaker">三井情報株式会社</span>
+**胡田 昌彦** <span class="speaker">日本ビジネスシステムズ株式会社<br>Microsoft MVP</span>
+
+⏱️ 14:35 - 15:15（40分）
+
+---
+<!-- _class: lead -->
+
+# Q&Aセッション
+
+## 💬 質問にお答えします！
+
+- どんな質問でも大歓迎です
+
+⏱️ 15:15 - 15:25（10分）
+
+---
+
+<!-- _class: normal -->
+
+![bg right:40% 90%](../Images/hcc-logo02f.png)
+
+# 📺 チャンネル登録をお願いします！
+
+## 現在 923人 → 目指せ 1000人！
+
+**YouTube HCCJPチャンネル**
+https://www.youtube.com/channel/UCrf4bEl7yJnkGYo3F67gA7w
+
+毎月第2金曜日の最新情報をお見逃しなく！
+
+---
+
+<!-- _class: lead -->
+
+![bg left:28% 82%](../Images/hcc-logo02f.png)
+
+# クロージング
+
+## 本日のご参加ありがとうございました！
+
+- アーカイブはYouTubeチャンネルから視聴可能
+- 資料は後日公開予定
+- ハッシュタグは **#HCCJP**
+
+---
+<!-- _class: lead -->
+
+# 次回予告
+
+## 📅 2025/12/12 14:00〜
+
+次回はMicrosoft Ignite 2025から最新情報をお送りする予定です！
+
+最新情報は YouTube チャンネル・X（旧Twitter）でお知らせ！
+https://www.youtube.com/channel/UCrf4bEl7yJnkGYo3F67gA7w
+
+---
+
+<!-- _class: lead -->
+
+![bg left:28% 82%](../Images/hcc-logo02f.png)
+
+# ご参加ありがとうございました！
+
+## また次回お会いしましょう！
+
