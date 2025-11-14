@@ -356,8 +356,8 @@ Windows フェールオーバークラスタのAD非依存構成の進化
   https://learn.microsoft.com/windows-server/failover-clustering/
 - **Microsoft Learn: ワークグループ クラスターの作成**
   https://learn.microsoft.com/windows-server/failover-clustering/deploy-workgroup-cluster
-- **MSサポートブログ: サポート ポリシー変更**
-  https://jpwinsup.github.io/blog/
+- **Microsoft Learn: ワークグループ クラスターを使用してライブ マイグレーションを行う**
+  https://learn.microsoft.com/ja-jp/windows-server/virtualization/hyper-v/manage/live-migration-workgroup-cluster?tabs=powershell
 
 ### 技術ブログ
 - **山市良氏: Windows Server 2025 新機能**
