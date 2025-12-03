@@ -96,8 +96,15 @@ HCCJP 第68回勉強会
 Microsoft Ignite 2025 の注目ポイント
 
 1. **Ignite 2025 全体の傾向**
+   - 「Frontier Firm」という世界観
+   - エージェントスプロールとガバナンス
 2. **AIエージェントの最新動向**
-3. **まとめ**
+   - Entra Agent ID / Agent 365
+   - 3つの「IQ」と Agent Factory
+   - Microsoft Foundry / MCP / A2A
+3. **実装とアーキテクチャ**
+   - プラットフォーム比較
+   - 推奨アーキテクチャ
 
 ⏱️ 約30分
 
@@ -105,9 +112,65 @@ Microsoft Ignite 2025 の注目ポイント
 
 <!-- _class: lead -->
 
+# Frontier Firm とは？
+
+## Microsoft が目指す「AI先進企業」の姿
+
+---
+
+<!-- _class: small -->
+
+# Frontier Firm の特徴
+
+### Frontier Firm = AI を"点"ではなく"面"で使う企業
+
+- **複数の業務領域**で AI / エージェントを活用
+  - 営業 / サポート / 開発 / 経理 / HR … 平均 7 つ以上の業務領域
+- **既製の Copilot だけでなく**
+  - 自社専用のカスタムエージェントを構築・運用
+- ビジネス成果
+  - AI活用が遅れている企業と比べて **数倍の生産性・ROI**
+
+### Ignite 2025 のメッセージ
+
+> **「すべての企業を Frontier Firm に近づけるためのプラットフォームを揃えた」**
+> そのキーコンセプトが
+> **エージェント** / **3つのIQ** / **Agent Factory**。
+
+---
+
+<!-- _class: small -->
+
+# エージェントスプロール（Agent Sprawl）の現実
+
+## なぜ今「エージェント管理」が急務なのか？
+
+### 現場で起きていること
+
+- 部門ごとにバラバラに
+  - SaaSの中に埋め込まれたエージェント
+  - 個人が立ち上げたチャットボット
+  - 外注ベンダーが作ったカスタムエージェント
+- 結果として…
+  - **誰が作った？**
+  - **何にアクセスできる？**
+  - **どこで動いている？**
+  - を把握できない "エージェントの野良化" が発生
+
+### Microsoft の回答
+
+> 人間と同じように
+> **「エージェントにもIDを付けて、統合的に管理する」**
+
+→ Entra Agent ID / Agent Registry / Agent 365 の登場
+
+---
+
+<!-- _class: lead -->
+
 # AIエージェント時代の到来
 
-## 人間と同じようにAIエージェントを管理する
+## 人間と同じように AI エージェントを管理する
 
 ---
 
@@ -118,15 +181,19 @@ Microsoft Ignite 2025 の注目ポイント
 ## これまでのMicrosoftのID管理の考え方
 
 ### 一貫した方針：すべてのアクセス主体にIDを
+
 - **人間（ユーザー）**: Entra IDでID管理
 - **アプリケーション**: サービスプリンシパル / マネージドID
 - **デバイス**: デバイスID / Intune管理
 - **そしてAIエージェント**: **Microsoft Entra Agent ID** 🆕
 
 ### Zero Trustの原則
+
 > 「誰が」「何を」「どこから」アクセスしているか常に検証
 
-**AIエージェントも例外ではない**
+- トークンを持っているだけでは信頼しない
+- コンテキスト（ID・デバイス・場所・リスク）で毎回検証
+- **AIエージェントも例外ではない**
 
 ---
 
@@ -137,8 +204,9 @@ Microsoft Ignite 2025 の注目ポイント
 ## AIエージェントを「一級市民」として管理
 
 ### 主要な機能
+
 - **エージェントの発見と登録**
-  - シャドーエージェントを含むすべてのAIエージェントを発見
+  - シャドーエージェントを含む、すべてのAIエージェントを発見
   - 一意のIDを割り当て、完全なインベントリを維持
 
 - **Agent Registry（エージェントレジストリ）**
@@ -147,9 +215,11 @@ Microsoft Ignite 2025 の注目ポイント
 
 - **ライフサイクル管理**
   - 作成・更新・無効化を自動化
-  - アクセスパッケージで意図的・監査可能・期限付きのアクセスを実現
+  - Entra ID Governance のアクセスパッケージと連携し
+    意図的・監査可能・期限付きのアクセスを実現
 
-> **ポイント**: Copilot Studioだけでなく、**非Microsoftエコシステム**のエージェントも管理対象
+> **ポイント**: Copilot Studio だけでなく、
+> **非Microsoftエコシステム**のエージェントも管理対象
 
 ---
 
@@ -159,16 +229,19 @@ Microsoft Ignite 2025 の注目ポイント
 
 | 機能 | 説明 |
 |------|------|
-| **Registry** | エージェントの一元管理・単一の情報源 |
-| **Access Control** | リソースへのアクセス制限 |
-| **Visualization** | 統合ダッシュボード・分析 |
-| **Interoperability** | 人間とエージェントのワークフロー連携 |
-| **Security** | 脅威からエージェントを保護 |
+| **Registry** | エージェントの一元管理・単一の情報源（Entra Agent Registry と連携） |
+| **Access Control** | リソースへのアクセス制限・ポリシー適用 |
+| **Visualization** | 統合ダッシュボード・分析・モニタリング |
+| **Interoperability** | 人間とエージェント、エージェント同士のワークフロー連携 |
+| **Security** | ポリシー・検出ルールでエージェントを脅威から保護 |
 
 ### ハイブリッド/マルチクラウド対応
-- **Copilot Studio / Microsoft Foundry**だけでなく
+
+- **Copilot Studio / Microsoft Foundry** だけでなく
 - **パートナーエコシステム**のエージェントも統合管理
-- AWS、GCP、オンプレミスで動作するエージェントも対象
+  - Salesforce や ServiceNow など、他社SaaS・クラウド上のエージェントも設計上の対象
+- オンプレミスや他クラウドで動作するエージェントも
+  **ID とポリシーの観点から一括管理**する方向性
 
 ---
 
@@ -179,17 +252,50 @@ Microsoft Ignite 2025 の注目ポイント
 ## Zero Trustをエージェントにも適用
 
 ### Conditional Access の拡張
+
 - AIエージェントにも条件付きアクセスポリシーを適用
 - リスクの高いエージェントをブロック
-- ネットワーク制御で悪意あるリソースへのアクセスを防止
+- 高感度なリソースへのアクセスをきめ細かく制御
 
 ### データ保護 (Microsoft Purview)
-- **Purview DLP for Copilot**: 機密データを含むプロンプトをブロック
-- クレジットカード番号や個人情報の漏洩を防止
 
-### Security Copilotとの連携
-- Microsoft 365 E5にSecurity Copilotを含む
-- Defender、Entra、Intune、Purviewに12の新エージェントを組み込み
+- **Purview DLP for Copilot**:
+  - 機密データを含むプロンプトや応答を検出・ブロック
+  - クレジットカード番号や個人情報の漏洩を防止
+
+### Security Copilot との連携
+
+- Microsoft 365 E5 に Security Copilot をバンドル
+- Defender / Entra / Intune / Purview に
+  **12 の新しいセキュリティエージェント**を組み込み
+
+---
+
+<!-- _class: small -->
+
+# セキュリティ全体像の整理
+
+## 「ID」「ネットワーク」「監視」の三位一体
+
+- **Entra Agent ID / Agent Registry**
+  - すべてのエージェントに ID を付与してカタログ化
+  - 存在・権限・所有者・利用状況を可視化
+
+- **Agent 365**
+  - エージェント全体のポリシー中枢 / コントロールプレーン
+  - どのエージェントが、どのデータに、どうアクセスできるかを制御
+
+- **Entra Internet Access / AI Prompt Shield**
+  - プロンプトインジェクションや悪意あるサイトへの接続を
+    ネットワークレベルでブロック
+
+- **Security Copilot**
+  - SOC/IT/コンプラ担当者向けの
+    「エージェント管理のCopilot」
+
+> **まとめ**:
+> エージェントは「作って終わり」ではなく、
+> **作った後の"運用・監視・防御"まで含めて設計する時代**
 
 ---
 
@@ -205,18 +311,29 @@ Microsoft Ignite 2025 の注目ポイント
 
 # Work IQ
 
-## Microsoft 365 Copilotの頭脳
+## Microsoft 365 Copilot の頭脳
 
 ### あなたの仕事を理解する
-- **データ**: メール、ファイル、会議、チャットなど組織・個人データに接続
-- **メモリ**: 好み、習慣、ワークフローを学習・記憶
-- **推論**: 洞察を提供し、ニーズを予測、タスクを先回りして実行
+
+- **データ**
+  - メール、ファイル、会議、チャットなど
+    組織・個人データに広く接続
+- **メモリ**
+  - 好み、頻出タスク、コラボ相手など
+    あなたの仕事のコンテキストを学習・記憶
+- **推論**
+  - 洞察を提供し、ニーズを予測し、タスクを先回りして実行
 
 ### 新機能
-- **会話メモリ**: セッション間でコンテキストを保持
-- **SharePointメタデータ推論**: 構造化メタデータで正確な回答（GA）
 
-> 3つの新エージェント: Workforce Insights、People、Learning Agent
+- **会話メモリ**
+  - セッションをまたいでコンテキストを保持
+- **SharePoint メタデータ推論（GA）**
+  - ドキュメント内容からメタデータを自動推論し、
+    構造化された回答精度を向上
+
+> Work IQ 上で動く 3つの新エージェント:
+> **Workforce Insights / People / Learning Agent**
 
 ---
 
@@ -226,16 +343,20 @@ Microsoft Ignite 2025 の注目ポイント
 
 ## ビジネスデータのインテリジェンス層
 
-### Microsoft Fabricと統合（プレビュー）
-- Power BIの統一セマンティックレイヤーをビジネス運用に拡張
-- **2,000万以上のモデル**に対応
+### Microsoft Fabric と統合（プレビュー）
+
+- Power BI の **統一セマンティックレイヤー** を
+  ビジネス運用レイヤーに拡張
+- **2,000万以上のセマンティックモデル**を対象に
 
 ### 何ができる？
-- 分析データ、時系列データ、位置データを統合
-- 運用システムとビジネス意味を紐づけ
+
+- 分析データ・時系列データ・位置データ などを統合
+- BIモデルに埋め込まれた「ビジネス意味」を、
+  運用システムからもそのまま活用
 - **リアルタイム**で人間とAIが行動可能な「ライブビュー」を提供
 
-> データ分析・ガバナンス・インサイトのためのインテリジェンス
+> データ分析・ガバナンス・インサイトのためのインテリジェンス層
 
 ---
 
@@ -247,14 +368,18 @@ Microsoft Ignite 2025 の注目ポイント
 
 | | 従来のRAG | Foundry IQ（次世代RAG） |
 |------|----------|----------------------|
-| **検索** | キーワード/ベクトル検索 | コンテキストエンジニアリング |
+| **検索** | キーワード / ベクトル検索 | コンテキストエンジニアリング |
 | **グラウンディング** | 単純な文書参照 | 意味理解に基づく根拠付け |
-| **精度** | ハルシネーションが課題 | 大幅に削減 |
-| **基盤** | 個別実装 | Azure AI Search統合 |
+| **精度** | ハルシネーションが課題 | ハルシネーションを**大幅に削減することを目指す** |
+| **基盤** | 個別実装 | Azure AI Search に統合された基盤 |
 
-### Foundry IQの位置づけ
-- **RAGの進化形**として、より正確で信頼性の高い応答を実現
-- カスタムAIエージェント構築のための開発者向けインテリジェンス
+### Foundry IQ の位置づけ
+
+- **RAG の進化形**として、より正確で信頼性の高い応答を目指す
+- カスタムAIエージェント構築のための
+  開発者向けインテリジェンスレイヤー
+- Azure AI Search に依存しない既存システムからも
+  段階的に移行できるアーキテクチャを想定
 
 > 現在プレビュー提供中
 
@@ -271,9 +396,70 @@ Microsoft Ignite 2025 の注目ポイント
 | **Foundry IQ** | 開発者 | エージェント構築・RAG強化 |
 
 ### Agent Factory
-- 3つのIQを統合したエージェント構築プログラム
-- **単一の従量課金プラン**でMicrosoft Foundry / Copilot Studioを利用
-- 初期ライセンス・プロビジョニング不要でエージェント展開
+
+- 3つのIQを統合した **エージェント構築プログラム**
+- **単一の従量課金プラン**で
+  Microsoft Foundry / Copilot Studio を利用可能
+- 初期ライセンス・大規模プロビジョニング不要で
+  小さく作って従量課金で回す PoC がしやすい
+- Frontier Firm を目指すための
+  **「エージェント工場」的な位置づけ**
+
+---
+
+<!-- _class: small -->
+
+# Microsoft Foundry 概要
+
+## 旧 Azure AI Foundry からの進化
+
+### Microsoft Foundry とは？
+
+- 旧 **Azure AI Foundry** の機能を拡張した
+  **エージェント開発の統合PaaS**
+- 特徴
+  - **11,000+ のモデル**にアクセス
+    - OpenAI / Anthropic / xAI / Meta / Mistral / Cohere / Microsoft Research … など
+  - LLMだけでなく、ツール・ワークフロー・データ接続まで統合管理
+  - Enterprise 向けの監査 / RBAC / ネットワーク制御を提供
+
+### Foundry Agent Service / Foundry Tools
+
+- **Foundry Agent Service**
+  - マルチエージェントのオーケストレーション
+  - カスタムエージェントのデプロイ・スケーリング
+- **Foundry Tools**
+  - 1,000+ の標準ツールカタログ＋社内専用ツール
+  - Entra Agent ID と連携した安全なツール実行
+
+> 「モデル単体」ではなく
+> **エージェント全体のライフサイクルを面倒見るプラットフォーム**
+
+---
+
+<!-- _class: small -->
+
+# MCP / A2A と相互運用性
+
+## 「Microsoft の世界に閉じこめない」ための標準化
+
+### MCP (Model Context Protocol)
+
+- Anthropic などが提唱する **オープンなプロトコル**
+- エージェントとツール／システムをつなぐ共通言語
+- Microsoft Foundry / Copilot Studio / Teams エージェント が
+  MCP ツールカタログをサポート
+
+### Agent-to-Agent (A2A) プロトコル
+
+- 異なるクラウド／ランタイム上のエージェント同士を連携
+- Microsoft Agent Framework / Foundry Agent Service でも対応
+- 将来的に **「エージェント間のマイクロサービス」** のような世界を想定
+
+### メッセージ
+
+> Microsoft のエコシステムに「閉じ込める」のではなく、
+> 標準プロトコルで **外の世界ともつながる前提** で設計されている。
 
 ---
 
@@ -289,15 +475,16 @@ Microsoft Ignite 2025 の注目ポイント
 
 # AI開発プラットフォームの比較
 
-| 観点 | Microsoft 365 Copilot | Copilot Studio | Azure AI Foundry | Azure（モデルのみ） | 非Microsoft |
-|------|---------------------|----------------|-----------------|------------------|-------------|
-| **対象者** | エンドユーザー | ビジネスユーザー | 開発者/DS | 開発者 | 開発者 |
-| **開発手法** | 利用のみ | ローコード | コードファースト | フルコード | フルコード |
-| **M365統合** | ネイティブ | シームレス | API経由 | なし | なし |
-| **ガバナンス** | 組み込み | Power Platform | Azure RBAC | Azure RBAC | 自前構築 |
-| **モデル選択** | 固定 | 限定的 | 11,000+ | 11,000+ | 任意 |
-| **カスタマイズ** | 低 | 中 | 高 | 最高 | 最高 |
+| 観点 | Microsoft 365 Copilot | Copilot Studio | Microsoft Foundry（旧 Azure AI Foundry） | Azure上でのモデル直叩き開発 | 非Microsoft |
+|------|---------------------|----------------|----------------------------------------|--------------------------|-------------|
+| **対象者** | エンドユーザー | ビジネスユーザー | 開発者 / DS / プラットフォームチーム | 開発者 | 開発者 |
+| **開発手法** | 利用のみ（エンドユーザー視点） | ローコード | コードファースト | フルコード | フルコード |
+| **M365統合** | ネイティブ | シームレス | API / コネクタ経由 | 原則なし | なし |
+| **ガバナンス** | M365 標準ポリシー | Power Platform (DLP / 監査) | Azure RBAC / Foundry 管理機能 | Azure RBAC など | 自前構築 |
+| **モデル選択** | 固定 | 限定的 | 11,000+ | 11,000+ から必要なものを選択 | 任意 |
+| **カスタマイズ** | 低（Copilot 構成レベル） | 中（ワークフロー／プラグイン） | 高（コード＋ツール＋データ） | 最高 | 最高 |
 | **立ち上げ速度** | 即時 | 数日 | 数週間 | 数週間〜 | 数ヶ月〜 |
+| **運用負荷** | 最小 | 小 | 中〜大 | 大 | 最大 |
 
 ---
 
@@ -308,21 +495,34 @@ Microsoft Ignite 2025 の注目ポイント
 ## SaaS → PaaS → IaaS/自前構築
 
 ### Microsoft 365 Copilot（SaaS）
-- すぐ使える完成品、カスタマイズは限定的
+
+- すぐ使える完成品
+- エンドユーザー視点では **「利用のみ」**
+- カスタマイズは Copilot Studio 経由で実施
 
 ### Copilot Studio（ローコードPaaS）
-- ビジネスユーザー向け、M365との統合が強み
+
+- ビジネスユーザー向け
+- M365 / Power Platform との統合が強み
 - ガバナンス（DLP、監査ログ、コンプライアンス）が組み込み
 
-### Azure AI Foundry / Microsoft Foundry（コードファーストPaaS）
-- 開発者向け、11,000+モデルへのアクセス
-- OpenAI + Anthropic両方を提供する唯一のクラウド
+### Microsoft Foundry（コードファーストPaaS）
 
-### Azureモデルのみ利用（IaaS的）
-- フル制御、Microsoftエコシステムは使わない
+- 開発者・プラットフォームチーム向け
+- 11,000+ モデル ＋ Tools ＋ エージェント管理
+- Agent Factory と組み合わせて Frontier Firm を目指す層
 
-### 完全非Microsoft（オンプレ/他クラウド）
-- すべて自前構築、最大の自由度と責任
+### Azure上でのモデル直叩き開発（IaaS的）
+
+- AKS / VM / Functions などでモデルだけを利用
+- Microsoft エコシステムをあまり使わず、
+  フルスクラッチで作りたい場合
+
+### 完全非Microsoft（オンプレ / 他クラウド / OSS）
+
+- 例: 自前の Kubernetes クラスタ＋OSS LLM＋自作オーケストレーション
+- 最大の自由度と引き換えに、
+  ガバナンス・セキュリティもすべて自前設計
 
 ---
 
@@ -330,9 +530,9 @@ Microsoft Ignite 2025 の注目ポイント
 
 # 推奨アーキテクチャ
 
-## フロントエンド/バックエンドパターン
+## フロントエンド / バックエンド パターン
 
-```
+```text
 ┌─────────────────────────────────────────────────────┐
 │  ユーザー（Teams / Web / Mobile）                    │
 └─────────────────────┬───────────────────────────────┘
@@ -343,13 +543,85 @@ Microsoft Ignite 2025 の注目ポイント
 └─────────────────────┬───────────────────────────────┘
                       ↓ 複雑なタスクをルーティング
 ┌─────────────────────────────────────────────────────┐
-│  Azure AI Foundry（バックエンド）                    │
+│  Microsoft Foundry（バックエンド）                   │
 │  - 高度な推論、カスタムモデル、マルチエージェント    │
+│  - Foundry IQ / Foundry Tools / MCP ツール           │
 └─────────────────────────────────────────────────────┘
 ```
 
-> **ベストプラクティス**: 多くの組織は両方を併用
-> Copilot Studioでプロトタイプ → Azure AI Foundryで本番構築
+### ベストプラクティス
+
+- 多くの組織は Copilot Studio と Microsoft Foundry を併用
+- Copilot Studio でプロトタイプ → Foundry で本番構築
+- その上に Entra Agent ID / Agent 365 / Security Copilot をかぶせて
+  ガバナンスとセキュリティを担保
+
+---
+
+<!-- _class: x-small -->
+
+# Q&A：Entra Agent ID とサービスプリンシパル
+
+### Q1. 今までもアプリケーションにはサービスプリンシパルがありました。AIエージェント用のIDとして使うのが「当たり前」だったと思うのですが、Entra Agent IDは本質的に何が違うの？
+
+**A1. ざっくり言うと、「AIエージェント専用に設計されたサービスプリンシパル＋ガバナンス基盤」です。**
+
+| | サービスプリンシパル | Entra Agent ID |
+|------|---------------------|----------------|
+| **想定** | 長期間動くアプリ／サービス前提 | 大量＆短命なエージェント前提 |
+| **スケール** | オブジェクト数は少なめ | Copilot/Foundry/外部由来の大量エージェント |
+| **管理** | 汎用的なアプリ管理 | Agent Registryと連動し専用スキーマで管理 |
+| **ガバナンス** | 個別に設定 | 条件付きアクセス、Identity Protection、アクセスパッケージなどと「エージェント単位」で統合 |
+
+> **結論**: 「エージェントっぽいSPを頑張って運用する」のではなく、最初からエージェント専用レーンを用意したのがEntra Agent ID。
+
+---
+
+<!-- _class: x-small -->
+
+# Q&A：外部エージェント & 野良AIはどう見える？
+
+### Q2. Microsoftのプラットフォーム以外で動いているエージェントも、そのままAgent 365に取り込めますか？
+
+**A2. いいえ。何も変えず"完全にそのまま"取り込むことはできません。**
+
+**「この世界観に正式参加」するには：**
+- Microsoft Foundry / Copilot Studio上でエージェントを作る、または
+- Microsoft Agent Identity Platform（＋MCP/A2Aなど）を使ってEntraにAgent IDを登録し、EntraをIdPにして動かす
+
+**完全に独立していてEntraと一切しゃべらないエージェントは：**
+- Agent Registryに"記録として"載せることはできても
+- IDレベルでフルにガバナンスを効かせる対象にはならない
+
+---
+
+<!-- _class: x-small -->
+
+# Q&A：野良OpenAI呼び出しの検知・ブロック
+
+### Q3. OpenAIのSDKでapi.openai.comを叩いているだけの「野良エージェント」が社内にあった場合、Agent 365で検知したりブロックしたりできますか？
+
+**A3. 検知・ブロック自体は「もともとの機能」でできます。ただしAgent 365の新機能ではなく：**
+
+| 製品 | 役割 |
+|------|------|
+| **Defender for Cloud Apps** | Cloud Discovery |
+| **Defender for Endpoint** | ネットワーク保護 |
+| **Entra Internet Access** | SSE / SWG |
+
+これらのFW／Proxy／エンドポイントレベルの制御機能で：
+- api.openai.comへの通信を検知
+- 「AIアプリカテゴリ」を禁止
+- ドメイン単位でブロック …といった制御が可能
+
+### 役割分担の整理
+
+| 対象 | 担当 |
+|------|------|
+| 野良OpenAI呼び出しの"検知＆ブロック" | **従来のセキュリティ製品の仕事** |
+| 正規エージェントの"棚卸し＆統制" | **Agent 365の仕事** |
+
+> Agent 365は、その上に「正規のエージェント＋統合されたシグナル」を束ねてエージェント単位でガバナンスするコントロールプレーン
 
 ---
 
@@ -357,7 +629,8 @@ Microsoft Ignite 2025 の注目ポイント
 
 # 参考文献
 
-### Microsoft公式ドキュメント
+### Microsoft公式ドキュメント・ブログ
+
 - **Microsoft Entra Ignite 2025: Key Announcements and Updates**
   [https://learn.microsoft.com/en-us/entra/fundamentals/whats-new-ignite-2025](https://learn.microsoft.com/en-us/entra/fundamentals/whats-new-ignite-2025)
 
@@ -370,6 +643,14 @@ Microsoft Ignite 2025 の注目ポイント
 - **Ambient and autonomous security for the agentic era**
   [https://www.microsoft.com/en-us/security/blog/2025/11/18/ambient-and-autonomous-security-for-the-agentic-era/](https://www.microsoft.com/en-us/security/blog/2025/11/18/ambient-and-autonomous-security-for-the-agentic-era/)
 
+- **Presenting Microsoft Foundry: the unified platform for building agents**
+  [https://azure.microsoft.com/](https://azure.microsoft.com/)
+
+- **Model Context Protocol (MCP) overview**
+  [https://modelcontextprotocol.io/](https://modelcontextprotocol.io/)
+
+※URLは変更される場合があります。正式な情報は公式サイトでご確認ください。
+
 ---
 
 <!-- _class: lead -->
@@ -380,5 +661,4 @@ Microsoft Ignite 2025 の注目ポイント
 
 ## 質問・コメントをお待ちしています
 
-**#HCCJP でシェアお願いします！**
-
+ハッシュタグ： **#HCCJP** でシェアお願いします！
