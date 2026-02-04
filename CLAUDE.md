@@ -1,0 +1,109 @@
+# presentations リポジトリ
+
+胡田昌彦のプレゼンテーション資料管理リポジトリ。Marpを使用してMarkdownからスライドを生成する。
+
+## ディレクトリの種類
+
+### 1. HCCJP勉強会（HCCJP_XX）
+- **主催**: ハイブリッドクラウド研究会（複数スピーカー、YouTubeライブ配信）
+- **特徴**: オープニング、複数セッション、Q&A、クロージングの構成
+- **ロゴ**: `../Images/hcc-logo02f.png` を使用
+
+### 2. 個人勉強会（日付_テーマ名）
+- **主催**: 胡田昌彦個人
+- **特徴**: 単独発表、シンプルな構成
+- **命名規則**: `YYYYMMDD_テーマ名`（例: `20260208_Gemini_VSCode_AIAgentDev`）
+
+## Marpスライドの作成方法
+
+### 基本構造
+
+```markdown
+---
+marp: true
+theme: gaia
+paginate: true
+backgroundColor: #fff
+style: |
+  section {
+    font-family: 'Meiryo', 'Segoe UI', sans-serif;
+    font-size: 36px;
+  }
+  h1 { color: #0078d4; font-size: 1.6em; }
+  h2 { color: #0078d4; font-size: 1.4em; }
+---
+
+# タイトル
+
+---
+
+# 次のスライド
+```
+
+### スライド区切り
+
+`---` で新しいスライドに分割する。
+
+### クラス指定（スライドごとのスタイル）
+
+```markdown
+<!-- _class: lead -->
+```
+
+| クラス | 用途 |
+|--------|------|
+| `lead` | セクションタイトル（大きめフォント） |
+| `small` | 情報が多いスライド（28px） |
+| `x-small` | さらに小さい（24px） |
+| `xx-small` | 最小（22px） |
+
+### 背景画像
+
+```markdown
+![bg right:30% 80%](../Images/logo.png)
+```
+
+- `right:30%` / `left:30%`: 配置位置と幅
+- `80%`: 画像サイズ
+
+### よく使うカスタムCSS
+
+```css
+.speaker {
+  font-size: 0.85em;
+  color: #666;
+}
+```
+
+スピーカー情報の表示に使用:
+```markdown
+<span class="speaker">所属・肩書き</span>
+```
+
+## 共有リソース
+
+- `Images/`: 複数プレゼンテーションで共有するロゴ等
+  - `hcc-logo02f.png`: HCCJPロゴ
+
+## 出力形式
+
+```bash
+# HTML出力
+npx @marp-team/marp-cli slides.md -o slides.html
+
+# PDF出力（ローカル画像使用時）
+npx @marp-team/marp-cli --pdf --allow-local-files slides.md -o slides.pdf
+
+# PPTX出力
+npx @marp-team/marp-cli --pptx --allow-local-files slides.md -o slides.pptx
+
+# プレビュー
+npx @marp-team/marp-cli --preview slides.md
+```
+
+## 新規プレゼンテーション作成手順
+
+1. ディレクトリ作成: `mkdir YYYYMMDD_テーマ名`
+2. `slides.md` を作成（上記テンプレートを使用）
+3. 必要に応じて `images/` サブディレクトリを作成
+4. PPTXまたはPDFにエクスポート
