@@ -83,6 +83,8 @@ style: |
 
 <!-- _class: lead -->
 
+![bg right:25% 90%](./images/ebi-icon-circle.png)
+
 # 【無料でスタート！】
 # Gemini CLI + VS Code
 ## AIエージェントで開発
@@ -155,6 +157,8 @@ style: |
 ---
 
 <!-- _class: lead -->
+
+![bg right:25% 90%](./images/ebi-icon-circle.png)
 
 # Part 1
 ## 環境セットアップ
@@ -276,6 +280,8 @@ gemini
 ---
 
 <!-- _class: lead -->
+
+![bg right:25% 90%](./images/ebi-icon-circle.png)
 
 # Part 2
 ## Todoアプリを作ってみよう
@@ -487,6 +493,8 @@ gemini
 
 <!-- _class: lead -->
 
+![bg right:25% 90%](./images/ebi-icon-circle.png)
+
 # Part 3
 ## GEMINI.md でカスタマイズ
 
@@ -528,8 +536,8 @@ AIが自動的に読み込んで従ってくれる
 
 # ルール
 - 回答は必ず日本語で行ってください。
-- 作業が完了したら、GEMINI.md の末尾に以下の形式で追記してください:
-  ## YYYY-MM-DD HH:MM - 作業内容 - 変更したファイル
+- 作業が完了したら、notes/YYYY-MM-DD.md に以下の形式で追記してください:
+  ## HH:MM - 作業内容 - 変更したファイル
 ```
 
 **→ この後の作業で、AIが勝手に日誌を書いてくれるはず…！**
@@ -560,6 +568,8 @@ AIが自動的に読み込んで従ってくれる
 ---
 
 <!-- _class: lead -->
+
+![bg right:25% 90%](./images/ebi-icon-circle.png)
 
 # Part 4
 ## さらに活用するなら知るべきこと(今日は知るだけ)
@@ -706,21 +716,23 @@ gemini extension install @google/search
 
 ---
 
-# GEMINI.md の日誌、見てみましょう
+# 日誌、見てみましょう
 
 ## さっき設定した日誌、書かれているかな？
 
 ```
-GEMINI.md を開いてみてください
+notes/ フォルダを開いてみてください
 ```
 
-- AIが作業するたびに、勝手に日誌を追記してくれているはず
-- **設定を書いておくだけで、AIが自律的に動いてくれる**
+- AIが作業するたびに、勝手に日誌ファイルを作って追記してくれているはず
+- **GEMINI.md に設定を書いておくだけで、AIが自律的に動いてくれる**
 - これが GEMINI.md の力！
 
 ---
 
 <!-- _class: lead -->
+
+![bg right:25% 90%](./images/ebi-icon-circle.png)
 
 # まとめ
 
@@ -807,6 +819,8 @@ GEMINI.md を開いてみてください
 ---
 
 <!-- _class: lead -->
+
+![bg right:25% 90%](./images/ebi-icon-circle.png)
 
 # ありがとうございました！
 

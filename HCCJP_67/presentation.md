@@ -78,7 +78,7 @@ style: |
 
 <!-- _class: lead -->
 
-![bg right:30% 80%](../Images/ebi/アセット9.png)
+![bg right:30% 80%](../Images/ebi/ebi-icon-circle.png)
 
 # ADに依存しないクラスタの世界へ(前半)
 
@@ -372,7 +372,7 @@ Windows フェールオーバークラスタのAD非依存構成の進化
 
 <!-- _class: lead -->
 
-![bg left:30% 80%](../Images/ebi/アセット9.png)
+![bg left:30% 80%](../Images/ebi/ebi-icon-circle.png)
 
 # ご清聴ありがとうございました！
 
