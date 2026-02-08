@@ -133,7 +133,7 @@ style: |
 | 時間 | 内容 |
 |------|------|
 | 前半（約1時間） | 環境セットアップ |
-| 後半（約1時間） | Todoアプリを作ってみる + α |
+| 後半（約1時間） | Todoアプリを作ってみる<br>アプリケーション操作<br>API連携<br>などなど！ |
 
 - ハンズオン形式で進めます
 - 見ているだけでもOK！
@@ -176,8 +176,10 @@ style: |
 
 # Step 2: Node.js のインストール
 
+**JavaScriptの実行エンジン。Gemini CLI の動作に必要。**
+
 1. https://nodejs.org/ にアクセス
-2. **LTS版**（推奨版）をダウンロード
+2. Windows用のインストーラー（.msi）をダウンロード
 3. インストーラーを実行（デフォルト設定でOK）
 
 **確認（PowerShellで）:**
@@ -186,7 +188,19 @@ node -v
 npm -v
 ```
 
-※ バージョン20以上が必要
+---
+
+# ⚠️ npm でエラーが出たら
+
+## 「スクリプトの実行が無効になっています」
+
+PowerShellを **管理者として実行** して:
+
+```powershell
+Set-ExecutionPolicy RemoteSigned
+```
+
+「Y」で許可 → もう一度 `npm -v` を確認
 
 ---
 
@@ -211,34 +225,27 @@ setx PATH "%PATH%;%AppData%\npm"
 gemini
 ```
 
-1. テーマを選択（後で変更可能）
-2. 認証方法で「Login with Google」を選択
-3. ブラウザが開くのでGoogleアカウントでログイン
+1. 認証方法で「Login with Google」を選択
+2. ブラウザが開くのでGoogleアカウントでログイン
+3. rを押してリスタート
 
 ---
 
 # Step 5: VS Code 拡張機能のインストール
 
-## Gemini CLI Companion
-
-1. VS Code のサイドバー → 拡張機能
-2. 「Gemini CLI Companion」を検索
-3. インストール
-
-**これで VS Code と Gemini CLI が連携！**
-- 開いているファイルを認識
-- 選択中のコードを理解
-- 差分ビューで変更を確認
-
----
-
-# Step 6: 動作確認
-
-VS Code のターミナルで:
+## VS Code のターミナルで gemini を起動するだけ！
 
 ```powershell
 gemini
 ```
+
+「Do you want to connect VS Code to Gemini CLI?」と聞かれるので **Yes** を選択
+
+→ 自動で **Gemini CLI Companion** がインストールされる！
+
+---
+
+# Step 6: 動作確認
 
 起動したら:
 ```
@@ -246,6 +253,14 @@ gemini
 ```
 
 「Connected to VS Code」と表示されればOK！
+
+---
+
+<!-- _class: lead -->
+
+# 🎉 環境セットアップ完了！
+
+## おめでとうございます！
 
 ---
 
@@ -316,25 +331,109 @@ HTMLとJavaScriptだけで動くようにして。
 
 ---
 
+# 日本語で使おう 🇯🇵
+
+## 英語で返ってきましたね… 毎回言うのは面倒！
+
+AIに GEMINI.md を作らせよう:
+
+```
+GEMINI.md を作成して。
+日本語で考えて、日本語で回答するように指示を書いて。
+```
+
+→ **設定ファイルの作成もAIに任せる！**
+
+💡 GEMINI.md = プロジェクトのルールブック（後で詳しく紹介）
+
+---
+
+# 💡 今日一番大事なこと
+
+## あなたがやらなくていい。AIにやらせる。
+
+AIが「手動で開いてください」と言ってきても…
+
+```
+開いてください。
+```
+
+→ **AIがコマンドを実行して開いてくれる！**
+
+せっかくAIエージェントを使うのだから、**人間は指示するだけ**
+
+---
+
+<!-- _class: small -->
+
+# 💡 今日一番大事なこと（続き）
+
+## AIエージェント時代の考え方
+
+- PCの操作は**ほとんどコマンドで自動化できる**
+- GUIで手作業していたことも、AIがコマンドで実行してくれる
+- 何が自動化できるか知らなくてもいい
+
+## じゃあどうするか？
+
+- **AIが全部できると信じて、まず「やって」とお願いする**
+- 仕事で「こうしてください」と言われたら、そのままAIに頼む
+- これだけで生産性が劇的に変わる
+
+## 今日はこれだけ覚えて帰ってもOKです！
+
+---
+
 # YOLOモード 🚀
 
 ## 確認なしで自動実行させる
-
-通常: ファイル作成や実行のたびに確認が必要
 
 **YOLOモード有効化:**
 - 起動時: `gemini --yolo`
 - 実行中: `Ctrl + Y` で切り替え
 
-⚠️ 便利だけど、何をしているか把握しながら使おう
+⚠️ 超便利だけど、最悪環境自体も壊す危険性あり！
+
+**YOLO** = "You Only Live Once"（人生一度きり、やっちゃえ！）
+日本語的には「よろ〜（よろしく〜）」と覚えると覚えやすいかも？（笑）
+
+---
+
+# お片付けもAIに任せる 🧹
+
+## 次のデモの前に、さっき作ったファイルを削除
+
+```
+GEMINI.md 以外の全ファイルを削除してください。
+```
+
+**→ 自分で消しに行かない。AIにやらせる！**
+
+※ もちろん自分で消してもOKです
 
 ---
 
 # デモ②: ドキュメントに書いてから作らせる
 
-## 要件を先に書いておく方法
+## まず requirements.md をAIに書かせる
 
-1. `requirements.md` に要件を記述
+```
+Todoアプリの要件定義書を requirements.md として作成して。
+タスクの追加、完了、削除ができて、
+ローカルストレージに保存する仕様で。
+```
+
+**→ 要件書すらAIに書かせる！**
+
+※ もちろん自分でゼロから書いてもOKです
+
+---
+
+# デモ②: ドキュメントに書いてから作らせる（続き）
+
+## できた requirements.md を使って作らせる
+
+1. 中身を確認・修正
 2. `@requirements.md` で参照させる
 
 ```
@@ -346,57 +445,41 @@ HTMLとJavaScriptだけで動くようにして。
 
 ---
 
-<!-- _class: x-small -->
+# デモ②: 要件を更新して再反映する
 
-# requirements.md の例
+## requirements.md に指示を追加
 
-```markdown
-# Todo アプリ
+```
+requirements.md にダークモードで実装する指示を追加して。
+```
 
-## 技術スタック
-- HTML / CSS / JavaScript
-- ローカルストレージで永続化
+追加したら、もう一度:
 
-## 画面一覧
-### タスク一覧画面
-- タスクの一覧を表示
-- チェックボックス、タスク名、期限日、編集・削除ボタン
-- 追加ボタンで詳細画面へ遷移
+```
+@requirements.md に従ってアプリケーションを更新してください。
+```
 
-### タスク詳細画面
-- タスク名と期限日の入力欄
-- 決定ボタンで保存、戻るボタンで一覧へ
+**→ ドキュメントを育てながら開発できる！**
+
+---
+
+# お片付け（2回目）🧹
+
+```
+GEMINI.md 以外の全ファイルを削除してください。
 ```
 
 ---
 
-# デモ③: 計画させてから作る
-
-## より良い結果を得るために
-
-```
-ローカルで動くTodoアプリを作りたい。
-まず計画を立てて、私に確認してから作業を始めて。
-
-要件:
-- タスクの追加、完了、削除
-- ローカルストレージに保存
-- シンプルなデザイン
-```
-
-**→ 計画を見てから「OK」と言う**
-
----
-
-# 3つのパターンの使い分け
+# 2つのパターンの使い分け
 
 | パターン | 向いているケース |
 |----------|------------------|
 | ①1発プロンプト | 簡単なもの、試作 |
 | ②ドキュメントベース | 要件が明確、再現性が必要 |
-| ③計画してから | 複雑なもの、段階的に進めたい |
 
-**慣れてきたら②③を使おう！**
+**複雑なものは②を使おう！**
+**「計画モード」の実装が進んできているので実装されたらそれも使おう！**
 
 ---
 
@@ -419,11 +502,15 @@ HTMLとJavaScriptだけで動くようにして。
 ```
 メモ帳を起動して、「Hello from Gemini!」と入力して、
 デスクトップに hello.txt として保存して閉じて。
+PowerShellで実現可能だよ。
 ```
 
 - PowerShellスクリプトを生成して実行してくれる
 - キー送信でアプリを操作できる
 - **知らない人が多いけど、スクリプトで普通にできること**
+
+⚠️ 今の Gemini CLI ではうまくできませんでした。Claude Code ならできました。
+**→ AIエージェントにも性能差あり。そのうちできるようになる。**
 
 ---
 
@@ -434,8 +521,7 @@ HTMLとJavaScriptだけで動くようにして。
 ## 外部サービスのAPIも呼べる
 
 ```
-Todoist に「勉強会の資料を作る」というタスクを追加して。
-期限は明日にして。
+Todoist に「test」っていうタスクを追加して。
 ```
 
 **準備:**
@@ -445,11 +531,23 @@ Todoist に「勉強会の資料を作る」というタスクを追加して。
 
 **→ タスクの追加・一覧表示・削除もAIに任せられる！**
 
+⚠️ Gemini CLI 無料版ではこのレベルの指示ではうまくいきませんでした。
+Claude Code でデモします。Gemini でもできないか、一緒に試行錯誤してみましょう！
+
+---
+
+<!-- _class: lead -->
+
+# ここまでわかれば
+# 何にでも使えます！ 🎉
+
+## あとは1つだけ知っておくといいこと
+
 ---
 
 # コンテキストの量を意識せよ 📊
 
-## AIには「記憶の限界」がある
+## 唯一ちょっと意識しておきたいこと
 
 **コンテキストウィンドウ** = AIが一度に見られる情報量
 
@@ -471,9 +569,15 @@ Todoist に「勉強会の資料を作る」というタスクを追加して。
 
 ---
 
-<!-- _class: small -->
+<!-- _class: x-small -->
 
 # 対策: 定期的にリセットする
+
+## クリアする
+```powershell
+# 会話履歴を削除する
+/clear
+```
 
 ## 新しいセッションを始める
 
@@ -483,6 +587,7 @@ exit
 
 # 新しく始める
 gemini
+
 ```
 
 **目安:**
@@ -516,34 +621,6 @@ AIが自動的に読み込んで従ってくれる
 
 ---
 
-<!-- _class: x-small -->
-
-# GEMINI.md の例（日誌機能付き）
-
-## これを書いて、この後の作業を続けましょう！
-
-```markdown
-# プロジェクト概要
-シンプルなTodoアプリです。
-
-# 技術スタック
-- HTML / CSS / JavaScript
-- ローカルストレージで永続化
-
-# コーディング規約
-- 変数名は日本語コメントで説明
-- console.logは残さない
-
-# ルール
-- 回答は必ず日本語で行ってください。
-- 作業が完了したら、notes/YYYY-MM-DD.md に以下の形式で追記してください:
-  ## HH:MM - 作業内容 - 変更したファイル
-```
-
-**→ この後の作業で、AIが勝手に日誌を書いてくれるはず…！**
-
----
-
 # GEMINI.md の階層
 
 ```
@@ -556,17 +633,62 @@ AIが自動的に読み込んで従ってくれる
 
 ---
 
-# 便利なコマンド
+<!-- _class: xx-small -->
 
-| コマンド | 説明 |
-|----------|------|
-| `/ide status` | VS Code との接続状態を確認 |
-| `/memory show` | 現在読み込まれているGEMINI.mdの内容を表示 |
-| `/memory refresh` | GEMINI.mdを再読み込み |
-| `/memory add <テキスト>` | グローバルGEMINI.mdに追記 |
+# GEMINI.md の階層 ― 具体例
+
+## ~/.gemini/GEMINI.md（グローバル：全プロジェクト共通）
+```markdown
+- 日本語で考えて、日本語で回答してください
+- コードにはコメントを日本語で書いてください
+```
+→ **どのプロジェクトでも毎回言わなくて済む！**
+
+## プロジェクト/GEMINI.md（プロジェクト固有）
+```markdown
+# Todoアプリ
+- HTML / CSS / JavaScript で実装
+- ローカルストレージで永続化
+- ダークモードで統一
+```
+→ **このプロジェクトのルールをAIが常に把握**
+
+## プロジェクト/tests/GEMINI.md（サブディレクトリ固有）
+```markdown
+- テストコードを書くときは Jest を使用してください
+```
+→ **tests/ の中で作業するときだけ追加で読み込まれる**
 
 ---
 
+# デモ: GEMINI.md に作業ログ機能を追加しよう
+
+## AIが自動で作業ログをつけてくれる！
+
+GEMINI.md に以下を追記:
+
+```markdown
+# ルール
+- 1回の会話ごとに、必ず notes/YYYY-MM-DD.md に
+  作業ログを追記してください
+- 形式: ## HH:MM - やったこと
+- ファイルがなければ作成、あれば追記
+```
+
+---
+
+# デモ: 作業ログがつくか試してみよう
+
+## 何回か会話してみる
+
+AIに何か作業させて、notes/ を確認してみましょう
+
+**→ 会話のたびに作業ログが追記されている！**
+**→ GEMINI.md にルールを書くだけで、AIの行動が変わる**
+
+これが GEMINI.md の力！
+
+---
 <!-- _class: lead -->
 
 ![bg right:25% 90%](./images/ebi-icon-circle.png)
@@ -584,29 +706,57 @@ AIが自動的に読み込んで従ってくれる
 - ✅ 基本的なプロンプト
 - ✅ GEMINI.md（プロジェクト設定）
 
-**今後深掘りしていく機能:**
+**もっと活用するなら使っていきたい機能:**
 - Extensions（拡張機能）
 - MCP（外部ツール連携）
 - Hooks（自動化）
 - Skills（再利用可能な技）
+- Custom Commands（カスタムコマンド）
+- Sub-Agents（サブエージェント）
 
 ---
 
+<!-- _class: x-small -->
+
+# ⚠️ この辺りはすぐに変わります
+
+## 機能の詳細を暗記しても意味がない
+
+- AIエージェントの進化は**とても速い**
+- 今日紹介した機能も、数ヶ月後には別物になっているかも
+
+## でも本質は変わらない
+
+- **コンテキスト**: AIに何を見せるか
+- **実行タイミング**: いつ、何をさせるか
+
+この2つだけ意識していれば大丈夫
+
+## 難しそう？ → 習うより慣れろ！
+
+先に勉強して覚えようとしなくていい。尻込みも不要。
+**使いながら覚える。それが一番早い。**
+
+---
 <!-- _class: small -->
 
 # Extensions（拡張機能）
 
 ## AIの能力を拡張するパッケージ
 
-```
-gemini extension install @google/search
-```
-
 - プロンプト、MCPサーバー、スキル、コマンドをまとめたパッケージ
 - チームで共有して環境を統一できる
-- 公式・コミュニティ製の拡張機能が多数
+- 公式・コミュニティ製が **351個以上** 公開中
 
-**例:** データベース連携、Terraform、SonarQube など
+**インストールは1行:**
+```powershell
+gemini extensions install <GitHubリポジトリURL>
+```
+
+GitHub、Terraform、Redis、Figma、Stripe など多数
+https://geminicli.com/extensions/ で一覧を見れる
+
+⚠️ 多くの拡張は APIキーやトークンなどの認証設定が必要
 
 ---
 
@@ -630,56 +780,89 @@ gemini extension install @google/search
 
 ---
 
+<!-- _class: x-small -->
+
 # Hooks（フック）
 
-## 特定のタイミングで自動実行
+## AIの動作の「前後」にスクリプトを自動実行
 
-```
-ファイル保存時 → 自動フォーマット
-コミット前 → テスト実行
-```
-
-- AIの動作の「前後」にスクリプトを挟める
-- セキュリティポリシーの強制
-- チームルールの自動適用
-
----
-
-# Skills（スキル）
-
-## 再利用可能な「技」を定義
-
-```markdown
-# /deploy
-本番環境にデプロイする
-
-## 手順
-1. テスト実行
-2. ビルド
-3. サーバーにアップロード
+```json
+// .gemini/settings.json
+{
+  "hooks": {
+    "BeforeTool": [{
+      "matcher": "write_file|replace",
+      "hooks": [{
+        "name": "secret-scanner",
+        "type": "command",
+        "command": ".gemini/hooks/block-secrets.sh",
+        "description": "シークレットの混入を防止"
+      }]
+    }]
+  }
+}
 ```
 
-- Markdownで定義するだけ
-- `/deploy` と打つだけで実行
-- チームで共有・再利用できる
+→ **ファイル書き込みの前に、秘密情報が含まれてないかチェック！**
+
+- スクリプトは自分で書く or 拡張機能としてまとめて入手もできる
 
 ---
 
 <!-- _class: x-small -->
 
-# 他のAIエージェントとの互換性
+# Skills（スキル）
 
-## 実は似た仕組みを持っている
+## 再利用可能な「技」を Markdown で定義
 
-| 機能 | Gemini CLI | Claude Code |
-|------|------------|-------------|
-| プロジェクト設定 | GEMINI.md | CLAUDE.md |
-| 拡張機能 | Extensions | Plugins |
-| 外部ツール連携 | MCP ✅ | MCP ✅ |
-| フック | Hooks | Hooks |
-| スキル | Skills | Skills |
+```
+.gemini/skills/code-reviewer/SKILL.md   ← プロジェクト用
+~/.gemini/skills/code-reviewer/SKILL.md ← 全プロジェクト共通
+```
 
-**MCP は共通規格** → 同じサーバーが使える！
+```markdown
+---
+name: code-reviewer
+description: コードレビューを実施するスキル
+---
+# Code Reviewer
+コードを徹底的にレビューして、バグやセキュリティの問題を指摘してください。
+```
+
+- `/code-reviewer` と打つだけで実行
+- `scripts/` にスクリプトを配置して実行させることも可能
+- チームで共有・再利用できる
+- Claude Code の Skills と互換性あり！スキルの使い回しができる
+
+---
+
+# Custom Commands（カスタムコマンド）
+
+## よく使うプロンプトをコマンド化
+
+```
+.gemini/commands/test.toml → /test で実行
+~/.gemini/commands/       → 全プロジェクト共通
+```
+
+`.toml` ファイルにプロンプトを書くだけ！
+
+- ネームスペースも可: `git/commit.toml` → `/git:commit`
+- チームで共有・バージョン管理できる
+
+---
+
+# Sub-Agents（サブエージェント）
+
+## AIが別のAIに仕事を振る
+
+- 専門的なタスク（コードレビュー、ドキュメント作成など）を別のエージェントに委任
+- 並列実行・独立したコンテキストで動作
+- `/subagents` コマンドで管理
+
+⚠️ まだ実験的機能（YOLO モードが必要）
+
+**→ 1人のAIが全部やるのではなく、チームのように分業できる時代へ**
 
 ---
 
@@ -714,19 +897,7 @@ gemini extension install @google/search
 
 **→ あなたのお好みは？**
 
----
-
-# 日誌、見てみましょう
-
-## さっき設定した日誌、書かれているかな？
-
-```
-notes/ フォルダを開いてみてください
-```
-
-- AIが作業するたびに、勝手に日誌ファイルを作って追記してくれているはず
-- **GEMINI.md に設定を書いておくだけで、AIが自律的に動いてくれる**
-- これが GEMINI.md の力！
+**現状はClaude Codeが総合力でトップ。モデル単体で見るとCodexが少し強い印象というのが胡田の印象。**
 
 ---
 
@@ -743,10 +914,11 @@ notes/ フォルダを開いてみてください
 1. ✅ VS Code + Node.js + Gemini CLI をインストール
 2. ✅ Gemini CLI Companion で VS Code と連携
 3. ✅ AIエージェントにTodoアプリを作らせた
-   - 1発プロンプト / ドキュメントベース / 計画してから
-4. ✅ YOLOモードで自動実行
-5. ✅ アプリ操作・API連携もできることを体験
-6. ✅ GEMINI.md でAIをカスタマイズ（日誌も自動で！）
+   - 1発プロンプト / ドキュメントベース
+4. ✅ 「AIにやらせる」マインドセットを体験
+5. ✅ YOLOモードで自動実行
+6. ✅ GEMINI.md でAIをカスタマイズ（作業ログも自動で！）
+7. ✅ 高度な機能の紹介（Extensions, MCP, Hooks, Skills, Commands, Sub-Agents）
 
 ---
 
@@ -759,36 +931,30 @@ notes/ フォルダを開いてみてください
 
 ---
 
-# ターミナルが「考える相棒」になる
 
-## 今日体験したこと以外にも…
+<!-- _class: lead -->
 
-- 🗓️ **旅行計画**: 「ソウル3泊4日、雨の日プランも」
-- 📝 **文章の推敲**: メール、ブログ、ドキュメント
-- 🤔 **設計の壁打ち**: 「この構成どう思う？」
-- 📰 **情報収集**: ニュース要約、リサーチ
-- 📋 **1日の振り返り**: 日報作成、タスク整理
+# AIエージェントに
+# 頼むだけで
+# 全部できる時代へ
 
-**思いついたら、まずAIに聞いてみよう**
-
-<span class="url">参考: https://dev.classmethod.jp/articles/claude-code-daily-workflow/</span>
+**胡田はもう仕事の8割はAIエージェントに話しかけるだけです。Skill増殖中。あなたも今日から始めましょう！**
 
 ---
+
 
 <!-- _class: xx-small -->
 
 # 参考リンク
 
+## インストール
+- VS Code: https://code.visualstudio.com/
+- Node.js: https://nodejs.org/
+
 ## 公式ドキュメント
 - Gemini CLI GitHub: https://github.com/google-gemini/gemini-cli
 - Gemini CLI Docs: https://geminicli.com/
 - GEMINI.md: https://google-gemini.github.io/gemini-cli/docs/cli/gemini-md.html
-- Gemini API Rate Limits: https://ai.google.dev/gemini-api/docs/rate-limits
-
-## 拡張機能・高度な機能
-- Extensions: https://geminicli.com/extensions/
-- Hooks: https://developers.googleblog.com/tailor-gemini-cli-to-your-workflow-with-hooks/
-- AGENTS.md（共通標準）: https://agents.md/
 
 ---
 
@@ -796,13 +962,17 @@ notes/ フォルダを開いてみてください
 
 # 参考リンク（続き）
 
-## 比較・解説記事
-- Gemini CLI vs Claude Code: https://composio.dev/blog/gemini-cli-vs-claude-code-the-better-coding-agent
-- Claude Code Plugins vs Gemini CLI Extensions: https://harishgarg.com/claude-code-plugins-vs-gemini-cli-extensions-a-comparison
+## 高度な機能
+- Extensions 一覧: https://geminicli.com/extensions/
+- MCP: https://geminicli.com/docs/tools/mcp-server/
+- Hooks: https://developers.googleblog.com/tailor-gemini-cli-to-your-workflow-with-hooks/
+- Skills: https://geminicli.com/docs/cli/skills/
+- Custom Commands: https://geminicli.com/docs/cli/custom-commands/
+- Sub-Agents: https://geminicli.com/docs/core/subagents/
 
-## インストール
-- VS Code: https://code.visualstudio.com/
-- Node.js: https://nodejs.org/
+## 共通標準・比較
+- AGENTS.md（共通標準）: https://agents.md/
+- Claude Code の日常活用: https://dev.classmethod.jp/articles/claude-code-daily-workflow/
 
 ---
 
@@ -815,6 +985,8 @@ notes/ フォルダを開いてみてください
 - 人間がやったのは「こういうスライドにして」と伝えることだけ
 
 **AIエージェント、本当になんでもできる時代です**
+
+その過程をnote記事にしました → https://note.com/ebibibi/n/n17504280d80d
 
 ---
 
