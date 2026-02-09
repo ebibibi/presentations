@@ -27,11 +27,47 @@ style: |
     background-color: #0078d4;
     color: white;
   }
+  code {
+    font-size: 0.9em;
+  }
+  li {
+    font-size: 0.95em;
+  }
+  section.small {
+    font-size: 28px;
+  }
+  section.small h1 {
+    font-size: 1.3em;
+  }
+  section.small h2 {
+    font-size: 1.1em;
+  }
+  section.small code {
+    font-size: 0.85em;
+  }
+  section.x-small {
+    font-size: 24px;
+  }
+  section.x-small h1 {
+    font-size: 1.2em;
+  }
+  section.x-small h2 {
+    font-size: 1.0em;
+  }
+  section.x-small code {
+    font-size: 0.6em;
+  }
+  section.x-small li {
+    font-size: 0.9em;
+  }
   section.lead h1 {
     font-size: 2.2em;
   }
   section.lead h2 {
     font-size: 1.8em;
+  }
+  section.lead .speaker {
+    font-size: 1.0em;
   }
   section.point {
     font-size: 42px;
@@ -42,6 +78,14 @@ style: |
   section.point h2 {
     font-size: 1.3em;
     color: #333;
+  }
+  .arch-box {
+    font-family: monospace;
+    font-size: 0.7em;
+    line-height: 1.3;
+    background: #f8f8f8;
+    padding: 15px;
+    border-radius: 8px;
   }
 ---
 
@@ -73,20 +117,57 @@ style: |
 # オープニング
 
 **司会：胡田 昌彦**
-<span class="speaker">日本ビジネスシステムズ株式会社<br>Microsoft MVP</span>
+<span class="speaker">日本ビジネスシステムズ株式会社<br>Microsoft MVP for Cloud and Datacenter Management, Microsoft Azure</span>
 
 ---
 
+<!-- _class: x-small -->
+
 # タイムテーブル
 
-| 時刻 | セッション | スピーカー |
-|------|------------|------------|
-| 14:00 | オープニング | 胡田 昌彦 |
-| 14:05 | ローカルLLMでAI使い放題！(40分) | 胡田 昌彦 |
-| 14:45 | Q&A (10分) | |
-| 14:55 | Adaptive Cloud Updates (20分) | 高添 修 氏 |
-| 15:15 | Q&A (5分) | |
-| 15:20 | クロージング | 胡田 昌彦 |
+| 時刻 | 時間 | セッション | スピーカー |
+|------|------|------------|------------|
+| 14:00 | 5分 | オープニング | 胡田 昌彦（JBS / Microsoft MVP） |
+| 14:05 | 45分 | ローカルLLMでAI使い放題！NVIDIA DGX Spark × Azure | 胡田 昌彦 |
+| 14:50 | 10分 | Q&A | 匿名で何でも質問できます！ |
+| 15:00 | 20分 | Microsoft "Adaptive Cloud" Updates | 高添 修 氏（日本マイクロソフト） |
+| 15:20 | 5分 | Q&A | 何でも質問できます！ |
+| 15:25 | 5分 | クロージング | 胡田 昌彦 |
+
+---
+
+![bg right:20% 60%](../Images/hcc-logo02f.png)
+
+# HCCJPとは
+
+## ハイブリッドクラウド研究会
+
+- 毎月第2金曜日 14時から開催
+- Azure + ハイブリッドクラウド関連の最新情報をお届け
+- オンライン配信（YouTube HCCJPチャンネル）
+
+📺チャンネル登録お願いします！
+https://www.youtube.com/channel/UCrf4bEl7yJnkGYo3F67gA7w
+
+---
+
+# 本日の注意事項
+
+- 📹 配信は録画されています（アーカイブ視聴可）
+- 💬 質問・コメント大歓迎！
+- 📝 Q&Aセッションでまとめてお答えします
+
+---
+
+<!-- _class: x-small -->
+
+# 質問・コメント方法
+
+## 💬 YouTubeチャットで質問・コメント大歓迎！
+
+- 右側のライブチャット欄から投稿してください
+- セッション中でもお気軽にどうぞ
+- 固定コメントに各種リンクを掲載します
 
 ---
 
@@ -98,6 +179,8 @@ style: |
 ## NVIDIA DGX Spark × Azure
 
 **胡田 昌彦**
+
+⏱️ 14:05 - 14:50（45分）
 
 ---
 
@@ -147,13 +230,27 @@ style: |
 
 ---
 
-<!-- _class: point -->
+<!-- _class: small -->
 
-# 構成
+# 構成: Ollama + LiteLLM
 
-## Ollama + LiteLLM
+<div class="arch-box">
 
-<!-- ここにアーキテクチャ図を挿入 -->
+```
+┌─────────────────────────────────────────────────┐
+│              DGX Spark (128GB)                   │
+│                                                  │
+│  ┌──────────┐    ┌────────────────┐              │
+│  │  Ollama   │◄───│   LiteLLM      │◄── API      │
+│  │ (LLM実行) │    │ (統合プロキシ)  │   リクエスト │
+│  │           │    │                │              │
+│  │ ・qwen3   │    │ ・Responses API│              │
+│  │ ・llama3  │    │ ・セッション継続│              │
+│  │ ・gemma3  │    │ ・ルーティング  │              │
+│  └──────────┘    └────────────────┘              │
+└─────────────────────────────────────────────────┘
+```
+</div>
 
 ---
 
@@ -218,13 +315,29 @@ style: |
 
 ---
 
-<!-- _class: point -->
+<!-- _class: small -->
 
 # 全体構成
 
-<!-- ここにハイブリッド構成図を挿入 -->
+<div class="arch-box">
 
-Azure App Service → Tailscale Funnel → DGX Spark
+```
+┌── Azure ──────────────┐     ┌── オンプレミス ──────────┐
+│                        │     │                          │
+│  ┌──────────────────┐  │     │  ┌──────────────────┐    │
+│  │  Azure App Service│  │     │  │   DGX Spark       │    │
+│  │  (Private Miner)  │──┼─────┼─▶│   Ollama+LiteLLM  │    │
+│  └──────────────────┘  │     │  └──────────────────┘    │
+│           │             │     │         ▲                │
+│           │ Fallback    │     │         │ Tailscale      │
+│           ▼             │     │         │ Funnel         │
+│  ┌──────────────────┐  │     │         │                │
+│  │  Azure OpenAI     │  │     │  https://spark.xxx.ts.net│
+│  │  (従量課金)       │  │     │                          │
+│  └──────────────────┘  │     └──────────────────────────┘
+└────────────────────────┘
+```
+</div>
 
 ---
 
@@ -376,7 +489,9 @@ tailscale funnel --bg 8080
 
 ## 💬 質問にお答えします！
 
-⏱️ 14:45 - 14:55（10分）
+- どんな質問でも大歓迎です
+
+⏱️ 14:50 - 15:00（10分）
 
 ---
 
@@ -389,7 +504,7 @@ tailscale funnel --bg 8080
 **高添 修 氏**
 <span class="speaker">日本マイクロソフト株式会社</span>
 
-⏱️ 14:55 - 15:15（20分）
+⏱️ 15:00 - 15:20（20分）
 
 ---
 
@@ -399,7 +514,9 @@ tailscale funnel --bg 8080
 
 ## 💬 質問にお答えします！
 
-⏱️ 15:15 - 15:20（5分）
+- どんな質問でも大歓迎です
+
+⏱️ 15:20 - 15:25（5分）
 
 ---
 
@@ -409,6 +526,36 @@ tailscale funnel --bg 8080
 
 ## 目指せ 1000人！
 
+**YouTube HCCJPチャンネル**
+https://www.youtube.com/channel/UCrf4bEl7yJnkGYo3F67gA7w
+
+毎月第2金曜日の最新情報をお見逃しなく！
+
+---
+
+<!-- _class: lead -->
+
+![bg left:28% 82%](../Images/hcc-logo02f.png)
+
+# クロージング
+
+## 本日のご参加ありがとうございました！
+
+- アーカイブはYouTubeチャンネルから視聴可能
+- 資料は後日公開予定
+- ハッシュタグは **#HCCJP**
+
+---
+
+<!-- _class: lead -->
+
+# 次回予告
+
+## 📅 2026/3/13 14:00〜
+
+次回の内容は調整中です！
+
+最新情報は YouTube チャンネル・X（旧Twitter）でお知らせ！
 https://www.youtube.com/channel/UCrf4bEl7yJnkGYo3F67gA7w
 
 ---
@@ -417,8 +564,6 @@ https://www.youtube.com/channel/UCrf4bEl7yJnkGYo3F67gA7w
 
 ![bg left:28% 82%](../Images/hcc-logo02f.png)
 
-# ありがとうございました！
+# ご参加ありがとうございました！
 
-**#HCCJP**
-
-次回: 2026/3/13 14:00〜
+## また次回お会いしましょう！
