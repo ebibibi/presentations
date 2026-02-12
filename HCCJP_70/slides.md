@@ -61,10 +61,10 @@ style: |
     font-size: 0.9em;
   }
   section.lead h1 {
-    font-size: 2.2em;
+    font-size: 2.0em;
   }
   section.lead h2 {
-    font-size: 1.8em;
+    font-size: 1.3em;
   }
   section.lead .speaker {
     font-size: 1.0em;
@@ -80,12 +80,15 @@ style: |
     color: #333;
   }
   .arch-box {
-    font-family: monospace;
+    font-family: 'MS Gothic', monospace;
     font-size: 0.7em;
     line-height: 1.3;
     background: #f8f8f8;
     padding: 15px;
     border-radius: 8px;
+  }
+  .arch-box pre, .arch-box code {
+    font-family: 'MS Gothic', monospace !important;
   }
 ---
 
@@ -121,20 +124,22 @@ style: |
 
 ---
 
-<!-- _class: x-small -->
+<!-- _class: small -->
 
 # タイムテーブル
 
-| 時刻 | 時間 | セッション | スピーカー |
-|------|------|------------|------------|
-| 14:00 | 5分 | オープニング | 胡田 昌彦（JBS / Microsoft MVP） |
-| 14:05 | 45分 | ローカルLLMでAI使い放題！NVIDIA DGX Spark × Azure | 胡田 昌彦 |
-| 14:50 | 10分 | Q&A | 匿名で何でも質問できます！ |
-| 15:00 | 20分 | Microsoft "Adaptive Cloud" Updates | 高添 修 氏（日本マイクロソフト） |
-| 15:20 | 5分 | Q&A | 何でも質問できます！ |
-| 15:25 | 5分 | クロージング | 胡田 昌彦 |
+| 時刻 | 内容 | スピーカー |
+|------|------|------------|
+| 14:00 (5分) | オープニング | 胡田 昌彦（JBS / MVP） |
+| 14:05 (45分) | ローカルLLMでAI使い放題！DGX Spark × Azure | 胡田 昌彦 |
+| 14:50 (10分) | Q&A | 匿名で質問できます！ |
+| 15:00 (10分) | Adaptive Cloud Updates（ビデオ） | 高添 修 氏（日本MS） |
+| 15:10 (5分) | Q&A | 何でも質問できます！ |
+| 15:15 (5分) | クロージング | 胡田 昌彦 |
 
 ---
+
+<!-- _class: small -->
 
 ![bg right:20% 60%](../Images/hcc-logo02f.png)
 
@@ -143,11 +148,10 @@ style: |
 ## ハイブリッドクラウド研究会
 
 - 毎月第2金曜日 14時から開催
-- Azure + ハイブリッドクラウド関連の最新情報をお届け
+- Azure + ハイブリッドクラウド関連の最新情報
 - オンライン配信（YouTube HCCJPチャンネル）
 
 📺チャンネル登録お願いします！
-https://www.youtube.com/channel/UCrf4bEl7yJnkGYo3F67gA7w
 
 ---
 
@@ -158,8 +162,6 @@ https://www.youtube.com/channel/UCrf4bEl7yJnkGYo3F67gA7w
 - 📝 Q&Aセッションでまとめてお答えします
 
 ---
-
-<!-- _class: x-small -->
 
 # 質問・コメント方法
 
@@ -184,31 +186,68 @@ https://www.youtube.com/channel/UCrf4bEl7yJnkGYo3F67gA7w
 
 ---
 
-<!-- _class: point -->
+# 今日の話は私の体験談です
 
-# 今日のゴール
+- Azure AI Foundry でエージェント開発
+- DGX Spark を評価機として入手 → ローカルに移行
+- ハマったポイントも全部リアルな経験
 
-## クラウドLLMのAPI課金、気になりませんか？
+## ⚠️ この分野は変化が超高速！
 
-→ **ローカルLLM × クラウドのハイブリッド構成**で解決！
+- **2026年2月時点**の情報です
+- LLMの対応API、ツールの機能は**数週間で変わる**
+- **必ず最新の状況を確認してください！**
 
 ---
 
 <!-- _class: lead -->
 
 # Part 1
-# NVIDIA DGX Spark
+# Azure AI Foundry での開発
 
 ---
 
-<!-- _class: point -->
+# Azure AI Foundry でエージェントを作った
 
-# DGX Spark とは
+## Azure Agent SDK でAIエージェント開発
+
+- Azure AI Foundry 上で **Azure Agent SDK** を使用
+- エージェントがLLMを呼び出してタスクを自律実行
+- 大量の社内ドキュメントからナレッジを抽出して共有可能な形態とするアプリを開発
+
+→ **ちゃんと動いた！うまくいっていた**
+
+---
+
+# でも…課金がキツい
+
+## 実験で溶けていくAPI費用
+
+- 開発中はトライ＆エラーの連続
+- 失敗してもリトライしても**全部課金**
+- 実験にかなりのお金を溶かしていた
+- 精神的プレッシャーも大きかった
+
+→ **「気軽に試せる環境がほしい！」**
+
+---
+
+<!-- _class: lead -->
+
+# Part 2
+# DGX Spark 入手！
+
+---
+
+# DGX Spark を評価機として入手！
 
 - デスクトップサイズの**AIスーパーコンピュータ**
 - **128GB統合メモリ**（CPU/GPU共有）
 - **240W**でシステム全体が動く（省電力！）
 - 価格: 国内70〜80万円台
+- 購入希望者はお問い合わせください！
+
+→ **固定費で、好きなだけローカルLLMを叩ける！**
 
 ---
 
@@ -218,46 +257,66 @@ https://www.youtube.com/channel/UCrf4bEl7yJnkGYo3F67gA7w
 
 ## 大規模モデルがローカルで動く
 
-- 通常GPU: 24GB → 70Bモデルが限界
-- DGX Spark: 128GB → **120Bモデルも余裕**
+- 通常のGPU: 24GB → 70Bモデルが限界
+  - メモリの大きいGPUはお値段も超お高い！
+    - 数百万～数千万…（汗
+- DGX Spark: 128GB → **120Bモデルも余裕なのに安い！**
 
 ---
 
 <!-- _class: lead -->
 
-# Part 2
+# Part 3
 # ローカルLLM環境構築
 
 ---
 
-<!-- _class: small -->
+
+
+# Agent SDK は Responses API で動いている
+
+## Azure のプログラムをそのまま使いたい
+
+| | Chat Completions | Responses API |
+|---|---|---|
+| 状態管理 | **クライアント側** | **サーバー側** |
+| 会話継続 | 毎回全履歴送信 | `previous_response_id` |
+| ビルトインツール | なし | Web検索、ファイル検索等 |
+
+→ ローカルでも **Responses API** が使えれば移行できる！
+
+---
+
+<!-- _class: point -->
+
+# Ollama だけでは足りない
+
+- Ollama v0.13.3以降: `/v1/responses` 対応済み
+  - ※私が試していたときにはそもそも未対応だった
+- ただし **stateful（セッション継続）は未対応**
+- Agent SDK は `previous_response_id` で会話継続する
+
+→ **LiteLLM** を間に挟めば解決！
+
+---
 
 # 構成: Ollama + LiteLLM
-
-<!-- 🎨 画像生成プロンプト:
-Create a clean, modern technical architecture diagram showing the internal structure of NVIDIA DGX Spark (128GB unified memory).
-Inside a rounded rectangle labeled "DGX Spark (128GB)", show two boxes side by side:
-- Left box: "Ollama" (LLM Runtime) with model names: qwen3, llama3, gemma3
-- Right box: "LiteLLM" (Unified Proxy) with features: Responses API, Session Management, Routing
-An arrow from the right edge labeled "API Requests" points into LiteLLM, and an arrow from LiteLLM points to Ollama.
-Style: flat design, blue (#0078d4) accent color, white background, no gradients, tech presentation style.
--->
 
 <div class="arch-box">
 
 ```
-┌─────────────────────────────────────────────────┐
-│              DGX Spark (128GB)                   │
-│                                                  │
-│  ┌──────────┐    ┌────────────────┐              │
-│  │  Ollama   │◄───│   LiteLLM      │◄── API      │
-│  │ (LLM実行) │    │ (統合プロキシ)  │   リクエスト │
-│  │           │    │                │              │
-│  │ ・qwen3   │    │ ・Responses API│              │
-│  │ ・llama3  │    │ ・セッション継続│              │
-│  │ ・gemma3  │    │ ・ルーティング  │              │
-│  └──────────┘    └────────────────┘              │
-└─────────────────────────────────────────────────┘
++---------------------------------------------------+
+|                 DGX Spark (128GB)                 |
+|                                                   |
+|  +------------+      +--------------------+       |
+|  |   Ollama   |<-----|      LiteLLM       |<- API |
+|  | (LLM実行)  |      | (統合プロキシ)     |       |
+|  |            |      |                    |       |
+|  | - qwen3    |      | - Responses API    |       |
+|  | - llama3   |      | - セッション継続   |       |
+|  | - gemma3   |      | - ルーティング     |       |
+|  +------------+      +--------------------+       |
++---------------------------------------------------+
 ```
 </div>
 
@@ -265,36 +324,15 @@ Style: flat design, blue (#0078d4) accent color, white background, no gradients,
 
 <!-- _class: point -->
 
-# Responses API とは？
+# コードがそのまま動いた！
 
-## Chat Completions API との違い
+- エンドポイントURLを変えただけ
+- Agent SDK のコードは**一切変更なし**
+- Responses API 互換のおかげ
 
-| | Chat Completions | Responses API |
-|---|---|---|
-| 入出力 | Messages配列 | Items形式 |
-| 状態管理 | **クライアント側** | **サーバー側** |
-| 会話継続 | 毎回全履歴送信 | `previous_response_id` |
-| ビルトインツール | なし | Web検索、ファイル検索等 |
-
-→ **Agent SDKはResponses APIを前提に設計**
+→ **クラウド → ローカル移行がスムーズ！**
 
 ---
-
-<!-- _class: point -->
-
-# なぜ LiteLLM？
-
-## Ollama + LiteLLM で統合・運用をシンプルに
-
-- Ollama v0.13.3以降: `/v1/responses` 対応済み
-- ただし **stateful（session継続）は未対応**
-- LiteLLM: セッション継続、ルーティング、複数バックエンド統合
-
-→ Agent SDK/フレームワークの実装がシンプルに！
-
----
-
-<!-- _class: point -->
 
 # LiteLLM の価値
 
@@ -304,6 +342,7 @@ Style: flat design, blue (#0078d4) accent color, white background, no gradients,
 - コストトラッキング、レート制限
 
 → ローカル × クラウドの**統合ハブ**として最適
+※ListeLLM自体の冗長化等要検証…。
 
 ---
 
@@ -313,18 +352,16 @@ Style: flat design, blue (#0078d4) accent color, white background, no gradients,
 
 - DBなし、管理UIなし
 - **設定ファイル1つで完結**
-- シンプルに統合APIだけ使いたい用途に最適
+- 統合APIだけ使いたい用途に最適
 
 ---
 
 <!-- _class: lead -->
 
-# Part 3
+# Part 4
 # Azure × オンプレ ハイブリッド
 
 ---
-
-<!-- _class: small -->
 
 # 全体構成
 
@@ -345,20 +382,21 @@ Style: clean flat design, two-tone (blue for cloud, green for on-prem), white ba
 <div class="arch-box">
 
 ```
-┌── Azure ──────────────┐     ┌── オンプレミス ──────────┐
-│                        │     │                          │
-│  ┌──────────────────┐  │     │  ┌──────────────────┐    │
-│  │  Azure App Service│  │     │  │   DGX Spark       │    │
-│  │  (Private Miner)  │──┼─────┼─▶│   Ollama+LiteLLM  │    │
-│  └──────────────────┘  │     │  └──────────────────┘    │
-│           │             │     │         ▲                │
-│           │ Fallback    │     │         │ Tailscale      │
-│           ▼             │     │         │ Funnel         │
-│  ┌──────────────────┐  │     │         │                │
-│  │  Azure OpenAI     │  │     │  https://spark.xxx.ts.net│
-│  │  (従量課金)       │  │     │                          │
-│  └──────────────────┘  │     └──────────────────────────┘
-└────────────────────────┘
++----------------------+       +----------------------------+
+|        Azure         |       |      オンプレミス          |
+|                      |       |                            |
+| +------------------+ | HTTPS |  https://spark.xxx.ts.net  |
+| | Azure App Service|-|------>|            |               |
+| | (AI駆動Webアプリ)| |       |            | Tailscale     |
+| +------------------+ |       |            v Funnel        |
+|         |            |       | +------------------------+ |
+|         | Fallback   |       | |       DGX Spark        | |
+|         v            |       | |   Ollama + LiteLLM     | |
+| +------------------+ |       | +------------------------+ |
+| |   Azure OpenAI   | |       |                            |
+| |  (従量課金)      | |       +----------------------------+
+| +------------------+ |
++----------------------+
 ```
 </div>
 
@@ -375,6 +413,8 @@ tailscale funnel --bg 8080
 ```
 
 → `https://spark.xxx.ts.net` で公開
+
+※Azureなら企業ならVPNやExpressRouteで接続している環境が多いためそれを使えばよい。今回は自宅環境のためTailscale Funnelを利用した。
 
 ---
 
@@ -401,7 +441,7 @@ Style: flowchart style, clean, minimal, green for primary path, blue for fallbac
 
 <!-- _class: point -->
 
-# 実際のシステム: Private Miner
+# AI駆動Webアプリ
 
 - Azure App Service で稼働
 - 社内ドキュメントからナレッジ抽出
@@ -417,7 +457,7 @@ Style: flowchart style, clean, minimal, green for primary path, blue for fallbac
 
 <!-- _class: point -->
 
-# リモートデスクトップで5時間溶かした
+# DGX Sparkへのリモートデスクトップで5時間溶かした
 
 - 設定アプリがハングアップ
 - RDP証明書エラー
@@ -440,8 +480,8 @@ Style: flowchart style, clean, minimal, green for primary path, blue for fallbac
 
 # nvidia-smi エラー
 
-- DGX Dashboardから「Update」したら動かなくなった
-- **再起動で解決**（ドライバ更新後は再起動必要）
+- DGX Dashboardで「Update」→ 動かなくなった
+- **再起動で解決**（ドライバ更新後は要再起動）
 
 ---
 
@@ -456,19 +496,27 @@ Style: flowchart style, clean, minimal, green for primary path, blue for fallbac
 # デモ内容
 
 1. **DGX Spark の状態確認**
-   - nvidia-smi、ollama list、systemctl status
+   - free -h、nvidia-smi、ollama list
 
-2. **LiteLLM API を叩く**
-   - curlでリクエスト → ローカルLLMが応答
-
-3. **Private Miner 診断UI**
-   - /diagnostics で接続状態確認
+2. **Open WebUI でチャット**
+   - http://192.168.1.3:3000
 
 ---
 
-<!-- _class: lead -->
+# Webアプリ診断画面
+![w:700](images/2026-02-12_13h37_20.png)
 
-# 🎬 デモ開始！
+※実際のURLが漏洩すると色々と面倒なためデモは割愛します🙏
+
+---
+
+# 効果 / 感想
+- ローカルLLMで**好きなだけ実験可能**
+- Azure Agent SDK のコードは**一切変更不要**
+- LLMを常時利用し続けてもお金の心配無し！
+- 電力も騒音も全然OK！自宅においても問題なし！
+- エンジニアには一人一台欲しい！将来そうなるかも。
+
 
 ---
 
@@ -482,12 +530,13 @@ Style: flowchart style, clean, minimal, green for primary path, blue for fallbac
 
 # 全部 Claude Code で作った
 
-- Private Miner アプリ全体
+- アプリ全体
 - Azure インフラ（Bicep、CI/CD）
 - DGX Spark 環境構築
-- **このスライドも**
-- connpass イベント概要
-- サムネイル画像
+- このスライドも
+- connpass イベントも
+
+自分はできたものをレビュー&微調整しただけ
 
 ---
 
@@ -499,20 +548,18 @@ Style: flowchart style, clean, minimal, green for primary path, blue for fallbac
 - 「LiteLLMで統合する」という**要件発見**
 - 「Tailscale Funnelで公開」という**設計判断**
 
-## AIは「How」を実装、「What」を決めるのは人間
+## AIは「How」、人間が「What」を決める
 
 ---
 
-<!-- _class: point -->
-
 # まとめ
 
-1. **DGX Spark**: 120Bモデルがローカルで動く
+1. **DGX Spark**: 120Bモデルがローカルでサクサク動く
 2. **LiteLLM**: 統合・ルーティング・セッション継続
-3. **Tailscale Funnel**: 簡単にインターネット公開
+3. **Tailscale Funnel**: インターネット公開
 4. **フェイルオーバー**: Azure OpenAIと連携
 
-**ローカルLLM × クラウドの真のハイブリッド**
+**ローカルLLM × クラウドのハイブリッド構成はアイデア次第で革命を起こせる！**
 
 ---
 
@@ -530,14 +577,14 @@ Style: flowchart style, clean, minimal, green for primary path, blue for fallbac
 
 <!-- _class: lead -->
 
-# セッション②
+# セッション②（ビデオ）
 
 ## Microsoft "Adaptive Cloud" Updates
 
 **高添 修 氏**
 <span class="speaker">日本マイクロソフト株式会社</span>
 
-⏱️ 15:00 - 15:20（20分）
+⏱️ 15:00 - 15:10（10分・ビデオ登壇）
 
 ---
 
@@ -549,18 +596,17 @@ Style: flowchart style, clean, minimal, green for primary path, blue for fallbac
 
 - どんな質問でも大歓迎です
 
-⏱️ 15:20 - 15:25（5分）
+⏱️ 15:10 - 15:15（5分）
 
 ---
 
-![bg right:40% 90%](../Images/hcc-logo02f.png)
+![bg right:30% 90%](../Images/hcc-logo02f.png)
 
 # 📺 チャンネル登録を！
 
 ## 目指せ 1000人！
 
 **YouTube HCCJPチャンネル**
-https://www.youtube.com/channel/UCrf4bEl7yJnkGYo3F67gA7w
 
 毎月第2金曜日の最新情報をお見逃しなく！
 
@@ -587,9 +633,9 @@ https://www.youtube.com/channel/UCrf4bEl7yJnkGYo3F67gA7w
 ## 📅 2026/3/13 14:00〜
 
 次回の内容は調整中です！
+希望あればコメントで！
 
-最新情報は YouTube チャンネル・X（旧Twitter）でお知らせ！
-https://www.youtube.com/channel/UCrf4bEl7yJnkGYo3F67gA7w
+最新情報は YouTube・X でお知らせ！
 
 ---
 
