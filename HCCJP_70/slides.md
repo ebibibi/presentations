@@ -234,6 +234,15 @@ https://www.youtube.com/channel/UCrf4bEl7yJnkGYo3F67gA7w
 
 # 構成: Ollama + LiteLLM
 
+<!-- 🎨 画像生成プロンプト:
+Create a clean, modern technical architecture diagram showing the internal structure of NVIDIA DGX Spark (128GB unified memory).
+Inside a rounded rectangle labeled "DGX Spark (128GB)", show two boxes side by side:
+- Left box: "Ollama" (LLM Runtime) with model names: qwen3, llama3, gemma3
+- Right box: "LiteLLM" (Unified Proxy) with features: Responses API, Session Management, Routing
+An arrow from the right edge labeled "API Requests" points into LiteLLM, and an arrow from LiteLLM points to Ollama.
+Style: flat design, blue (#0078d4) accent color, white background, no gradients, tech presentation style.
+-->
+
 <div class="arch-box">
 
 ```
@@ -319,6 +328,20 @@ https://www.youtube.com/channel/UCrf4bEl7yJnkGYo3F67gA7w
 
 # 全体構成
 
+<!-- 🎨 画像生成プロンプト:
+Create a professional network architecture diagram showing a hybrid cloud setup:
+LEFT SIDE (labeled "Azure Cloud", blue background):
+- "Azure App Service (Private Miner)" box at top
+- "Azure OpenAI (Pay-per-use)" box at bottom
+- A dashed arrow labeled "Fallback" from App Service to Azure OpenAI
+RIGHT SIDE (labeled "On-Premises", green background):
+- "DGX Spark" box containing "Ollama + LiteLLM"
+- Below it: "https://spark.xxx.ts.net"
+CONNECTION between sides:
+- Solid arrow from Azure App Service to DGX Spark, labeled "Tailscale Funnel (HTTPS)"
+Style: clean flat design, two-tone (blue for cloud, green for on-prem), white background, suitable for tech presentation. No 3D effects.
+-->
+
 <div class="arch-box">
 
 ```
@@ -358,6 +381,16 @@ tailscale funnel --bg 8080
 <!-- _class: point -->
 
 # フェイルオーバー構成
+
+<!-- 🎨 画像生成プロンプト:
+Create a simple failover flow diagram:
+1. "API Request" arrow enters from the left
+2. First node: "DGX Spark (Primary)" with label "Free / Unlimited" - highlighted in green
+3. If DGX Spark fails (red X mark), arrow goes down to:
+4. Second node: "Azure OpenAI (Fallback)" with label "Pay-per-use" - highlighted in blue
+5. Both nodes have an arrow pointing right to "Response"
+Style: flowchart style, clean, minimal, green for primary path, blue for fallback path, white background.
+-->
 
 1. **Primary**: DGX Spark（使い放題）
 2. **Fallback**: Azure OpenAI（従量課金）
