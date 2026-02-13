@@ -600,18 +600,6 @@ Style: flowchart style, clean, minimal, green for primary path, blue for fallbac
 
 ---
 
-![bg right:30% 90%](../Images/hcc-logo02f.png)
-
-# 📺 チャンネル登録を！
-
-## 目指せ 1000人！
-
-**YouTube HCCJPチャンネル**
-
-毎月第2金曜日の最新情報をお見逃しなく！
-
----
-
 <!-- _class: lead -->
 
 ![bg left:28% 82%](../Images/hcc-logo02f.png)
@@ -626,6 +614,48 @@ Style: flowchart style, clean, minimal, green for primary path, blue for fallbac
 
 ---
 
+![bg right:30% 90%](../Images/hcc-logo02f.png)
+
+# 📺 チャンネル登録を！
+
+## 目指せ 1000人！
+
+**YouTube HCCJPチャンネル**
+
+毎月第2金曜日の最新情報をお見逃しなく！
+
+---
+
+<!-- _class: small -->
+
+# 🙌 HCCJPを一緒に盛り上げませんか？
+
+HCCJPは**企業・個人を問わず、誰でも参加できるオープンなコミュニティ**です。
+
+今、特に**こんな仲間**を募集しています！
+
+- 🏢 **ユーザー企業の担当者** — 「うちはこう使ってる」というリアルな導入事例の共有
+- 💬 **構成相談したい方** — 「こういう構成どう？」をみんなで議論しましょう
+- 🤖 **生成AI × インフラに興味がある方** — 今日のようなAI活用事例を持ち寄りましょう
+- 🎤 **登壇してみたい方** — 初登壇も大歓迎！発表の場を提供します
+
+---
+
+<!-- _class: point -->
+
+# 🤖 生成AI × ハイブリッドクラウド
+
+今日のセッションのように、**生成AIとインフラの交差点**が
+HCCJPの大きなテーマになっています。
+
+- **AIをインフラ管理に使う**（AI Agent × Azure）
+- **AIワークロードをどこで動かすか**（ローカルLLM × クラウド）
+
+**現場の知恵を持ち寄って、一緒に研究しましょう！**
+
+Connpassグループへの参加お待ちしています！
+
+---
 <!-- _class: lead -->
 
 # 次回予告
