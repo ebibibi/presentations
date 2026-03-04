@@ -267,6 +267,24 @@ style: |
 
 <!-- _class: small -->
 
+# 3軸を視覚化すると
+
+```mermaid
+graph LR
+    A["🤖 AIエージェント"] --> B["🏃 実行環境\nローカル / クラウド / ハイブリッド"]
+    A --> C["📜 コンテキスト\nローカル / クラウド / ハイブリッド"]
+    A --> D["🧠 モデル\n単一 / マルチ / オンデバイス"]
+    B --- E["Claude Code\nCursor / Devin..."]
+    C --- F["CLAUDE.md\nGitHub / Obsidian..."]
+    D --- G["Claude / GPT-4o\nDeepSeek / Ollama..."]
+```
+
+→ **同じ「AI開発」でも、3軸の組み合わせは無限大**
+
+---
+
+<!-- _class: small -->
+
 # 3軸でツールを分類してみる
 
 | ツール | 実行環境 | コンテキスト | モデル |
@@ -337,19 +355,22 @@ style: |
 
 ---
 
-<!-- _class: point -->
+<!-- _class: small -->
 
 # 例3: Claude Code のセッション引き継ぎ
 
-| | Remote Control | Cloud on the Web |
-|--|---|---|
-| 実行場所 | **ローカルPC** | AnthropicクラウドVM |
-| 移動するもの | メッセージのみ | 会話履歴＋ブランチ |
-| ローカルファイル | ✅ アクセス可 | ❌ GitHub経由のみ |
-| 並列実行 | ❌ 1セッション1接続 | ✅ 何タスクでも |
+```mermaid
+graph LR
+    PC["💻 ローカルPC\nClaude Code実行中\n（城・主権環境）"]
+    WEB["📱 claude.ai\nWeb/モバイルUI"]
+    VM["☁️ クラウドVM\nAnthropicマネージド"]
 
-**共通点: VMを引っ越すより圧倒的に軽い**
-→ これが「本当のハイブリッド」を可能にする
+    PC <-->|"Remote Control\nメッセージのみ流れる\n（コードはローカルのまま）"| WEB
+    PC -->|"--remote\n新タスクを並列投入"| VM
+    VM -->|"--teleport\n会話履歴+ブランチごと\n持ち帰り"| PC
+```
+
+→ **VMを引っ越すより圧倒的に軽い。これが「本当のハイブリッド」**
 
 ---
 
@@ -446,22 +467,22 @@ CLAUDE.md
 
 # クラウドとオンプレを同じAPIで（Azure Arc）
 
-<div class="arch-box">
+```mermaid
+graph TB
+    AG["🤖 AIエージェント\nClaude Code / Cursor / Copilot"]
+    ARM["⚙️ Azure Resource Manager\n統一API層"]
+    CL["☁️ Azureクラウド\nVMs / AKS / Databases / Functions"]
+    OP["🏢 オンプレミス\nAzure Local / Arc Servers / AKS Arc / Arc Data"]
 
+    AG -->|"同じAPIで操作"| ARM
+    ARM --> CL
+    ARM --> OP
+
+    style AG fill:#dbeafe,stroke:#2563eb
+    style ARM fill:#fef9c3,stroke:#ca8a04
+    style CL fill:#dcfce7,stroke:#16a34a
+    style OP fill:#ffedd5,stroke:#ea580c
 ```
-AIエージェント（Claude Code / Cursor / Copilot...）
-              ↓ 同じ API
-┌─────────────────────────────────────┐
-│       Azure Resource Manager        │
-├──────────────────┬──────────────────┤
-│   Azure (クラウド) │   オンプレミス    │
-│   - VMs          │   - Azure Local  │
-│   - AKS          │   - Arc Servers  │
-│   - Databases    │   - AKS Arc      │
-│   - Functions    │   - Arc Data Svc │
-└──────────────────┴──────────────────┘
-```
-</div>
 
 **エージェントは場所を気にしない。APIがあるかどうかだけを気にする。**
 
@@ -485,20 +506,17 @@ AIエージェント（Claude Code / Cursor / Copilot...）
 
 # AI エージェントの4層モデル
 
-```
-┌─────────────────────────────────────────────────┐
-│ 📜 コンテキスト（魂）                            │ ← 自分で作る・育てる
-│    CLAUDE.md / skills / rules / MCP設定          │   （組織の競争優位）
-├─────────────────────────────────────────────────┤
-│ 🤖 エージェントSW                                │ ← 選ぶ・使う
-│    Claude Code / Copilot / Codex / Gemini CLI    │   （現時点はClaude Codeが頭1つ抜けている）
-├─────────────────────────────────────────────────┤
-│ 🧠 頭脳（モデル）                                │ ← 借りる・差し替える
-│    Claude / GPT-4o / DeepSeek / OSS LLM          │   （最強を選ぶ）
-├─────────────────────────────────────────────────┤
-│ 🏃 実行環境（肉体）                              │ ← インフラとして整備
-│    ローカル / クラウドVM / エッジ                │   （APIがあれば何でもいい）
-└─────────────────────────────────────────────────┘
+```mermaid
+graph TD
+    A["📜 コンテキスト（魂）\nCLAUDE.md / skills / rules\n← 自分で作る・育てる（組織の競争優位）"]
+    B["🤖 エージェントSW\nClaude Code / Copilot / Codex\n← 選ぶ・使う"]
+    C["🧠 頭脳（モデル）\nClaude / GPT-4o / DeepSeek / OSS LLM\n← 借りる・最強に差し替える"]
+    D["🏃 実行環境（肉体）\nローカル / クラウドVM / エッジ\n← インフラ整備（APIがあれば何でも可）"]
+    A --> B --> C --> D
+    style A fill:#dbeafe,stroke:#2563eb
+    style B fill:#ede9fe,stroke:#7c3aed
+    style C fill:#dcfce7,stroke:#16a34a
+    style D fill:#ffedd5,stroke:#ea580c
 ```
 
 ---
@@ -516,6 +534,28 @@ AIエージェント（Claude Code / Cursor / Copilot...）
 
 この4つを同時に実現した組織が、
 **圧倒的な生産性で次の時代を作る**
+
+---
+
+<!-- _class: small -->
+
+# 明日からできること ─ 実践3ステップ
+
+**今日の話を「聞いて終わり」にしない**
+
+1. **コンテキストを1ファイルに書く** 📜
+   - `CLAUDE.md` をリポジトリに作ってみる
+   - 「このプロジェクトでAIに伝えたいこと」を箇条書きにするだけでいい
+
+2. **APIの口を1つ開ける** ⚙️
+   - Azure Arc で既存サーバーを1台 Arc-enabled にしてみる
+   - エージェントが「触れる」インフラを1つ作る
+
+3. **モデルを1回差し替えてみる** 🔄
+   - Cursor や Copilot で使うモデルを変えてみる
+   - 「替えられる」ことを体験するだけでOK
+
+→ **この3つで、あなたも今日からハイブリッドクラウドの実践者**
 
 ---
 
