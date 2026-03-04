@@ -555,6 +555,20 @@ CLAUDE.md
 
 ---
 
+<!-- _class: small -->
+
+# 💬 Kelsey Hightower（Google / Kubernetes）
+
+## "No one wants to manage infrastructure.<br>They want to consume it via API."
+
+- Kubernetes の生みの親の一人
+- 「インフラはAPIで消費するもの」という思想を一貫して主張
+- KubernetesはオンプレをAPIで包む「プラットフォームのプラットフォーム」
+
+> この哲学がそのままAIエージェント時代の答えになっている
+
+---
+
 <!-- _class: point -->
 
 # オンプレミスは？
@@ -678,6 +692,20 @@ AIエージェント（Claude Code / Cursor / Copilot...）
 3. **3つの軸**（実行環境・コンテキスト・モデル）で整理
 4. **モビリティの高さ**と**標準化**が鍵
 5. 人の数だけ構成がある — **可能性は無限大**
+
+---
+
+<!-- _class: x-small -->
+
+# 参考・引用リソース
+
+| 内容 | 出典 |
+|------|------|
+| Kubernetes = "platform for building platforms" / API as infrastructure | Kelsey Hightower (Google) |
+| Agentic AI × マルチクラウド × マルチモデルの3軸アーキテクチャ | [Equinix Blog (2025/03)](https://blog.equinix.com/blog/2025/03/19/how-to-do-agentic-ai-inference-in-a-multicloud-multi-model-world/) |
+| AI Agentsが動くためのインフラ要件を体系化した論文 | [arXiv 2501.10114 "Infrastructure for AI Agents"](https://arxiv.org/html/2501.10114v2) |
+| 実際にマルチクラウドを跨ぐAIエージェントを構築した開発者の記録 | [InfoWorld (2025)](https://www.infoworld.com/article/3959533/i-built-an-agentic-ai-system-across-multiple-public-cloud-providers.html) |
+| Gartner 2026 I&O Top Trends — Hybrid Computing × Agentic AI | [Gartner (2025/12)](https://www.gartner.com/en/newsroom/press-releases/2025-12-11-gartner-identifies-the-top-trends-impacting-infrastructure-and-operations-for-2026) |
 
 ---
 
