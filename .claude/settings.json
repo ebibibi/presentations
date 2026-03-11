@@ -1,0 +1,35 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "tool == \"Read\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/track-read.sh"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "tool == \"Edit\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/enforce-read-before-edit.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "tool == \"Write\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/enforce-read-before-edit.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
