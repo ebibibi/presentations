@@ -1,0 +1,10 @@
+{
+  "emeraldwalk.runonsave": {
+    "commands": [
+      {
+        "match": "slides\\.md$",
+        "cmd": "python -m marp2pptx ${file}"
+      }
+    ]
+  }
+}
