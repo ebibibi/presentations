@@ -12,13 +12,16 @@ Features:
 """
 
 import argparse
+import io
 import math
 import re
 import sys
 import html as html_mod
+import tempfile
 import unicodedata
 from pathlib import Path
 
+from PIL import Image, ImageDraw, ImageFont
 from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
@@ -668,34 +671,77 @@ def _place_html_table(sl, elem, bfont, left, top, width, max_h):
     return top + h + 0.1
 
 
+def _render_ascii_art(code, max_w_inches, max_h_inches):
+    """Render ASCII art as a PNG image with pixel-perfect monospace alignment.
+
+    Uses IPAGothic which correctly maintains CJK:ASCII = 2:1 width ratio.
+    Returns (image_bytes, width_inches, height_inches).
+    """
+    FONT_PATH = "/usr/share/fonts/opentype/ipafont-gothic/ipag.ttf"
+    DPI = 150
+    PAD = 20  # padding in pixels
+
+    lines = code.split("\n")
+    max_dw = max(display_width(line) for line in lines)
+    nlines = len(lines)
+
+    # Find largest font size that fits within max_w
+    avail_w_px = int(max_w_inches * DPI) - PAD * 2
+    # IPAGothic: half-width char width ≈ 0.5 × font_size
+    font_size = max(12, min(int(avail_w_px / (max_dw * 0.5)), 36))
+
+    font = ImageFont.truetype(FONT_PATH, font_size)
+
+    # Measure actual dimensions
+    tmp_img = Image.new("RGB", (1, 1))
+    tmp_draw = ImageDraw.Draw(tmp_img)
+    line_height = int(font_size * 1.3)
+    img_w = avail_w_px + PAD * 2
+    img_h = nlines * line_height + PAD * 2
+
+    # Check height constraint and shrink if needed
+    max_h_px = int(max_h_inches * DPI)
+    if img_h > max_h_px:
+        ratio = max_h_px / img_h
+        font_size = max(10, int(font_size * ratio))
+        font = ImageFont.truetype(FONT_PATH, font_size)
+        line_height = int(font_size * 1.3)
+        img_h = nlines * line_height + PAD * 2
+
+    # Render
+    img = Image.new("RGB", (img_w, img_h), (245, 245, 245))
+    draw = ImageDraw.Draw(img)
+    text_color = (50, 49, 48)
+
+    y = PAD
+    for line in lines:
+        draw.text((PAD, y), line, fill=text_color, font=font)
+        y += line_height
+
+    buf = io.BytesIO()
+    img.save(buf, format="PNG", dpi=(DPI, DPI))
+    buf.seek(0)
+
+    w_in = img_w / DPI
+    h_in = img_h / DPI
+    return buf, w_in, h_in
+
+
 def _place_code(sl, elem, bfont, left, top, width, max_h):
     code = elem["text"]
     is_arch = elem.get("arch", False)
     nlines = code.count("\n") + 1
 
     if is_arch:
-        # ASCII art: calculate exact font size to fit width, no auto-fit
-        max_dw = max(display_width(line) for line in code.split("\n"))
-        avail_w_pt = width * 72 - 20  # subtract padding
-        # Monospace: each half-width char ≈ 0.6 × font_size
-        cfont = max(8, min(int(avail_w_pt / (max_dw * 0.6)), int(bfont * 0.7)))
-        h = min(max(0.6, nlines * cfont * 1.35 / 72 + 0.4), max_h)
+        # ASCII art: render as image for pixel-perfect monospace alignment
+        img_buf, img_w, img_h = _render_ascii_art(code, width, max_h)
+        h = min(img_h, max_h)
 
-        bg = sl.shapes.add_shape(1, Inches(left), Inches(top), Inches(width), Inches(h))
-        bg.fill.solid()
-        bg.fill.fore_color.rgb = CODE_BG
-        bg.line.fill.background()
+        # Center horizontally if image is narrower than available width
+        img_left = left + (width - img_w) / 2 if img_w < width else left
 
-        tf = bg.text_frame
-        tf.word_wrap = False  # Never wrap ASCII art
-        run = tf.paragraphs[0].add_run()
-        run.text = code
-        run.font.name = "MS Gothic"
-        run.font.size = Pt(cfont)
-        run.font.color.rgb = TEXT_COLOR
-        _set_ea_font(run, "MS Gothic")
-        _set_monospace_props(run)
-        # No TEXT_TO_FIT_SHAPE — exact sizing preserves monospace alignment
+        pic = sl.shapes.add_picture(img_buf, Inches(img_left), Inches(top),
+                                     Inches(img_w), Inches(h))
     else:
         cfont = int(bfont * 0.6)
         h = min(max(0.6, nlines * cfont * 1.4 / 72 + 0.5), max_h)
