@@ -316,9 +316,17 @@ def _content_height(elems, bfont, w_pt):
             rh = _table_row_heights(rows_data, tfont, w_pt, ncols)
             h += sum(rh) + 15
         elif t == "code":
-            cf = bfont * 0.6
             nlines = e["text"].count("\n") + 1
-            h += nlines * cf * 1.4 + 30  # padding inside code box
+            if e.get("arch"):
+                # Match _render_ascii_art sizing: DPI=150, PAD=20, line_h=font*1.3
+                max_dw = max(display_width(ln) for ln in e["text"].split("\n"))
+                avail_px = int((w_pt / 72) * 150) - 40  # DPI=150, PAD=20*2
+                fsz = max(12, min(int(avail_px / (max_dw * 0.5)), 36))
+                img_h_px = nlines * int(fsz * 1.3) + 40  # PAD*2
+                h += img_h_px / 150 * 72  # px → inches → points
+            else:
+                cf = bfont * 0.6
+                h += nlines * cf * 1.4 + 30
         elif t == "para":
             h += est_lines(e["text"], bfont, w_pt) * bfont * 1.7
         h += ELEMENT_GAP
@@ -541,19 +549,27 @@ def _build_standard(sl, sd, src_dir, pn, total):
     # Group elements: consecutive text vs table/code
     groups = _group_elements(body_elems)
 
-    for gtype, gelems in groups:
+    for gi, (gtype, gelems) in enumerate(groups):
         remaining = SLIDE_H - cur_top - MARGIN - PAGE_NUM_H
         if remaining < 0.2:
             break
 
+        # Reserve space for subsequent groups so current group doesn't hog it all
+        budget = remaining
+        if gtype == "code" and gelems[0].get("arch") and gi + 1 < len(groups):
+            reserved = 0.0
+            for _, future_elems in groups[gi + 1:]:
+                reserved += _content_height(future_elems, bfont, w_pt) / 72 + 0.15
+            budget = max(remaining * 0.5, remaining - reserved)
+
         if gtype == "text":
-            cur_top = _place_text_group(sl, gelems, bfont, cl, cur_top, cw, remaining)
+            cur_top = _place_text_group(sl, gelems, bfont, cl, cur_top, cw, budget)
         elif gtype == "md_table":
-            cur_top = _place_md_table(sl, gelems[0], bfont, cl, cur_top, cw, remaining)
+            cur_top = _place_md_table(sl, gelems[0], bfont, cl, cur_top, cw, budget)
         elif gtype == "html_table":
-            cur_top = _place_html_table(sl, gelems[0], bfont, cl, cur_top, cw, remaining)
+            cur_top = _place_html_table(sl, gelems[0], bfont, cl, cur_top, cw, budget)
         elif gtype == "code":
-            cur_top = _place_code(sl, gelems[0], bfont, cl, cur_top, cw, remaining)
+            cur_top = _place_code(sl, gelems[0], bfont, cl, cur_top, cw, budget)
 
     _page_num(sl, pn, total)
 
