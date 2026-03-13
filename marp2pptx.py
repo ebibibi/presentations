@@ -394,9 +394,12 @@ def _run(para, text, font_pt, color, bold=False, italic=False, mono=False):
         return
     run = para.add_run()
     run.text = text
-    run.font.name = MONO if mono else FONT
+    font_name = MONO if mono else FONT
+    run.font.name = font_name
     run.font.size = Pt(font_pt)
     run.font.color.rgb = color
+    # Set East Asian font — without this, CJK chars use PowerPoint's default
+    _set_ea_font(run, font_name)
     if bold:
         run.font.bold = True
     if italic:
@@ -690,6 +693,8 @@ def _place_code(sl, elem, bfont, left, top, width, max_h):
         run.font.name = "MS Gothic"
         run.font.size = Pt(cfont)
         run.font.color.rgb = TEXT_COLOR
+        _set_ea_font(run, "MS Gothic")
+        _set_monospace_props(run)
         # No TEXT_TO_FIT_SHAPE — exact sizing preserves monospace alignment
     else:
         cfont = int(bfont * 0.6)
@@ -707,6 +712,7 @@ def _place_code(sl, elem, bfont, left, top, width, max_h):
         run.font.name = MONO
         run.font.size = Pt(cfont)
         run.font.color.rgb = TEXT_COLOR
+        _set_ea_font(run, MONO)
         tf.auto_size = MSO_AUTO_SIZE.TEXT_TO_FIT_SHAPE
 
     return top + h + 0.1
@@ -715,6 +721,23 @@ def _place_code(sl, elem, bfont, left, top, width, max_h):
 # ═══════════════════════════════════════════════════════════════
 # Shape helpers
 # ═══════════════════════════════════════════════════════════════
+
+def _set_ea_font(run, font_name):
+    """Set East Asian font on a run (python-pptx only sets Latin)."""
+    rPr = run._r.get_or_add_rPr()
+    ea = rPr.find(qn("a:ea"))
+    if ea is None:
+        ea = rPr.makeelement(qn("a:ea"), {})
+        rPr.append(ea)
+    ea.set("typeface", font_name)
+
+
+def _set_monospace_props(run):
+    """Disable kerning and set fixed spacing for ASCII art alignment."""
+    rPr = run._r.get_or_add_rPr()
+    rPr.set("kern", "0")
+    rPr.set("spc", "0")
+
 
 def _accent_bar(sl):
     s = sl.shapes.add_shape(1, Inches(0), Inches(0), Inches(SLIDE_W), Inches(ACCENT_H))
