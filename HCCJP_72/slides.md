@@ -61,14 +61,14 @@ Microsoft MVP for Cloud and Datacenter Management, Microsoft Azure
 
 **Claude Cowork（スキル・MCP なし）**
 
-> 「Resource Group を作って、その中に Storage Account をデプロイして」
+> 「HCCJP 第72回勉強会のウェルカムページを作って、Azure Static Web Apps にデプロイして」
 
-**結果:**
-- 「申し訳ございませんが、Azure リソースを直接操作する機能は持っていません」
-- せいぜい Azure CLI コマンドの**テキスト**を提示するだけ
-- 実行はできない。知識も古い可能性がある
+**→ 実演します（画面共有）**
 
-**→ AIは「知っている」が「できない」**
+予想される結果:
+- 「Azure リソースを直接操作する機能は持っていません」
+- Azure CLI コマンドの**テキスト**を提示するだけ
+- 実行はできない
 
 ---
 
@@ -76,15 +76,18 @@ Microsoft MVP for Cloud and Datacenter Management, Microsoft Azure
 
 **Claude Cowork（Agent Skills + Azure MCP Server 導入済み）**
 
-> 「Resource Group を作って、その中に Storage Account をデプロイして」
+> 同じプロンプトをそのまま投げる
 
-**結果:**
-- azure-prepare スキルが自動発火 → 設計を提案
-- azure-validate → 構成をチェック
-- azure-deploy → **実際に Azure リソースを作成**
-- 最新のベストプラクティスに従い、セキュリティ設定も自動で適用
+**→ 実演します（画面共有）**
 
-**→ AIは「知っている」し「できる」ようになった**
+予想される結果:
+- HTML/CSS を自動生成（「HCCJP 第72回勉強会へようこそ！」）
+- Azure にデプロイ → **公開URLが出てくる**
+- 聴衆のみなさん、スマホでアクセスしてみてください 📱
+
+💡 前回（第71回）もこの方法でライブデモサイトを作りました
+
+**→ スキルとMCPで「知っている」だけでなく「できる」ようになった**
 
 ---
 
