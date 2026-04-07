@@ -94,6 +94,24 @@ Microsoft MVP for Cloud and Datacenter Management, Microsoft Azure
 
 ---
 
+# なぜ3つに分かれているのか？
+
+**答え: 作っているチームが違う**
+
+| リポジトリ | GitHub Org | 作成日 | チーム |
+|-----------|-----------|--------|--------|
+| **microsoft/skills** | `microsoft` | 2026-01-16 | Azure SDK チーム |
+| **MicrosoftDocs/Agent-Skills** | `MicrosoftDocs` | 2026-01-27 | Microsoft Learn チーム |
+| **microsoft/azure-skills** | `microsoft` | 2026-02-26 | Azure Tools チーム |
+
+- 1月 — SDKチーム「エージェントにSDKの使い方を教えよう」
+- 1月末 — Docsチーム「Learn のドキュメントもスキル化できる」
+- 2月末 — Toolsチーム「知識＋実行能力をセットで提供したい」
+
+**→ 技術的な必然ではなく、Microsoft社内の組織境界がそのままリポジトリ構造に**
+
+---
+
 # ① microsoft/skills（⭐1,900+）
 
 **「このSDKのコードをどう書くか」を教えるスキル**
@@ -283,19 +301,201 @@ Microsoft MVP for Cloud and Datacenter Management, Microsoft Azure
 
 ---
 
-# 3つのリポジトリの使い分け
+# 公式の使い分けガイドは？
+
+## 存在しない 🤷
+
+| 公式ブログ記事 | 他リポジトリへの言及 |
+|---------------|-------------------|
+| [Context-Driven Development](https://devblogs.microsoft.com/all-things-azure/context-driven-development-agent-skills-for-microsoft-foundry-and-azure/) | microsoft/skills だけ紹介 |
+| [Announcing Azure Skills Plugin](https://devblogs.microsoft.com/all-things-azure/announcing-the-azure-skills-plugin/) | azure-skills だけ紹介 |
+| MicrosoftDocs/Agent-Skills README | 他リポジトリへの言及なし |
+
+- 各チームが**自分のリポジトリだけ**をブログで紹介
+- 3つの関係を俯瞰的に説明した公式ドキュメントは**ゼロ**
+- さらに azure-skills は microsoft/skills 内に**プラグインとしても同梱**（関係が複雑）
+
+**→ だからこの勉強会で整理する意味がある**
+
+---
+
+# スキルの入れすぎ問題: Context Rot
+
+## スキルは段階的に読み込まれる（Progressive Disclosure）
+
+| レベル | 読まれるもの | いつ | コスト/スキル |
+|--------|------------|------|-------------|
+| **L1: Discovery** | name + description | **常時** | ~50-100トークン |
+| **L2: Instructions** | SKILL.md 本文 | トリガー時 | ~1,000-5,000トークン |
+| **L3: Resources** | スクリプト・追加ファイル | 必要時 | 可変 |
+
+**L1 だけでも 300スキル × ~75トークン = ~22,500トークン 常時消費**
+
+microsoft/skills の README が明確に警告:
+> "Loading all skills causes **context rot**: diluted attention, wasted tokens, conflated patterns."
+
+**→ 全部入れればいいわけではない。でも、いちいち選ぶのも面倒**
+
+---
+
+# 結局どう使えばいいのか？
+
+## Step 1: まず azure-skills プラグインだけ入れる（推奨）
+
+```
+/plugin install azure@azure-skills
+```
+→ **24スキル** + Azure MCP（200+ツール）+ Foundry MCP が全部入り
+→ 日常のAzure開発はこれ1つでカバーできる
+
+## Step 2: MicrosoftDocs/Agent-Skills は「バンドル」で追加
+
+| バンドル | スキル数 | 対象 |
+|---------|---------|------|
+| 🚀 Quick Start | 8 | とりあえず全員 |
+| ⭐ Popular | 21 | よく使うサービスを広くカバー |
+| 🤖 AI/ML Developer | ロール別 | AI エンジニア向け |
+| 🏗️ Infrastructure Pro | ロール別 | インフラエンジニア向け |
+
+## Step 3: microsoft/skills は言語×プロジェクトで選ぶ
+
+| プロジェクトの言語 | 追加するスキル |
+|------------------|--------------|
+| Python | `-py` 系を必要なSDK分だけ |
+| .NET | `-dotnet` 系を必要なSDK分だけ |
+| TypeScript | `-ts` 系を必要なSDK分だけ |
+
+**→ 全部入りではなく「プラグイン + バンドル + 言語別」の3段階で組む**
+
+---
+
+<!-- _class: small -->
+
+# 具体的なインストールコマンド
+
+## ケース1: とりあえず Azure 全般をカバーしたい
+
+```bash
+# Copilot CLI / Claude Code 共通
+/plugin marketplace add microsoft/azure-skills
+/plugin install azure@azure-skills
+```
+
+→ 24スキル + Azure MCP + Foundry MCP が1コマンドで入る
+
+---
+
+<!-- _class: small -->
+
+# 具体的なインストールコマンド（続き）
+
+## ケース2: 特定サービスの深い知識が欲しい（Agent-Skills）
+
+```bash
+# リポジトリをクローン
+git clone https://github.com/MicrosoftDocs/agent-skills.git
+
+# 必要なスキルだけコピー（Claude Code の場合）
+cp -r agent-skills/skills/azure-container-apps \
+      your-project/.claude/skills/
+
+# GitHub Copilot の場合
+cp -r agent-skills/skills/azure-container-apps \
+      your-project/.github/skills/
+```
+
+⚠️ `skills/skills/` にならないよう注意 — **中身だけ**コピーする
+
+---
+
+<!-- _class: small -->
+
+# 具体的なインストールコマンド（続き）
+
+## ケース3: SDK のコードパターンが欲しい（microsoft/skills）
+
+```bash
+# ウィザード形式で必要なスキルを選択（推奨）
+npx skills add microsoft/skills
+
+# 手動で特定スキルだけコピー
+git clone https://github.com/microsoft/skills.git
+cp -r skills/skills/azure-cosmos-py \
+      your-project/.claude/skills/
+```
+
+## ケース4: 全エージェントで共有したい
+
+```bash
+# シンボリックリンクで複数エージェント設定を共有
+ln -s ../.github/skills .claude/skills
+ln -s ../.github/skills .opencode/skills
+```
+
+**→ どのエージェントでも同じスキルが使える**
+
+---
+
+# 入れたらどう使われるのか？
+
+## 答え: 自然言語で自動トリガー。専用コマンドは不要
+
+| エージェント | 起動方法 |
+|------------|---------|
+| **Claude Code** | 自然言語 or `/skill-name` |
+| **GitHub Copilot** | 自然言語 or `@workspace` |
+| **Cursor** | `@skill-name` in Chat |
+| **Gemini CLI / Codex CLI** | 自然言語 |
+
+普通に話しかけるだけでスキルが自動で起動する:
+
+> 「Container Apps のベストプラクティスは？」
+> → azure-container-apps スキルが自動で発火
+
+> 「このアプリを Azure にデプロイして」
+> → azure-prepare スキルが自動で発火
+
+---
+
+<!-- _class: small -->
+
+# スキルごとに「動き方」が違う
+
+| リポジトリ | スキルが発火すると何が起きるか |
+|-----------|---------------------------|
+| **azure-skills** | エージェントが**直接 Azure を操作**する（MCP経由で `azd up`, `az deployment` 等を実行） |
+| **Agent-Skills** | **Microsoft Learn のドキュメントをリアルタイム取得**して回答に使う（`microsoft_docs_fetch`） |
+| **microsoft/skills** | **SDK のコードパターンをコンテキストに注入**してコード生成の精度を上げる |
+
+## azure-skills は「ワークフロー」が組まれている
+
+```
+azure-prepare  →  azure-validate  →  azure-deploy
+  (設計・準備)       (検証)            (デプロイ実行)
+```
+
+- 各スキルの description に **WHEN 句**（発火条件）が明記されている
+- azure-deploy は validate 済みでないと**実行を拒否**する（ガードレール）
+- 人間は「デプロイして」と言うだけ。順序はスキルが制御する
+
+---
+
+# 3つのリポジトリの使い分け（具体例）
 
 ```
 あなたの開発プロジェクト
 │
 ├── 「Cosmos DB の Python コード書いて」
 │   └── → microsoft/skills の azure-cosmos-py が活躍
+│        → SDKパターンが注入され、正しいコードが生成される
 │
 ├── 「Container Apps のベストプラクティスは？」
 │   └── → MicrosoftDocs/Agent-Skills の azure-container-apps が活躍
+│        → Learn から最新ドキュメントを取得して回答
 │
 └── 「このアプリを Azure にデプロイして」
     └── → microsoft/azure-skills の prepare→validate→deploy が活躍
+         → 実際にAzureリソースを作成・デプロイまで実行
 ```
 
 ---
