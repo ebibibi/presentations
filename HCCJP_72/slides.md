@@ -51,6 +51,50 @@ Microsoft MVP for Cloud and Datacenter Management, Microsoft Azure
 
 ---
 
+<!-- _class: lead -->
+
+# まず、見てください
+
+---
+
+# デモ① Before: 素の Claude に Azure を頼む
+
+**Claude Cowork（スキル・MCP なし）**
+
+> 「Resource Group を作って、その中に Storage Account をデプロイして」
+
+**結果:**
+- 「申し訳ございませんが、Azure リソースを直接操作する機能は持っていません」
+- せいぜい Azure CLI コマンドの**テキスト**を提示するだけ
+- 実行はできない。知識も古い可能性がある
+
+**→ AIは「知っている」が「できない」**
+
+---
+
+# デモ② After: スキル＋MCP を入れた Claude に同じことを頼む
+
+**Claude Cowork（Agent Skills + Azure MCP Server 導入済み）**
+
+> 「Resource Group を作って、その中に Storage Account をデプロイして」
+
+**結果:**
+- azure-prepare スキルが自動発火 → 設計を提案
+- azure-validate → 構成をチェック
+- azure-deploy → **実際に Azure リソースを作成**
+- 最新のベストプラクティスに従い、セキュリティ設定も自動で適用
+
+**→ AIは「知っている」し「できる」ようになった**
+
+---
+
+<!-- _class: lead -->
+
+# 何が起きたのか？
+## ここからは「種明かし」です
+
+---
+
 # AIコーディングエージェントの現在地
 
 - **Claude Code** / **GitHub Copilot** / **OpenAI Codex** ...
@@ -289,15 +333,6 @@ Microsoft MVP for Cloud and Datacenter Management, Microsoft Azure
 ```
 
 **エージェントを選ばない。同じスキルが Copilot でも Claude Code でも動く。**
-
----
-
-<!-- _class: lead -->
-
-# デモ
-
-## azure-skills プラグインで
-## 実際にAzureリソースを操作してみる
 
 ---
 
