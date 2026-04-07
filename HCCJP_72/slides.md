@@ -65,8 +65,8 @@ Microsoft MVP for Cloud and Datacenter Management, Microsoft Azure
 # Agent Skills とは？（30秒で）
 
 - **AIエージェントに専門知識を与えるmarkdownファイル群**
-- LLMは事前学習で知識を持っているが、適切なコンテキストがないと活性化できない
-- スキル = そのトリガー（activation context）
+- LLMは事前学習でAzureの知識を持っている。でも古い・不正確・hallucinationのリスク
+- スキル = **最新で正確な公式知識をコンテキストとして注入する仕組み**
 
 ```
 .github/skills/
@@ -340,32 +340,34 @@ microsoft/skills の README が明確に警告:
 
 # 結局どう使えばいいのか？
 
-## Step 1: まず azure-skills プラグインだけ入れる（推奨）
+## 原則: 「今使うものだけ」入れる
+
+azure-skills プラグインは便利だが、24スキル + Azure MCP（200+ツール）+ Foundry MCP が**常時コンテキストを消費**する。前スライドの Context Rot がまさにこれ。
+
+## Step 1: プロジェクトで使うサービスのスキルだけ入れる
+
+```bash
+# 例: Container Apps + Cosmos DB のプロジェクト
+cp -r agent-skills/skills/azure-container-apps your-project/.claude/skills/
+cp -r agent-skills/skills/azure-cosmos-db your-project/.claude/skills/
+```
+→ 必要なサービスの知識だけ。コンテキストを無駄にしない
+
+## Step 2: SDK スキルも言語×使うサービスだけ
+
+```bash
+# Python で Cosmos DB を使うなら
+npx skills add microsoft/skills --filter azure-cosmos-py
+```
+
+## Step 3: azure-skills プラグインは「全部入りが必要な時」だけ
 
 ```
 /plugin install azure@azure-skills
 ```
-→ **24スキル** + Azure MCP（200+ツール）+ Foundry MCP が全部入り
-→ 日常のAzure開発はこれ1つでカバーできる
+→ 何のサービスを使うかまだ決まっていない探索フェーズや、複数サービスを横断する設計時に有効
 
-## Step 2: MicrosoftDocs/Agent-Skills は「バンドル」で追加
-
-| バンドル | スキル数 | 対象 |
-|---------|---------|------|
-| 🚀 Quick Start | 8 | とりあえず全員 |
-| ⭐ Popular | 21 | よく使うサービスを広くカバー |
-| 🤖 AI/ML Developer | ロール別 | AI エンジニア向け |
-| 🏗️ Infrastructure Pro | ロール別 | インフラエンジニア向け |
-
-## Step 3: microsoft/skills は言語×プロジェクトで選ぶ
-
-| プロジェクトの言語 | 追加するスキル |
-|------------------|--------------|
-| Python | `-py` 系を必要なSDK分だけ |
-| .NET | `-dotnet` 系を必要なSDK分だけ |
-| TypeScript | `-ts` 系を必要なSDK分だけ |
-
-**→ 全部入りではなく「プラグイン + バンドル + 言語別」の3段階で組む**
+**→ 「全部入り」はコスト。必要なスキルを選んで入れるのが基本**
 
 ---
 
