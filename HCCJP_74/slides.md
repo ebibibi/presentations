@@ -1,0 +1,313 @@
+---
+marp: true
+theme: default
+paginate: true
+header: "HCCJP 第74回勉強会 | 2026年6月12日"
+footer: "ハイブリッドクラウド研究会"
+---
+
+# HCCJP 第74回勉強会
+
+## オンプレ × 冪等 × AI
+### コードで建てる検証環境をOSSでみんなで作りませんか？
+
+**2026年6月12日（金）14:00〜15:30**
+
+ハイブリッドクラウド研究会
+
+---
+
+# 本日のアジェンダ
+
+| 時刻 | セッション | スピーカー |
+|------|-----------|-----------|
+| 14:00 | オープニング | 胡田 |
+| 14:05 | **コードで建てる検証環境（中間報告＆デモ）** | 胡田 |
+| 14:40 | **ディスカッション「こんな機能が欲しい！」** | 全員 |
+| 14:55 | **Microsoft "Adaptive Cloud" Updates** | 高添 氏 |
+| 15:15 | Q&A | 高添 氏 |
+| 15:25 | クロージング | 胡田 |
+
+---
+
+# 今日は「参加型」の回です 🙌
+
+このスライドは **FlowAsk**（胡田の個人開発プロダクト）で動いています。
+
+## 👉 https://flowask.ebisuda.net/e/552645
+
+- セッション中いつでも **質問・コメント・アンケート回答** できます
+- 「この構成どう思う？」「こんな機能欲しい」を聞きたい回なので
+  **皆さんの声が本体** です
+- YouTubeチャットでももちろんOK！
+
+---
+
+# 自己紹介
+
+## 胡田 昌彦（えびすだ まさひこ）
+
+- 日本ビジネスシステムズ株式会社
+- Microsoft MVP for Cloud and Datacenter Management / Microsoft Azure
+- HCCJP 主幹事
+- 最近は **AIエージェント（Claude Code）に開発・運用のほぼすべてを任せる** 生活
+- YouTube: 「えびすだまさひこ」で検索 📺
+
+---
+
+# 今日の題材
+
+## hyperv-nestlab（OSS・開発中）
+
+**宣言的・冪等な Nested Hyper-V ラボ構築基盤**
+
+### 👉 https://github.com/ebibibi/hyperv-nestlab
+
+> 既存の Hyper-V サーバー 1 台さえあれば、`bootstrap.ps1` ひとつで
+> 制御 VM（Ansible 内蔵）を自己構築し、YAML 宣言から
+> Nested ホスト（L1）とその中の VM 群（L2: Windows / Linux / AD / クラスタ）を、
+> どこでも同じ形で再現する
+
+**コンセプト通りに動くところまで来ました。今日は中間報告です。**
+
+---
+
+# なぜ「コードで建てる検証環境」なのか
+
+## 検証環境づくりの「あるある」
+
+- 検証のたびに Hyper-V マネージャーでポチポチ…手順書が育つだけ
+- 「あの環境もう一回作って」→ 微妙に違うものができる
+- AD・クラスタ入りの構成は特に再現がつらい
+- 物理マシンが変わると全部やり直し
+
+## やりたいこと
+
+- **YAMLを書いて1コマンド** → 同じ環境がどこでも建つ
+- 壊しても、何度でも、**同じものが** 返ってくる（冪等）
+- クラウド（Azure VM）でもオンプレでも **同じコード** が動く
+
+---
+
+# 3つの絶対基準（設計の芯）
+
+## 1. 前提は「Hyper-V サーバーがあること」**だけ**
+制御環境・ツールはすべて自己ブートストラップ。
+Packer / ADK / oscdimg などの外部依存なし（DISM 標準ツールで golden 生成）
+
+## 2. どの環境でも**決定論的に**同じ環境になる
+版固定（images.yml）+ SHA256 検証 + 単一の宣言ファイル。
+**2回流して no-change** が受け入れ条件
+
+## 3. **誰でも**使い回せる
+単一エントリ `bootstrap.ps1`、ハードコードなし、データはリポジトリ配下に自己完結
+
+---
+
+# アーキテクチャ（3層）
+
+```text
+L0  物理 Hyper-V ホスト  ── あなたが用意する唯一の前提
+│
+├─ 制御 VM (Ubuntu + Ansible)        CtrlNAT 10.20.0.10  ← bootstrapが自己構築
+│
+└─ L1: Nested Hyper-V ホスト VM      CtrlNAT 10.20.0.20
+     │   (静的メモリ / ExposeVirtualizationExtensions / MACスプーフィング)
+     │   ラボストア L: ← golden / L2 VM / cloud-initシードを集約
+     │
+     └─ LabNAT 10.10.0.0/24  (L1内NATで自己完結 — L2はL1の中で閉じる)
+          ├─ L2: Windows Server 2025  (goldenの差分ディスクから一瞬で作成)
+          ├─ L2: Ubuntu 24.04         (cloud imageの差分 + cloud-initシード)
+          ├─ L2: dc01 (ADフォレスト)   ← 新規フォレストに昇格
+          └─ L2: mem01 …              ← ドメイン参加
+```
+
+---
+
+# 役割分担 — 誰が・どこを・どうやって
+
+| 層・操作 | 実行主体 | 接続方式 |
+|---|---|---|
+| L0 操作（NAT / L1作成 / 制御VM / golden配送） | ホスト PowerShell | ローカル / PowerShell Direct |
+| L1 内部（Hyper-V役割 / LabNAT / L2作成） | **Ansible** | 制御VM → WinRM → L1 |
+| L2 ゲスト内 ID（静的IP / 改名 / AD昇格・参加） | ホスト PowerShell | **二段 PowerShell Direct**（L0→L1→L2） |
+
+### ポイント
+- L2 は LabNAT 内に隔離 → 制御VMから直接届かない → **L1を踏み台**にする
+- PowerShell Direct は VMBus 経由 = **物理ネットワークに依存しない**
+  再起動をまたぐ再接続も確実
+
+---
+
+# 宣言ファイル — L1（土台）と L2（中身）を分離
+
+L1 は使い回し、L2 だけ差し替えて色々なラボを建てる。
+
+```yaml
+# l2/minimal-windows.yml — 最小の例
+defaults: { cpu: 2, memory_gb: 4, os: windows_server_2025 }
+groups:
+  - { name: win, name_prefix: win, count: 1, ip_from: 10.10.0.51 }
+```
+
+```yaml
+# 言語も宣言するだけ（ISO自動DL → 言語別golden生成）
+groups:
+  - { name: win-ja, count: 1, ip_from: 10.10.0.62, language: ja-jp }
+  - { name: lin-ja, count: 1, ip_from: 10.10.0.63, os: ubuntu_2404, language: ja-jp }
+```
+
+サンプル: minimal-windows / minimal-linux / **ad-forest**（DC+メンバ） / multi-lang / fileserver-s2d（🚧）
+
+---
+
+# bootstrap.ps1 — 1コマンドの中身
+
+```powershell
+# DryRunで構築プランだけ確認（VMは作らない）
+.\bootstrap.ps1 -L1 l1\standard-host.yml -L2 l2\ad-forest.yml -DryRun
+
+# 本番実行（制御VM自己構築 → L1 → L2 → AD まで一括・冪等）
+.\bootstrap.ps1 -L1 l1\standard-host.yml -L2 l2\ad-forest.yml
+```
+
+1. プリフライト（Hyper-V / Python / 設定ファイル）
+2. 検証 + 解決（JSON Schema + 意味検証 → resolved.json）
+3. イメージ整備（Ubuntu 自動取得 / Windows golden を **DISM** で生成）
+4. L0→L1 プロビジョニング → 制御 VM 構築 → golden 配送
+5. L1 内 Hyper-V + LabNAT（Ansible）→ L2 作成 → AD 構築
+
+**再実行すれば全工程が冪等に収束**（no-change が受け入れ条件）
+
+---
+
+# 速さと容量の工夫
+
+## golden イメージ + 差分ディスク
+
+- Windows: 評価版 ISO を**直リンク自動DL** → DISM で golden VHDX を生成
+  （oscdimg 不要・ADK 不要・フォーム登録不要）
+- Ubuntu: cloud image を版固定で取得 → VHDX 変換
+- **L2 の OS ディスクは golden からの差分（ディファレンシング）ディスク**
+  → 作成は一瞬、Windows L2 の初期サイズは **~300MB**
+
+## ラボストア（L:）
+
+- golden / L2 VM / cloud-init シードは L1 の OS ディスクではなく
+  専用の大容量ディスクに集約 → L1 自体は小さく保つ
+
+---
+
+# 開発の進め方も「AI時代」流
+
+- 開発はほぼ **Claude Code（AIエージェント）** に任せて進行
+  - 5時間放置して自律でインフラを作らせる、という実験も（YouTubeで公開中）
+- ハマりどころは Claude のメモリではなく **リポジトリ内 `KB/` に記事化**
+  - 例: 「S2DはDatacenterエディション必須」「入れ子dcpromoはDNSゾーンを作り切らない」
+  - AIも人間も**同じナレッジベース**を読む → 同じ罠に二度はまらない
+- テスト: resolver/スキーマは pytest、実機は「2回流してno-change」
+
+---
+
+# 現在のステータス
+
+| 項目 | 状態 |
+|---|---|
+| スキーマ / resolver / DryRun プラン | ✅ |
+| L0→L1 冪等プロビジョニング | ✅ |
+| イメージ整備（Windows DISM golden / Ubuntu cloud image） | ✅ |
+| 制御ノード自動構築 + Ansible 本線疎通 | ✅ |
+| **L2: Windows Server 2025**（実機検証） | ✅ |
+| **L2: Ubuntu 24.04**（cloud-init・実機検証） | ✅ |
+| **L2: AD フォレスト + ドメイン参加**（実機検証） | ✅ |
+| **bootstrap.ps1 一発再現** | ✅ |
+| クラスタ + S2D / Azure Local / GUI | 🚧 |
+
+---
+
+# デモ 🎬
+
+## YAML → `bootstrap.ps1` → ラボが建つまで
+
+- DryRun で構築プランを見る
+- 実際の構築の様子（冪等収束）
+- できあがった L1 / L2 環境の中身
+
+---
+
+# この先の構想① — AIから自由に使える基盤に
+
+## Skills か、MCP サーバーか
+
+今は人間が `bootstrap.ps1` を叩く形。次の一手として:
+
+- **案A: AIエージェント向け Skills 提供**
+  Claude Code 等に「このツールの使い方」を skill として教える
+  → AIが YAML を書き、bootstrap を叩き、結果を検証する
+- **案B: MCP サーバー提供**
+  ラボ構築をツールとして公開 → どの AI クライアントからも呼べる
+
+### 狙い
+AIに「Windows/Linux混在のAD検証環境作って」と言うだけで、
+**クラウドもオンプレも、Linux も Windows も**、AIがガリガリ建てられる世界 🌍
+
+---
+
+# この先の構想② — その他のロードマップ
+
+- **クラスタ + S2D**（ロール足場まで実装済み）
+- **Azure Local** — 展開部分は既存 OSS をラップする形で
+- **Azure 上の VM でも同じコードを** — Nested なのでホストがオンプレでも
+  Azure VM でも地続き（ポータビリティ）
+- **GUI** — 宣言ファイルの `language` などをドロップダウンで選ぶだけ、の入口
+
+---
+
+# 🗣️ ディスカッション — 皆さんに聞きたい！
+
+1. **この構成、どう思いますか？**
+   3層構造 / 制御VM+Ansible / PowerShell Direct 踏み台 / golden+差分…
+2. **もっと良くするなら、どこをどうしたら良い？**
+3. **AI連携は Skills と MCP サーバー、どっちが嬉しい？**
+4. **「自分のこの用途で使いたい」はありますか？**
+5. **こんな機能が欲しい！**
+
+## 回答はこちらから 👇
+
+### https://flowask.ebisuda.net/e/552645
+
+（YouTubeチャットでもOK！どんどん書き込んでください）
+
+---
+
+# まとめ
+
+- **hyperv-nestlab**: 宣言的・冪等な Nested Hyper-V ラボ構築基盤（OSS）
+  - 前提は Hyper-V サーバー1台だけ。YAML + 1コマンドで L1/L2/AD まで一括構築
+  - コンセプト通り動くところまで来ました（中間報告）
+- これから: クラスタ/S2D → Azure Local → **AIから自由に使える基盤へ**
+- **一緒に育てませんか？** Issue / PR / アイデア大歓迎です
+
+### 👉 https://github.com/ebibibi/hyperv-nestlab
+### 👉 https://flowask.ebisuda.net/e/552645
+
+---
+
+# Microsoft "Adaptive Cloud" 最新動向
+
+## 高添 修 氏（日本マイクロソフト株式会社）
+
+毎月恒例！ Azure Local・Azure Arc・Windows Server 関連の
+最新情報をお届けいただきます 🎉
+
+---
+
+# クロージング
+
+## 本日もご参加ありがとうございました！
+
+- アーカイブは YouTube で公開します
+- 感想・追加の質問はこちらへ
+  **https://flowask.ebisuda.net/e/552645**
+- HCCJP は **毎月第2金曜 14:00** 開催！
+  次回もお楽しみに 👋
