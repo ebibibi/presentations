@@ -22,10 +22,10 @@ footer: "ハイブリッドクラウド研究会"
 | 時刻 | セッション | スピーカー |
 |------|-----------|-----------|
 | 14:00 | オープニング | 胡田 |
-| 14:05 | **コードで建てる検証環境（中間報告＆デモ）** | 胡田 |
-| 14:40 | **ディスカッション「こんな機能が欲しい！」** | 全員 |
-| 14:55 | **Microsoft "Adaptive Cloud" Updates** | 高添 氏 |
-| 15:15 | Q&A | 高添 氏 |
+| 14:05 | **Microsoft "Adaptive Cloud" Updates** | 高添 氏 |
+| 14:25 | Q&A | 高添 氏 |
+| 14:35 | **コードで建てる検証環境（中間報告＆デモ）** | 胡田 |
+| 15:10 | **ディスカッション「こんな機能が欲しい！」** | 全員 |
 | 15:25 | クロージング | 胡田 |
 
 ---
@@ -40,6 +40,23 @@ footer: "ハイブリッドクラウド研究会"
 - 「この構成どう思う？」「こんな機能欲しい」を聞きたい回なので
   **皆さんの声が本体** です
 - YouTubeチャットでももちろんOK！
+
+---
+
+# Microsoft "Adaptive Cloud" 最新動向
+
+## 高添 修 氏（日本マイクロソフト株式会社）
+
+毎月恒例！ Azure Local・Azure Arc・Windows Server 関連の
+最新情報をお届けいただきます 🎉
+
+---
+
+# Q&A（高添さんセッション）
+
+ご質問は **YouTubeチャット** または **FlowAsk** からどうぞ！
+
+## 👉 https://flowask.ebisuda.net/e/552645
 
 ---
 
@@ -290,15 +307,6 @@ AIに「Windows/Linux混在のAD検証環境作って」と言うだけで、
 
 ### 👉 https://github.com/ebibibi/hyperv-nestlab
 ### 👉 https://flowask.ebisuda.net/e/552645
-
----
-
-# Microsoft "Adaptive Cloud" 最新動向
-
-## 高添 修 氏（日本マイクロソフト株式会社）
-
-毎月恒例！ Azure Local・Azure Arc・Windows Server 関連の
-最新情報をお届けいただきます 🎉
 
 ---
 

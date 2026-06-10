@@ -24,7 +24,14 @@
 
 ## セッション内容
 
-### 1. オンプレ × 冪等 × AI — コードで建てる検証環境をOSSでみんなで作りませんか？
+### 1. Microsoft "Adaptive Cloud" 最新動向
+
+高添 修 氏（日本マイクロソフト株式会社）
+
+Microsoft高添さんからは毎月恒例のMicrosoft "Adaptive Cloud" の最新動向をお伝えいただきます！
+Azure Local、Azure Arc、Windows Server関連の最新情報をお見逃しなく！
+
+### 2. オンプレ × 冪等 × AI — コードで建てる検証環境をOSSでみんなで作りませんか？
 
 **胡田 昌彦**（日本ビジネスシステムズ株式会社 / Microsoft MVP）
 
@@ -48,27 +55,20 @@
 
 「オープンソースのプロダクトを、みんなでアイデアを出し合って作ってみませんか？」という会です。ぜひコメント・チャットで参加してください！
 
-### 2. Microsoft "Adaptive Cloud" 最新動向
-
-高添 修 氏（日本マイクロソフト株式会社）
-
-Microsoft高添さんからは毎月恒例のMicrosoft "Adaptive Cloud" の最新動向をお伝えいただきます！
-Azure Local、Azure Arc、Windows Server関連の最新情報をお見逃しなく！
-
 ## スピーカー
 
-- **胡田 昌彦** - 日本ビジネスシステムズ株式会社、Microsoft MVP for Cloud and Datacenter Management, Microsoft Azure
 - **高添 修 氏** - 日本マイクロソフト株式会社
+- **胡田 昌彦** - 日本ビジネスシステムズ株式会社、Microsoft MVP for Cloud and Datacenter Management, Microsoft Azure
 
 ## タイムテーブル
 
 | 時刻 | 時間 | セッション | スピーカー |
 |------|------|------------|------------|
 | 14:00 | 5分 | オープニング | 胡田 昌彦 |
-| 14:05 | 35分 | コードで建てる検証環境（中間報告＆デモ） | 胡田 昌彦 |
-| 14:40 | 15分 | ディスカッション「こんな機能が欲しい！」 | 全員 |
-| 14:55 | 20分 | Microsoft "Adaptive Cloud" Updates | 高添 修 氏 |
-| 15:15 | 10分 | Q&A | 高添 修 氏 |
+| 14:05 | 20分 | Microsoft "Adaptive Cloud" Updates | 高添 修 氏 |
+| 14:25 | 10分 | Q&A | 高添 修 氏 |
+| 14:35 | 35分 | コードで建てる検証環境（中間報告＆デモ） | 胡田 昌彦 |
+| 15:10 | 15分 | ディスカッション「こんな機能が欲しい！」 | 全員 |
 | 15:25 | 5分 | クロージング | 胡田 昌彦 |
 
 ## 視聴方法
