@@ -145,7 +145,8 @@ text(40,990,"■ 同じ横線に足を出す＝同一サブネットで直接通
 add('</svg>')
 svg="\n".join(P)
 open("./images/net.svg","w").write(svg)
+SCALE = 2  # 2x スーパーサンプリングで FullHD 以上の鮮明さ（ベクター描画なのでボケない）
 cairosvg.svg2png(bytestring=svg.encode("utf-8"),
                  write_to="./images/net.png",
-                 output_width=W, output_height=H)
-print("wrote net.png", W,"x",H)
+                 output_width=W*SCALE, output_height=H*SCALE)
+print("wrote net.png", W*SCALE,"x",H*SCALE)

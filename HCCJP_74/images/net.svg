@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1680" height="1020" viewBox="0 0 1680 1020">
+<rect x="0" y="0" width="1680" height="1020" fill="#fff"/>
+<text x="40" y="52" font-family="Noto Sans CJK JP" font-size="33" font-weight="bold" fill="#1a1a1a" text-anchor="start">hyperv-nestlab — ネットワーク構成（2つの NAT を L1 がルーティング）</text>
+<text x="40" y="84" font-family="Noto Sans CJK JP" font-size="18" font-weight="normal" fill="#555" text-anchor="start">横線 = ネットワーク（サブネット）。各ホストは足を出して接続。L1 は両ネットに足を出すルータ（デュアルホーム）。</text>
+<rect x="30" y="104" width="1620" height="850" rx="16" fill="#ffffff" stroke="#0a3d6b" stroke-width="3"/>
+<rect x="30" y="104" width="1620" height="40" rx="16" fill="#0a3d6b"/>
+<rect x="30" y="124" width="1620" height="20" fill="#0a3d6b"/>
+<text x="52" y="132" font-family="Noto Sans CJK JP" font-size="21" font-weight="bold" fill="#fff" text-anchor="start">L0 — 物理 Hyper-V ホスト（Windows）：仮想スイッチ＋NAT を提供する親</text>
+<rect x="210.0" y="150" width="300" height="110" rx="10" fill="#eaf2fb" stroke="#0a3d6b" stroke-width="2.5"/>
+<rect x="210.0" y="150" width="300" height="30" rx="10" fill="#0a3d6b"/>
+<rect x="210.0" y="165" width="300" height="15" fill="#0a3d6b"/>
+<text x="360" y="172" font-family="Noto Sans CJK JP" font-size="16.5" font-weight="bold" fill="#fff" text-anchor="middle">L0 物理ホスト（NAT/GW）</text>
+<text x="360" y="206" font-family="Noto Sans CJK JP" font-size="15" font-weight="normal" fill="#555" text-anchor="middle">Hyper-V 仮想スイッチ</text>
+<line x1="360" y1="260" x2="360" y2="320" stroke="#0a3d6b" stroke-width="3"/>
+<circle cx="360" cy="320" r="7" fill="#8a5a00"/>
+<text x="372" y="308" font-family="Noto Sans CJK JP" font-size="15" font-weight="bold" fill="#8a5a00" text-anchor="start">10.20.0.1</text>
+<rect x="610.0" y="150" width="300" height="110" rx="10" fill="#e8f5e8" stroke="#0b5a0b" stroke-width="2.5"/>
+<rect x="610.0" y="150" width="300" height="30" rx="10" fill="#0b5a0b"/>
+<rect x="610.0" y="165" width="300" height="15" fill="#0b5a0b"/>
+<text x="760" y="172" font-family="Noto Sans CJK JP" font-size="16.5" font-weight="bold" fill="#fff" text-anchor="middle">制御 VM（Ubuntu+Ansible）</text>
+<text x="760" y="206" font-family="Noto Sans CJK JP" font-size="15" font-weight="normal" fill="#555" text-anchor="middle">自動化の頭脳・踏み台</text>
+<line x1="760" y1="260" x2="760" y2="320" stroke="#0b5a0b" stroke-width="3"/>
+<circle cx="760" cy="320" r="7" fill="#8a5a00"/>
+<text x="772" y="308" font-family="Noto Sans CJK JP" font-size="15" font-weight="bold" fill="#8a5a00" text-anchor="start">10.20.0.10</text>
+<rect x="210" y="315" width="1250" height="10" rx="5" fill="#8a5a00"/>
+<text x="210" y="352" font-family="Noto Sans CJK JP" font-size="20" font-weight="bold" fill="#8a5a00" text-anchor="start">CtrlNAT  10.20.0.0/24</text>
+<text x="1460" y="352" font-family="Noto Sans CJK JP" font-size="15" font-weight="normal" fill="#555" text-anchor="end">制御プレーン（L0・制御VM・L1 が同一セグメント）</text>
+<rect x="1130" y="380" width="340" height="150" rx="10" fill="#eaf2fb" stroke="#0a3d6b" stroke-width="3"/>
+<rect x="1130" y="380" width="340" height="32" rx="10" fill="#0a3d6b"/>
+<rect x="1130" y="396" width="340" height="16" fill="#0a3d6b"/>
+<text x="1300" y="403" font-family="Noto Sans CJK JP" font-size="17" font-weight="bold" fill="#fff" text-anchor="middle">L1 — Nested ホスト VM ＝ ルータ</text>
+<text x="1300" y="440" font-family="Noto Sans CJK JP" font-size="15" font-weight="normal" fill="#555" text-anchor="middle">Windows / Hyper-V / NAT 中継</text>
+<text x="1300" y="468" font-family="Noto Sans CJK JP" font-size="14.5" font-weight="normal" fill="#555" text-anchor="middle">2 つの NIC を持ち両ネットを橋渡し</text>
+<text x="1300" y="494" font-family="Noto Sans CJK JP" font-size="13.5" font-weight="normal" fill="#888" text-anchor="middle">ExposeVirtualizationExt / 静的メモリ</text>
+<line x1="1300" y1="380" x2="1300" y2="320" stroke="#0a3d6b" stroke-width="3"/>
+<circle cx="1300" cy="320" r="7" fill="#8a5a00"/>
+<text x="1314" y="308" font-family="Noto Sans CJK JP" font-size="15" font-weight="bold" fill="#8a5a00" text-anchor="start">10.20.0.20</text>
+<rect x="120" y="560" width="1200" height="380" rx="14" fill="#fffaf0" stroke="#7a4a00" stroke-width="2" stroke-dasharray="9 6"/>
+<text x="140" y="590" font-family="Noto Sans CJK JP" font-size="17" font-weight="bold" fill="#7a4a00" text-anchor="start">L1 Nested ホスト VM の内側 — LabNAT は L1 の中で閉じる（L2 を隔離）</text>
+<rect x="200" y="615" width="1140" height="10" rx="5" fill="#7a4a00"/>
+<text x="200" y="608" font-family="Noto Sans CJK JP" font-size="20" font-weight="bold" fill="#7a4a00" text-anchor="start">LabNAT  10.10.0.0/24　（GW = L1 10.10.0.1）</text>
+<line x1="1300" y1="530" x2="1300" y2="620" stroke="#0a3d6b" stroke-width="3"/>
+<circle cx="1300" cy="620" r="7" fill="#7a4a00"/>
+<text x="1278" y="650" font-family="Noto Sans CJK JP" font-size="15" font-weight="bold" fill="#7a4a00" text-anchor="end">10.10.0.1 (GW)</text>
+<rect x="205.0" y="680" width="250" height="210" rx="10" fill="#f1ebf8" stroke="#3b1d5e" stroke-width="2.5"/>
+<rect x="205.0" y="680" width="250" height="30" rx="10" fill="#3b1d5e"/>
+<rect x="205.0" y="695" width="250" height="15" fill="#3b1d5e"/>
+<text x="330" y="702" font-family="Noto Sans CJK JP" font-size="15.5" font-weight="bold" fill="#fff" text-anchor="middle">L2 — Windows Server 2025</text>
+<text x="330" y="734" font-family="Noto Sans CJK JP" font-size="15" font-weight="bold" fill="#1a1a1a" text-anchor="middle">10.10.0.51 / WinRM</text>
+<text x="330" y="762" font-family="Noto Sans CJK JP" font-size="13.5" font-weight="normal" fill="#555" text-anchor="middle">golden の差分ディスク</text>
+<text x="330" y="785" font-family="Noto Sans CJK JP" font-size="13.5" font-weight="normal" fill="#555" text-anchor="middle">認証: Administrator</text>
+<text x="330" y="808" font-family="Noto Sans CJK JP" font-size="13.5" font-weight="normal" fill="#555" text-anchor="middle">NTLM</text>
+<line x1="330" y1="680" x2="330" y2="620" stroke="#3b1d5e" stroke-width="3"/>
+<circle cx="330" cy="620" r="7" fill="#7a4a00"/>
+<rect x="495.0" y="680" width="250" height="210" rx="10" fill="#f1ebf8" stroke="#3b1d5e" stroke-width="2.5"/>
+<rect x="495.0" y="680" width="250" height="30" rx="10" fill="#3b1d5e"/>
+<rect x="495.0" y="695" width="250" height="15" fill="#3b1d5e"/>
+<text x="620" y="702" font-family="Noto Sans CJK JP" font-size="15.5" font-weight="bold" fill="#fff" text-anchor="middle">L2 — Ubuntu 24.04</text>
+<text x="620" y="734" font-family="Noto Sans CJK JP" font-size="15" font-weight="bold" fill="#1a1a1a" text-anchor="middle">10.10.0.50 / SSH</text>
+<text x="620" y="762" font-family="Noto Sans CJK JP" font-size="13.5" font-weight="normal" fill="#555" text-anchor="middle">cloud-init NoCloud</text>
+<text x="620" y="785" font-family="Noto Sans CJK JP" font-size="13.5" font-weight="normal" fill="#555" text-anchor="middle">認証: labadmin</text>
+<text x="620" y="808" font-family="Noto Sans CJK JP" font-size="13.5" font-weight="normal" fill="#555" text-anchor="middle">公開鍵</text>
+<line x1="620" y1="680" x2="620" y2="620" stroke="#3b1d5e" stroke-width="3"/>
+<circle cx="620" cy="620" r="7" fill="#7a4a00"/>
+<rect x="755.0" y="680" width="250" height="210" rx="10" fill="#f1ebf8" stroke="#3b1d5e" stroke-width="2.5"/>
+<rect x="755.0" y="680" width="250" height="30" rx="10" fill="#3b1d5e"/>
+<rect x="755.0" y="695" width="250" height="15" fill="#3b1d5e"/>
+<text x="880" y="702" font-family="Noto Sans CJK JP" font-size="15.5" font-weight="bold" fill="#fff" text-anchor="middle">L2 — dc01（AD/DC）</text>
+<text x="880" y="734" font-family="Noto Sans CJK JP" font-size="15" font-weight="bold" fill="#1a1a1a" text-anchor="middle">10.10.0.10</text>
+<text x="880" y="762" font-family="Noto Sans CJK JP" font-size="13.5" font-weight="normal" fill="#555" text-anchor="middle">新規フォレスト昇格</text>
+<text x="880" y="785" font-family="Noto Sans CJK JP" font-size="13.5" font-weight="normal" fill="#555" text-anchor="middle">二段 PS Direct で構築</text>
+<text x="880" y="808" font-family="Noto Sans CJK JP" font-size="13.5" font-weight="normal" fill="#555" text-anchor="middle">NETBIOS\Administrator</text>
+<line x1="880" y1="680" x2="880" y2="620" stroke="#3b1d5e" stroke-width="3"/>
+<circle cx="880" cy="620" r="7" fill="#7a4a00"/>
+<rect x="1015.0" y="680" width="250" height="210" rx="10" fill="#f1ebf8" stroke="#3b1d5e" stroke-width="2.5"/>
+<rect x="1015.0" y="680" width="250" height="30" rx="10" fill="#3b1d5e"/>
+<rect x="1015.0" y="695" width="250" height="15" fill="#3b1d5e"/>
+<text x="1140" y="702" font-family="Noto Sans CJK JP" font-size="15.5" font-weight="bold" fill="#fff" text-anchor="middle">L2 — mem01 …（メンバ）</text>
+<text x="1140" y="734" font-family="Noto Sans CJK JP" font-size="15" font-weight="bold" fill="#1a1a1a" text-anchor="middle">10.10.0.x / WinRM</text>
+<text x="1140" y="762" font-family="Noto Sans CJK JP" font-size="13.5" font-weight="normal" fill="#555" text-anchor="middle">ドメイン参加</text>
+<text x="1140" y="785" font-family="Noto Sans CJK JP" font-size="13.5" font-weight="normal" fill="#555" text-anchor="middle">count / ip_from で</text>
+<text x="1140" y="808" font-family="Noto Sans CJK JP" font-size="13.5" font-weight="normal" fill="#555" text-anchor="middle">台数を量産</text>
+<line x1="1140" y1="680" x2="1140" y2="620" stroke="#3b1d5e" stroke-width="3"/>
+<circle cx="1140" cy="620" r="7" fill="#7a4a00"/>
+<rect x="1350" y="640" width="290" height="290" rx="10" fill="#fafafa" stroke="#999" stroke-width="1.8"/>
+<text x="1366" y="670" font-family="Noto Sans CJK JP" font-size="17" font-weight="bold" fill="#1a1a1a" text-anchor="start">到達性のルール</text>
+<circle cx="1374" cy="698" r="6" fill="#c0392b"/>
+<text x="1388" y="703" font-family="Noto Sans CJK JP" font-size="14" font-weight="normal" fill="#1a1a1a" text-anchor="start">制御 VM → L1（WinRM）</text>
+<text x="1388" y="725" font-family="Noto Sans CJK JP" font-size="14" font-weight="normal" fill="#1a1a1a" text-anchor="start">→ L1 がルーティング →</text>
+<text x="1388" y="747" font-family="Noto Sans CJK JP" font-size="14" font-weight="normal" fill="#1a1a1a" text-anchor="start">L2 の IP に到達</text>
+<text x="1366" y="780" font-family="Noto Sans CJK JP" font-size="14" font-weight="bold" fill="#b00" text-anchor="start">✕ 作業PC / L0 から L2 へは</text>
+<text x="1366" y="802" font-family="Noto Sans CJK JP" font-size="14" font-weight="normal" fill="#b00" text-anchor="start">  直接届かない（隔離）</text>
+<text x="1366" y="836" font-family="Noto Sans CJK JP" font-size="13.5" font-weight="normal" fill="#555" text-anchor="start">PowerShell Direct は VMBus</text>
+<text x="1366" y="856" font-family="Noto Sans CJK JP" font-size="13.5" font-weight="normal" fill="#555" text-anchor="start">経由でこの図の線に依存しない</text>
+<text x="1366" y="878" font-family="Noto Sans CJK JP" font-size="13.5" font-weight="normal" fill="#555" text-anchor="start">（IP/NIC が無いVMにも到達）</text>
+<text x="1366" y="908" font-family="Noto Sans CJK JP" font-size="13.5" font-weight="normal" fill="#555" text-anchor="start">NAT 上り: L1→CtrlNAT→L0→外</text>
+<text x="40" y="990" font-family="Noto Sans CJK JP" font-size="15" font-weight="normal" fill="#555" text-anchor="start">■ 同じ横線に足を出す＝同一サブネットで直接通信可　／　別ネット間はルータ(L1)を必ず経由</text>
+</svg>

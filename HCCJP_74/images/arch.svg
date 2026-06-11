@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1680" height="1120" viewBox="0 0 1680 1120">
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c0392b"/></marker><marker id="arrowB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f6feb"/></marker></defs>
+<rect x="0" y="0" width="1680" height="1120" fill="#ffffff"/>
+<text x="40" y="52" font-family="Noto Sans CJK JP" font-size="34" font-weight="bold" fill="#1a1a1a" text-anchor="start">hyperv-nestlab — Nested Hyper-V 3層アーキテクチャ</text>
+<text x="40" y="86" font-family="Noto Sans CJK JP" font-size="19" font-weight="normal" fill="#555" text-anchor="start">既存の Hyper-V サーバー1台だけが前提。bootstrap.ps1 が制御VMを自己構築し、YAML宣言から L1 / L2 を冪等に再現する。</text>
+<rect x="40" y="110" width="1600" height="960" rx="16" fill="#ffffff" stroke="#0a3d6b" stroke-width="3.5"/>
+<rect x="40" y="110" width="1600" height="46" rx="16" fill="#0a3d6b"/>
+<rect x="40" y="134" width="1600" height="22" fill="#0a3d6b"/>
+<text x="62" y="142" font-family="Noto Sans CJK JP" font-size="24" font-weight="bold" fill="#fff" text-anchor="start">L0 — 物理 Hyper-V ホスト（Windows）</text>
+<text x="1618" y="142" font-family="Noto Sans CJK JP" font-size="19" font-weight="normal" fill="#cfe3f7" text-anchor="end">★ あなたが用意する唯一の前提</text>
+<text x="62" y="188" font-family="Noto Sans CJK JP" font-size="18" font-weight="normal" fill="#555" text-anchor="start">ホスト PowerShell + PowerShell Direct（VMBus）で土台を構築 / Hyper-V マネージャーで各VMの画面へ</text>
+<rect x="80" y="230" width="360" height="300" rx="12" fill="#e8f5e8" stroke="#0b5a0b" stroke-width="3"/>
+<rect x="80" y="230" width="360" height="40" rx="12" fill="#0b5a0b"/>
+<rect x="80" y="250" width="360" height="20" fill="#0b5a0b"/>
+<text x="98" y="258" font-family="Noto Sans CJK JP" font-size="20" font-weight="bold" fill="#fff" text-anchor="start">制御 VM（Ubuntu + Ansible）</text>
+<text x="98" y="304" font-family="Noto Sans CJK JP" font-size="19" font-weight="bold" fill="#1a1a1a" text-anchor="start">IP: 10.20.0.10  /  CtrlNAT</text>
+<text x="98" y="338" font-family="Noto Sans CJK JP" font-size="17" font-weight="normal" fill="#1a1a1a" text-anchor="start">・自動化の頭脳（Ansible 内蔵）</text>
+<text x="98" y="366" font-family="Noto Sans CJK JP" font-size="17" font-weight="normal" fill="#1a1a1a" text-anchor="start">・bootstrap.ps1 が自己構築</text>
+<text x="98" y="394" font-family="Noto Sans CJK JP" font-size="17" font-weight="normal" fill="#1a1a1a" text-anchor="start">・ここから L1 / L2 を構成</text>
+<text x="98" y="430" font-family="Noto Sans CJK JP" font-size="17" font-weight="bold" fill="#555" text-anchor="start">踏み台:</text>
+<text x="98" y="456" font-family="Noto Sans CJK JP" font-size="16" font-weight="normal" fill="#555" text-anchor="start"> L2 へは制御VMからのみ</text>
+<text x="98" y="478" font-family="Noto Sans CJK JP" font-size="16" font-weight="normal" fill="#555" text-anchor="start"> IP 到達（作業PC/L0からは不可）</text>
+<text x="98" y="508" font-family="Noto Sans CJK JP" font-size="15" font-weight="normal" fill="#555" text-anchor="start">OS: 差分ディスクで軽量</text>
+<rect x="80" y="544" width="1480" height="32" rx="16" fill="#fff6e6" stroke="#8a5a00" stroke-width="2"/>
+<text x="104" y="567" font-family="Noto Sans CJK JP" font-size="18" font-weight="bold" fill="#8a5a00" text-anchor="start">CtrlNAT  10.20.0.0/24   （制御VM ⇄ L1 を IP で接続）</text>
+<line x1="260.0" y1="530" x2="260.0" y2="544" stroke="#8a5a00" stroke-width="2.5"/>
+<rect x="560" y="200" width="1050" height="660" rx="14" fill="#eaf2fb" stroke="#0a3d6b" stroke-width="3"/>
+<rect x="560" y="200" width="1050" height="42" rx="14" fill="#0a3d6b"/>
+<rect x="560" y="222" width="1050" height="20" fill="#0a3d6b"/>
+<text x="578" y="230" font-family="Noto Sans CJK JP" font-size="22" font-weight="bold" fill="#fff" text-anchor="start">L1 — Nested Hyper-V ホスト VM（Windows）</text>
+<text x="1592" y="230" font-family="Noto Sans CJK JP" font-size="19" font-weight="bold" fill="#cfe3f7" text-anchor="end">IP: 10.20.0.20</text>
+<text x="578" y="272" font-family="Noto Sans CJK JP" font-size="16" font-weight="normal" fill="#555" text-anchor="start">ExposeVirtualizationExtensions（入れ子有効化）/ 静的メモリ / MACスプーフィング</text>
+<text x="578" y="296" font-family="Noto Sans CJK JP" font-size="16" font-weight="normal" fill="#555" text-anchor="start">役割: LabNAT のルータ ＆ DHCP / L2 のホスト</text>
+<rect x="1220" y="318" width="370" height="96" rx="10" fill="#f3f3f3" stroke="#444" stroke-width="2"/>
+<text x="1234" y="346" font-family="Noto Sans CJK JP" font-size="16" font-weight="bold" fill="#1a1a1a" text-anchor="start">ラボストア L:（大容量・差分の置き場）</text>
+<text x="1234" y="372" font-family="Noto Sans CJK JP" font-size="15" font-weight="normal" fill="#555" text-anchor="start">golden イメージ → L2 は差分ディスク</text>
+<text x="1234" y="394" font-family="Noto Sans CJK JP" font-size="15" font-weight="normal" fill="#555" text-anchor="start">cloud-init シードもここに集約</text>
+<line x1="760" y1="544" x2="760" y2="860.1" stroke="#8a5a00" stroke-width="0"/>
+<rect x="580" y="330" width="620" height="500" rx="12" fill="#fff6e6" stroke="#8a5a00" stroke-width="2.5" stroke-dasharray="8 5"/>
+<text x="596" y="360" font-family="Noto Sans CJK JP" font-size="18" font-weight="bold" fill="#8a5a00" text-anchor="start">LabNAT  10.10.0.0/24   （GW = L1 10.10.0.1）</text>
+<text x="596" y="384" font-family="Noto Sans CJK JP" font-size="14.5" font-weight="normal" fill="#555" text-anchor="start">L1 の中で閉じる自己完結ネット — L2 をオフライン検証環境として隔離</text>
+<rect x="596" y="404" width="290" height="188" rx="10" fill="#f1ebf8" stroke="#3b1d5e" stroke-width="2.5"/>
+<rect x="596" y="404" width="290" height="34" rx="10" fill="#3b1d5e"/>
+<rect x="596" y="421" width="290" height="17" fill="#3b1d5e"/>
+<text x="608" y="428" font-family="Noto Sans CJK JP" font-size="17" font-weight="bold" fill="#fff" text-anchor="start">L2 — Windows Server 2025</text>
+<text x="608" y="462" font-family="Noto Sans CJK JP" font-size="15.5" font-weight="bold" fill="#1a1a1a" text-anchor="start">10.10.0.51 / WinRM 5985</text>
+<text x="608" y="486" font-family="Noto Sans CJK JP" font-size="14" font-weight="normal" fill="#555" text-anchor="start">golden の差分ディスクから</text>
+<text x="608" y="507" font-family="Noto Sans CJK JP" font-size="14" font-weight="normal" fill="#555" text-anchor="start">一瞬で作成（初期 ~300MB）</text>
+<text x="608" y="528" font-family="Noto Sans CJK JP" font-size="14" font-weight="normal" fill="#555" text-anchor="start">認証: Administrator / NTLM</text>
+<rect x="906" y="404" width="290" height="188" rx="10" fill="#f1ebf8" stroke="#3b1d5e" stroke-width="2.5"/>
+<rect x="906" y="404" width="290" height="34" rx="10" fill="#3b1d5e"/>
+<rect x="906" y="421" width="290" height="17" fill="#3b1d5e"/>
+<text x="918" y="428" font-family="Noto Sans CJK JP" font-size="17" font-weight="bold" fill="#fff" text-anchor="start">L2 — Ubuntu 24.04</text>
+<text x="918" y="462" font-family="Noto Sans CJK JP" font-size="15.5" font-weight="bold" fill="#1a1a1a" text-anchor="start">10.10.0.50 / SSH 22</text>
+<text x="918" y="486" font-family="Noto Sans CJK JP" font-size="14" font-weight="normal" fill="#555" text-anchor="start">cloud image の差分 +</text>
+<text x="918" y="507" font-family="Noto Sans CJK JP" font-size="14" font-weight="normal" fill="#555" text-anchor="start">cloud-init NoCloud シード</text>
+<text x="918" y="528" font-family="Noto Sans CJK JP" font-size="14" font-weight="normal" fill="#555" text-anchor="start">認証: labadmin / 公開鍵</text>
+<rect x="596" y="612" width="290" height="188" rx="10" fill="#f1ebf8" stroke="#3b1d5e" stroke-width="2.5"/>
+<rect x="596" y="612" width="290" height="34" rx="10" fill="#3b1d5e"/>
+<rect x="596" y="629" width="290" height="17" fill="#3b1d5e"/>
+<text x="608" y="636" font-family="Noto Sans CJK JP" font-size="17" font-weight="bold" fill="#fff" text-anchor="start">L2 — dc01（AD フォレスト）</text>
+<text x="608" y="670" font-family="Noto Sans CJK JP" font-size="15.5" font-weight="bold" fill="#1a1a1a" text-anchor="start">10.10.0.10 / AD・DC</text>
+<text x="608" y="694" font-family="Noto Sans CJK JP" font-size="14" font-weight="normal" fill="#555" text-anchor="start">新規フォレストに昇格</text>
+<text x="608" y="715" font-family="Noto Sans CJK JP" font-size="14" font-weight="normal" fill="#555" text-anchor="start">二段 PowerShell Direct で構築</text>
+<text x="608" y="736" font-family="Noto Sans CJK JP" font-size="14" font-weight="normal" fill="#555" text-anchor="start">NETBIOS\Administrator</text>
+<rect x="906" y="612" width="290" height="188" rx="10" fill="#f1ebf8" stroke="#3b1d5e" stroke-width="2.5"/>
+<rect x="906" y="612" width="290" height="34" rx="10" fill="#3b1d5e"/>
+<rect x="906" y="629" width="290" height="17" fill="#3b1d5e"/>
+<text x="918" y="636" font-family="Noto Sans CJK JP" font-size="17" font-weight="bold" fill="#fff" text-anchor="start">L2 — mem01 …（メンバ）</text>
+<text x="918" y="670" font-family="Noto Sans CJK JP" font-size="15.5" font-weight="bold" fill="#1a1a1a" text-anchor="start">10.10.0.x / WinRM</text>
+<text x="918" y="694" font-family="Noto Sans CJK JP" font-size="14" font-weight="normal" fill="#555" text-anchor="start">ドメイン参加</text>
+<text x="918" y="715" font-family="Noto Sans CJK JP" font-size="14" font-weight="normal" fill="#555" text-anchor="start">差分ディスクで台数を量産</text>
+<text x="918" y="736" font-family="Noto Sans CJK JP" font-size="14" font-weight="normal" fill="#555" text-anchor="start">count / ip_from で増殖</text>
+<rect x="1220" y="432" width="370" height="398" rx="10" fill="#fafafa" stroke="#999" stroke-width="1.8"/>
+<text x="1236" y="462" font-family="Noto Sans CJK JP" font-size="18" font-weight="bold" fill="#1a1a1a" text-anchor="start">接続・制御の経路</text>
+<circle cx="1244" cy="492" r="7" fill="#c0392b"/>
+<text x="1260" y="498" font-family="Noto Sans CJK JP" font-size="16" font-weight="bold" fill="#c0392b" text-anchor="start">A. 制御（自動化）経路</text>
+<text x="1260" y="522" font-family="Noto Sans CJK JP" font-size="14.5" font-weight="normal" fill="#1a1a1a" text-anchor="start">制御VM → WinRM 5985 → L1</text>
+<text x="1260" y="544" font-family="Noto Sans CJK JP" font-size="14.5" font-weight="normal" fill="#1a1a1a" text-anchor="start">制御VM → L1ルーティング → L2 IP</text>
+<text x="1260" y="566" font-family="Noto Sans CJK JP" font-size="14.5" font-weight="normal" fill="#555" text-anchor="start">Linux=SSH / Windows=WinRM</text>
+<text x="1260" y="588" font-family="Noto Sans CJK JP" font-size="14.5" font-weight="normal" fill="#555" text-anchor="start">中身を作り込むのは Ansible</text>
+<circle cx="1244" cy="628" r="7" fill="#1f6feb"/>
+<text x="1260" y="634" font-family="Noto Sans CJK JP" font-size="16" font-weight="bold" fill="#1f6feb" text-anchor="start">B. コンソール（画面）経路</text>
+<text x="1260" y="658" font-family="Noto Sans CJK JP" font-size="14.5" font-weight="normal" fill="#1a1a1a" text-anchor="start">L0 → vmconnect → L1 の画面</text>
+<text x="1260" y="680" font-family="Noto Sans CJK JP" font-size="14.5" font-weight="normal" fill="#1a1a1a" text-anchor="start">L1 内 Hyper-V マネージャー →</text>
+<text x="1260" y="702" font-family="Noto Sans CJK JP" font-size="14.5" font-weight="normal" fill="#1a1a1a" text-anchor="start">  vmconnect localhost → L2 の画面</text>
+<text x="1260" y="724" font-family="Noto Sans CJK JP" font-size="14.5" font-weight="normal" fill="#555" text-anchor="start">VMBus 経由（ネットワーク非依存）</text>
+<text x="1236" y="764" font-family="Noto Sans CJK JP" font-size="15.5" font-weight="bold" fill="#1a1a1a" text-anchor="start">最後の砦: PowerShell Direct</text>
+<text x="1236" y="788" font-family="Noto Sans CJK JP" font-size="14" font-weight="normal" fill="#555" text-anchor="start">IPもWinRMも無いVMに VMBus で到達。</text>
+<text x="1236" y="810" font-family="Noto Sans CJK JP" font-size="14" font-weight="normal" fill="#555" text-anchor="start">L0→L1→L2 の二段で復旧できる。</text>
+<line x1="440" y1="320" x2="560" y2="320" stroke="#c0392b" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="500.0" y="308" font-family="Noto Sans CJK JP" font-size="15" font-weight="bold" fill="#c0392b" text-anchor="middle">WinRM 5985 (A)</text>
+<path d="M 90 530 L 62 550 L 62 888 L 578 888 L 578 830" fill="none" stroke="#c0392b" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#arrow)"/>
+<text x="72" y="878" font-family="Noto Sans CJK JP" font-size="15" font-weight="bold" fill="#c0392b" text-anchor="start">A: 制御VM →（WinRM で L1）→ L1ルーティングで L2 の IP へ到達</text>
+<line x1="1310" y1="884" x2="1450" y2="852" stroke="#1f6feb" stroke-width="2.5" stroke-dasharray="2 6"/>
+<text x="1310" y="906" font-family="Noto Sans CJK JP" font-size="15" font-weight="bold" fill="#1f6feb" text-anchor="start">B: L0 → L1 → L2  PowerShell Direct / コンソール（VMBus・ネットワーク非依存）</text>
+<rect x="80" y="620" width="360" height="230" rx="10" fill="#fafafa" stroke="#999" stroke-width="1.8"/>
+<text x="96" y="650" font-family="Noto Sans CJK JP" font-size="18" font-weight="bold" fill="#1a1a1a" text-anchor="start">宣言（入力）→ 確定モデル</text>
+<rect x="100" y="670" width="150" height="36" rx="6" fill="#eef4ff" stroke="#1f6feb" stroke-width="1.8"/>
+<text x="175" y="693" font-family="Noto Sans CJK JP" font-size="15" font-weight="normal" fill="#1a1a1a" text-anchor="middle">l1/*.yml</text>
+<rect x="100" y="714" width="150" height="36" rx="6" fill="#eef4ff" stroke="#1f6feb" stroke-width="1.8"/>
+<text x="175" y="737" font-family="Noto Sans CJK JP" font-size="15" font-weight="normal" fill="#1a1a1a" text-anchor="middle">l2/*.yml</text>
+<line x1="255" y1="710" x2="285" y2="710" stroke="#555" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="285" y="682" width="135" height="58" rx="6" fill="#fff6e6" stroke="#8a5a00" stroke-width="1.8"/>
+<text x="352" y="706" font-family="Noto Sans CJK JP" font-size="14" font-weight="normal" fill="#1a1a1a" text-anchor="middle">tools/</text>
+<text x="352" y="726" font-family="Noto Sans CJK JP" font-size="14" font-weight="bold" fill="#1a1a1a" text-anchor="middle">resolve.py</text>
+<text x="96" y="780" font-family="Noto Sans CJK JP" font-size="14.5" font-weight="normal" fill="#555" text-anchor="start">→ build/resolved.json（名前/IP/ドメイン）</text>
+<text x="96" y="806" font-family="Noto Sans CJK JP" font-size="14" font-weight="normal" fill="#555" text-anchor="start">版固定(images.yml)+SHA256 検証で</text>
+<text x="96" y="828" font-family="Noto Sans CJK JP" font-size="14" font-weight="normal" fill="#555" text-anchor="start">どの環境でも決定論的に同じ形に収束</text>
+<text x="40" y="1098" font-family="Noto Sans CJK JP" font-size="14.5" font-weight="normal" fill="#555" text-anchor="start">bootstrap.ps1 の流れ:  ①プリフライト → ②検証/解決(resolve.py) → ③イメージ整備(DISM golden / Ubuntu取得) → ④L0→L1→制御VM→golden配送 → ⑤L1内 Hyper-V+LabNAT(Ansible)→L2作成→AD　／　再実行は冪等収束（no-change が受入条件）</text>
+</svg>
