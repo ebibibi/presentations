@@ -252,6 +252,62 @@ groups:
 
 ---
 
+<!-- _class: small -->
+
+# 建てたあと、どうやって入る？
+
+Nested なので **層をまたいで**アクセスする。肝は **2つの経路は別物**：
+
+- **制御（自動化）経路** … IPネットワーク（制御VM → L1ルーティング → L2）で SSH / WinRM
+- **コンソール（画面）経路** … Hyper-Vマネージャーの**入れ子**（L0→L1→L2、VMBus）
+
+```text
+作業PC ──RDP──▶ L0(物理ホスト) ──SSH──▶ 制御VM(10.20.0.10)  ← 自動化の操作卓
+                   │                        │ WinRM        │ 制御経路
+                   │ Hyper-Vコンソール       ▼              ▼  (L1ルーティング)
+                   └──(VMBus)──▶ L1(10.20.0.20) ──────▶ L2群(LabNAT 10.10.0.x)
+                                  └ L1内のHyper-Vマネージャーで L2 の画面を開く
+```
+
+**L2 は LabNAT に隔離** → 作業PC/L0 からは直接届かない。踏み台かコンソール経由が必須。
+
+---
+
+<!-- _class: small -->
+
+# 4つのアクセスパターン
+
+| やりたいこと | 方法 | 具体 |
+|---|---|---|
+| Linux を操作 | **① SSH** | 制御VM →`ssh labadmin@10.10.0.x`（L2 Linux） |
+| Windows を操作 | **② WinRM** | 制御VM →`Enter-PSSession 10.10.0.x`（L2 Win） |
+| 画面を見て GUI | **③ Hyper-Vマネージャー** | L0→L1コンソール → L1内で `vmconnect localhost "<L2>"` |
+| 直接つながらない VM | **④ 踏み台 / PS Direct** | L2 は制御VM経由。壊れた VM は VMBus で L0→L1→L2 |
+
+- **PowerShell Direct（VMBus）** は IP も WinRM も無い・壊れた VM に届く**最後の砦**
+- ドメイン参加 Windows で DC への二段ホップ（クラスタ等）は **CredSSP**
+- 詳細・図解は `docs/access-guide.md`（接続マトリクス＋トポロジ図）
+
+---
+
+# 構築完了 → 接続情報を自動表示 🆕
+
+`bootstrap.ps1` の最後に、建った環境の**実際の値**で接続先・資格情報・接続例を一覧表示
+
+```text
+[制御 VM]   10.20.0.10:22  SSH 公開鍵  labadmin
+  接続例 : ssh -i "build/ssh/id_ed25519" labadmin@10.20.0.10
+[L2: web01] 10.10.0.51:5985  WinRM/NTLM  Administrator
+[L2: lin01] 10.10.0.52:22    SSH         labadmin
+[Hyper-Vマネージャーで L2 を操作] L0→L1コンソール → vmconnect ...
+```
+
+- L2 は **OS種別（Linux=SSH / Windows=WinRM）とドメイン参加有無で出し分け**
+- 「建てたはいいけど、どこに何のIDで入るんだっけ？」を**毎回見なくて済む**
+- ※平文パスワードを出すので、配信・録画時は伏せる前提
+
+---
+
 # この先の構想① — AIから自由に使える基盤に
 
 ## Skills か、MCP サーバーか
