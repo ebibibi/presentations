@@ -178,20 +178,22 @@ L0  物理 Hyper-V ホスト  ── あなたが用意する唯一の前提
 
 ---
 
-<!-- _class: small -->
+<!-- _class: x-small -->
 
-# 役割分担 — 誰が・どこを・どうやって
+# 役割分担 — PowerShell / PowerShell Direct と Ansible のハイブリッド
 
-| 層・操作 | 実行主体 | 接続方式 |
+**「Ansible 一本」ではない。**分担の境界は **「対象に IP + WinRM がもう在るか」**。
+整うまで（と L0 操作）は PowerShell、整った後の“内側の定常構成”だけ Ansible が仕上げる。
+
+| 操作 | 実行主体 | 接続方式 |
 |---|---|---|
-| L0 操作（NAT / L1作成 / 制御VM / golden配送） | ホスト PowerShell | ローカル / PowerShell Direct |
-| L1 内部（Hyper-V役割 / LabNAT / L2作成） | **Ansible** | 制御VM → WinRM → L1 |
-| L2 ゲスト内 ID（静的IP / 改名 / AD昇格・参加） | ホスト PowerShell | **二段 PowerShell Direct**（L0→L1→L2） |
+| **L0 操作**（NAT / L1作成 / 制御VM / golden配送 / 削除） | ホスト **PowerShell**（Hyper-V cmdlet） | ローカル |
+| **“ネットワーク前”ブートストラップ**（L1/L2 の 静的IP・WinRM有効化・改名・RDP ／ **AD 昇格・参加**） | ホスト **PowerShell Direct** | 二段 PS Direct（VMBus, L0→L1→L2） |
+| **IP+WinRM 後の L1/L2 内部**（Hyper-V役割+LabNAT=`setup_l1` ／ L2作成=`create_l2` ／ クラスタ+S2D=`create_cluster`） | **Ansible** | 制御VM → WinRM → L1/L2 |
 
-### ポイント
-- L2 は LabNAT 内に隔離 → 制御VMから直接届かない → **L1を踏み台**にする
-- PowerShell Direct は VMBus 経由 = **物理ネットワークに依存しない**
-  再起動をまたぐ再接続も確実
+### なぜ混在するか
+- **Ansible は IP+WinRM が前提** → 作りたて/壊れた段階や L0 操作には使えない。そこを **PowerShell Direct（VMBus）** が埋める（物理ネット非依存・再起動またぎも確実）
+- **AD 昇格は DC への二段ホップ**のため PS Direct。L2 は LabNAT 隔離なので **L1 を踏み台**（Windows=二段 PS Direct / Linux=L1 から SSH）
 
 ---
 
