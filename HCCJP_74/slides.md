@@ -174,14 +174,6 @@ L0  物理 Hyper-V ホスト  ── あなたが用意する唯一の前提
 <!-- _footer: "" -->
 <!-- _paginate: false -->
 
-![bg fit](images/arch.png)
-
----
-
-<!-- _header: "" -->
-<!-- _footer: "" -->
-<!-- _paginate: false -->
-
 ![bg fit](images/net.png)
 
 ---
