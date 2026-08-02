@@ -4,7 +4,8 @@
 
 - **日時**: 2026年8月14日（金）14:00-15:30
 - **形式**: オンライン（YouTube Live）
-- **テーマ**: オンプレのサーバー、壊します。直すのはAIです。 — Azure Arc × AIエージェントによる無人障害復旧
+- **テーマ**: オンプレのサーバー壊します。直すのはAIです。 — Azure Arc × AIによる無人障害復旧
+- **Connpass**: https://hybridcloud.connpass.com/event/402528/
 
 ## 概要
 
@@ -102,7 +103,7 @@ Azure Local、Azure Arc、Windows Server関連の最新情報をお見逃しな�
 
 ## 視聴方法
 
-- **YouTube Live**: TBD
+- **YouTube Live**: https://www.youtube.com/watch?v=uPc6T-wL8-0
 - チャンネル登録してお待ちください！
 
 ## 主催

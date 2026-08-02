@@ -47,7 +47,7 @@
 ### 📺 視聴方法
 
 YouTube Live（HCCJPチャンネル）で配信します。
-👉 配信URL: （確定後に掲載 / チャンネル登録してお待ちください！）
+👉 配信URL: https://www.youtube.com/watch?v=uPc6T-wL8-0
 
 ### 🎤 セッション内容
 
@@ -111,7 +111,7 @@ NTTコミュニケーションズ株式会社 / 日商エレクトロニクス�
 
 ## ③ 作成後のTODO
 
-- [ ] YouTube Live 配信枠を作成（スキル `youtube-live-schedule`）→ URLを説明欄に差し込む
+- [x] YouTube Live 配信枠を作成済み → https://www.youtube.com/watch?v=uPc6T-wL8-0 （Connpass説明欄への差し込みは手動）
 - [ ] 公開設定を確認（グループメンバーへの通知タイミング）
 - [ ] 障害シナリオを**全部リハーサル**して、提示する選択肢を確定する（README参照）
 - [ ] 復旧デモの録画を1本撮っておく（当日どうしても失敗したときの保険）
