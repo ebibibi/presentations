@@ -1,0 +1,14 @@
+A striking 16:9 YouTube thumbnail for a Japanese IT community webinar. Dark navy tech background (#0A1628) with faint blue circuit-board lines and a subtle server-room bokeh, matching a professional Microsoft Azure aesthetic.
+
+Composition:
+- LEFT THIRD: a glowing server rack rendered in RED alert tones, with a large red warning triangle icon and red "ERROR" style indicator lights. It clearly looks broken and alarming.
+- RIGHT THIRD: a glowing cyan-blue AI neural-network sphere made of connected nodes, with a bright GREEN check-mark badge next to it. It clearly looks healthy and recovered.
+- A luminous cyan arrow flows from the red server on the left toward the AI sphere on the right, suggesting recovery.
+- CENTER: bold Japanese headline text, stacked on two lines, very large, heavy gothic sans-serif, with a strong dark outline and glow so it is perfectly legible:
+  line 1: 「壊します。」 in bright red-orange
+  line 2: 「直すのはAI。」 in white with cyan glow
+- Below the headline, one smaller line of white text: 「Azure Arc × AIエージェント」
+
+IMPORTANT: keep the TOP-RIGHT corner area (about 260x260 pixels) clean and empty dark background — a logo will be placed there later. Do not draw any logo, watermark, or text in the top-right corner.
+
+Do not include any other text, no English words other than "Azure Arc", no small unreadable captions. The Japanese text must be perfectly legible and accurately rendered.
