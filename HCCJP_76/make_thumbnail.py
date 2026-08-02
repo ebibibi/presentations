@@ -61,10 +61,10 @@ def build() -> Image.Image:
     composed = Image.alpha_composite(base, badge)
     composed.alpha_composite(logo, pos)
 
-    # 開催日は縁取りして、背景の明暗にかかわらず読めるようにする
+    # 開催日は左上へ。下辺には「オンプレミス」「AIエージェント」のラベルがあるため重ねない
     draw = ImageDraw.Draw(composed)
     font = _bold_jp_font(DATE_FONT_SIZE)
-    x, y = 34, height - 66
+    x, y = 40, 40
     for dx in (-3, 0, 3):
         for dy in (-3, 0, 3):
             draw.text((x + dx, y + dy), DATE_TEXT, font=font, fill=(4, 10, 26, 255))

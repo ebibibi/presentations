@@ -1,14 +1,14 @@
-A striking 16:9 YouTube thumbnail for a Japanese IT community webinar. Dark navy tech background (#0A1628) with faint blue circuit-board lines and a subtle server-room bokeh, matching a professional Microsoft Azure aesthetic.
+A striking 16:9 YouTube thumbnail for a Japanese IT webinar, dark navy tech background (#0A1628) with faint blue circuit lines. The image must clearly show a ROUTE: an AI agent reaches an on-premises server THROUGH the Azure cloud.
 
-Composition:
-- LEFT THIRD: a glowing server rack rendered in RED alert tones, with a large red warning triangle icon and red "ERROR" style indicator lights. It clearly looks broken and alarming.
-- RIGHT THIRD: a glowing cyan-blue AI neural-network sphere made of connected nodes, with a bright GREEN check-mark badge next to it. It clearly looks healthy and recovered.
-- A luminous cyan arrow flows from the red server on the left toward the AI sphere on the right, suggesting recovery.
-- CENTER: bold Japanese headline text, stacked on two lines, very large, heavy gothic sans-serif, with a strong dark outline and glow so it is perfectly legible:
-  line 1: 「壊します。」 in bright red-orange
-  line 2: 「直すのはAI。」 in white with cyan glow
-- Below the headline, one smaller line of white text: 「Azure Arc × AIエージェント」
+Layout (this routing must be unmistakable):
+- BOTTOM LEFT: an on-premises server rack inside a small office/datacenter building silhouette, glowing RED with a red warning triangle - clearly broken. Small white label under it: 「オンプレミス」
+- TOP CENTER: a large glowing blue CLOUD symbol, clean and bright, with the white word "Azure" written inside it. Small cyan label under the cloud: 「Azure Arc」
+- BOTTOM RIGHT: a glowing cyan AI neural-network sphere of connected nodes, with a laptop terminal beside it. Small white label under it: 「AIエージェント」
+- A single thick glowing cyan energy beam forms a big arch: it starts at the AI sphere on the right, rises UP into the Azure cloud, passes THROUGH the cloud, and comes DOWN onto the red server on the left, ending with bright arrow heads. Add small flowing light particles along the beam to show direction from AI to the cloud to the server. The beam must visibly pass through the cloud, not around it.
+- Where the beam lands on the server, show a GREEN check-mark badge glowing, meaning it got fixed.
 
-IMPORTANT: keep the TOP-RIGHT corner area (about 260x260 pixels) clean and empty dark background — a logo will be placed there later. Do not draw any logo, watermark, or text in the top-right corner.
+Text: place ONE bold Japanese headline across the middle of the image, very large heavy gothic sans-serif, white with strong dark outline and cyan glow, perfectly legible, on two short lines:
+line 1: 「壊れたオンプレを」
+line 2: 「AIがAzure経由で直す」
 
-Do not include any other text, no English words other than "Azure Arc", no small unreadable captions. The Japanese text must be perfectly legible and accurately rendered.
+Keep the TOP-RIGHT corner (about 300x300 pixels) clean, empty dark background - a logo will be placed there later. Do not draw any logo, watermark, brand mark, or extra text in the top-right corner. No other text anywhere. The Japanese text must be perfectly legible and accurately rendered.
