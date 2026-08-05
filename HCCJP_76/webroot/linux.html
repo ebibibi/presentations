@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>arclnx01 — オンプレミス Ubuntu Linux</title>
+<style>
+  :root{
+    --accent:#ff8a3d;        /* Linux/Ubuntu のアクセント (オレンジ) */
+    --accent-2:#e95420;
+    --bg-1:#1a0d06;
+    --bg-2:#3a1d0c;
+    --ok:#8bd450;
+    --ink:#fff3e9;
+    --muted:#d5a583;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  /* 背景は html にも敷く。body だけだとビューポートより短いときに地の白が出る */
+  html,body{min-height:100%}
+  /* キャンバス全体を暗色で塗る。ビューポートより文書が少し高いときに地の白が覗くのを防ぐ */
+  html{background-color:#1a0d06;background-image:linear-gradient(160deg,var(--bg-1) 0%,var(--bg-2) 100%);overflow:hidden}
+  body{min-height:100vh;
+    font-family:"Ubuntu","Yu Gothic UI","Hiragino Sans",system-ui,sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(1200px 700px at 12% -10%, rgba(255,138,61,.30), transparent 60%),
+      radial-gradient(900px 600px at 100% 110%, rgba(233,84,32,.38), transparent 60%),
+      linear-gradient(160deg,var(--bg-1) 0%,var(--bg-2) 100%);
+    display:flex;align-items:center;justify-content:center;
+    padding:4vmin;overflow:hidden;
+  }
+  body::after{
+    content:"";position:fixed;inset:0;pointer-events:none;
+    background:repeating-linear-gradient(180deg,rgba(255,255,255,.035) 0 1px,transparent 1px 4px);
+    mix-blend-mode:overlay;
+  }
+  .card{
+    position:relative;z-index:1;width:min(1100px,96vw);
+    background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02));
+    border:1px solid rgba(255,138,61,.4);
+    border-radius:28px;padding:clamp(28px,4.5vmin,56px);
+    box-shadow:0 40px 120px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,255,255,.12);
+    backdrop-filter:blur(6px);
+  }
+  .top{display:flex;align-items:center;gap:clamp(16px,2.4vmin,28px);flex-wrap:wrap}
+  /* Ubuntu の "circle of friends" を模した円環 (画像を使わず CSS だけで描く) */
+  .logo{
+    width:clamp(64px,9vmin,104px);aspect-ratio:1;flex:none;position:relative;
+    border-radius:50%;border:clamp(7px,1.1vmin,12px) solid var(--accent-2);
+    filter:drop-shadow(0 12px 26px rgba(255,138,61,.45));
+  }
+  .logo i{position:absolute;width:30%;aspect-ratio:1;border-radius:50%;background:var(--accent);
+    box-shadow:0 0 0 clamp(3px,.5vmin,5px) var(--bg-1)}
+  .logo i:nth-child(1){top:-18%;left:35%}
+  .logo i:nth-child(2){bottom:-6%;left:-12%}
+  .logo i:nth-child(3){bottom:-6%;right:-12%}
+  .os{font-size:clamp(34px,6.4vmin,76px);font-weight:800;letter-spacing:-.02em;line-height:1.05}
+  .os small{display:block;font-size:.42em;font-weight:600;color:var(--accent);letter-spacing:.28em;margin-bottom:.35em}
+  .place{
+    margin-top:clamp(18px,2.6vmin,30px);
+    display:inline-flex;align-items:center;gap:.6em;
+    font-size:clamp(15px,2.1vmin,24px);font-weight:700;
+    padding:.55em 1.1em;border-radius:999px;
+    background:rgba(255,138,61,.16);border:1px solid rgba(255,138,61,.55);
+  }
+  .place b{color:var(--accent)}
+  .status{
+    margin-top:clamp(20px,3vmin,34px);display:flex;align-items:center;gap:.7em;
+    font-size:clamp(26px,4.6vmin,54px);font-weight:800;color:var(--ok);letter-spacing:.02em;
+  }
+  .dot{width:.62em;height:.62em;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 rgba(139,212,80,.7);animation:pulse 1.8s infinite}
+  @keyframes pulse{70%{box-shadow:0 0 0 .75em rgba(139,212,80,0)}100%{box-shadow:0 0 0 0 rgba(139,212,80,0)}}
+  .grid{
+    margin-top:clamp(22px,3.4vmin,38px);
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:clamp(12px,1.8vmin,20px);
+  }
+  .item{background:rgba(0,0,0,.32);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:clamp(14px,2vmin,22px)}
+  .item span{display:block;font-size:clamp(11px,1.35vmin,14px);letter-spacing:.18em;color:var(--muted);text-transform:uppercase}
+  .item strong{display:block;margin-top:.35em;font-size:clamp(18px,2.6vmin,30px);font-weight:700}
+  .foot{
+    margin-top:clamp(22px,3.2vmin,36px);padding-top:clamp(14px,2vmin,22px);
+    border-top:1px solid rgba(255,255,255,.12);
+    display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;
+    color:var(--muted);font-size:clamp(12px,1.6vmin,17px);
+  }
+  .clock{font-variant-numeric:tabular-nums;color:var(--ink);font-weight:700}
+</style>
+</head>
+<body>
+  <main class="card">
+    <div class="top">
+      <div class="logo" aria-hidden="true"><i></i><i></i><i></i></div>
+      <h1 class="os"><small>ON-PREMISES SERVER</small>Ubuntu 24.04 LTS</h1>
+    </div>
+
+    <div class="place">これは <b>オンプレミス</b> で動いている <b>Linux</b> サーバーです</div>
+
+    <div class="status"><span class="dot"></span>SERVICE ONLINE</div>
+
+    <div class="grid">
+      <div class="item"><span>Hostname</span><strong>arclnx01</strong></div>
+      <div class="item"><span>Web Server</span><strong>nginx</strong></div>
+      <div class="item"><span>Address</span><strong>10.10.0.41</strong></div>
+      <div class="item"><span>Azure Arc</span><strong>Connected</strong></div>
+    </div>
+
+    <div class="foot">
+      <div>HCCJP 第76回 — オンプレのサーバー、壊します。直すのはAIです。</div>
+      <div class="clock" id="clock">--:--:--</div>
+    </div>
+  </main>
+<script>
+  // 秒針が動いていれば「今この瞬間に生きている」ことが一目で分かる (静止画との区別)
+  const pad = n => String(n).padStart(2,'0');
+  const tick = () => {
+    const d = new Date();
+    document.getElementById('clock').textContent =
+      `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}  ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  };
+  tick(); setInterval(tick, 1000);
+</script>
+</body>
+</html>
