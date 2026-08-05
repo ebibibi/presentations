@@ -82,7 +82,7 @@ style: |
 <!-- TODO
 - 第74回「コードで建てる検証環境」で作った Nested Hyper-V ラボの構成図
 - Windows Server / Linux が Arc に繋がっている状態を Azure ポータルで見せる
-- 監視ダッシュボード（今は緑）を先に見せておく ← 後で赤くなるので対比が効く
+- Azure Monitor / Application Insights の「可用性」（今は緑）を先に見せておく ← 後で赤くなるので対比が効く
 -->
 
 ---
@@ -125,7 +125,8 @@ azcmagent connect --resource-group rg-arc-lab \
 | **任意コマンドを流す** | **Run Command** ← 今日の主役 |
 | 対話的に入る | SSH over Arc |
 | 構成を宣言して強制する | Machine Configuration |
-| ログ・メトリクスを見る | Azure Monitor / AMA |
+| Webの死活を監視する | Azure Monitor / Application Insights |
+| OSのログ・メトリクスを見る | Azure Monitor Agent (AMA) |
 | パッチを当てる | Azure Update Manager |
 
 **入口が全部 `az` に統一されている＝AIエージェントがそのまま手を持てる**
