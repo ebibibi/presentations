@@ -111,12 +111,28 @@ Nested Hyper-V ラボの L2 を Azure Arc に接続済み。どちらも**動い
 環境の再構築は `hyperv-nestlab` で `.\bootstrap.ps1 -L1 l1\standard-host.yml -L2 l2\arc-demo.yml`。
 ページの再配布は `webroot/deploy.sh`（Arc の Run Command 経由）。
 
+### 監視・復旧の流れ
+
+専用ダッシュボードは作らず、**Azure Monitor / Application Insights の標準「可用性」画面**を使う。
+オンプレ側にはパブリックIPやインバウンド開放を持たせず、Cloudflare Tunnel がアウトバウンドHTTPSで
+Webサイトを公開する。Standard availability test が HTTP 200 とページ固有文字列を5分間隔で検証し、
+失敗をAzure Monitorアラートとして赤表示する。AIはAzure Monitorの証拠を読み、Azure Arc Run Commandで
+調査・復旧し、同じ可用性テストが緑へ戻るところまでを一続きで見せる。
+
+ArcのConnected Machine heartbeatだけでは、切断判定に通常15〜30分かかるためWeb障害検知には使わない。
+Standard availability testの検出目安は**停止から0〜5分＋アラート処理時間**。デモ用は日本1拠点・1失敗で
+発報させるが、本番運用ではMicrosoft推奨の5拠点中3拠点失敗などへ強める。
+
+検証用スクリプトとAzure構成は [`monitoring/`](monitoring/) に置く。Standard testは実行回数課金なので、
+有効化前に課金承認を取る。
+
 ## 参考リンク
 
 - [Azure Arc-enabled servers ドキュメント](https://learn.microsoft.com/azure/azure-arc/servers/)
 - [Run Command（Arc対応サーバー）](https://learn.microsoft.com/azure/azure-arc/servers/run-command)
 - [SSH access to Azure Arc-enabled servers](https://learn.microsoft.com/azure/azure-arc/servers/ssh-arc-overview)
 - [Machine Configuration](https://learn.microsoft.com/azure/governance/machine-configuration/overview)
+- [Application Insights 可用性テスト](https://learn.microsoft.com/azure/azure-monitor/app/availability)
 - [第74回：コードで建てる検証環境](https://hybridcloud.connpass.com/event/396455/)
 
 ## 視聴方法
