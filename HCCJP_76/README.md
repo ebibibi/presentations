@@ -98,6 +98,19 @@ Azure Local、Azure Arc、Windows Server関連の最新情報をお見逃しな�
 
 > 💡 難易度「難」を1つは混ぜたい。**症状と原因が一致しない障害**ほど、AIが"考えている"ことが伝わる。
 
+## デモ環境の状態（2026-08-05 時点）
+
+Nested Hyper-V ラボの L2 を Azure Arc に接続済み。どちらも**動いている Web サイト**を持っている
+（当日はこれを壊す）。ページの実体と配布スクリプトは [`webroot/`](webroot/) にある。
+
+| VM | OS / Web | IP | Azure Arc |
+|---|---|---|---|
+| arcwin01 | Windows Server 2025 / IIS | 10.10.0.51 | Connected（rg-hccjp76-arc / japaneast） |
+| arclnx01 | Ubuntu 24.04 / nginx | 10.10.0.41 | Connected（同上） |
+
+環境の再構築は `hyperv-nestlab` で `.\bootstrap.ps1 -L1 l1\standard-host.yml -L2 l2\arc-demo.yml`。
+ページの再配布は `webroot/deploy.sh`（Arc の Run Command 経由）。
+
 ## 参考リンク
 
 - [Azure Arc-enabled servers ドキュメント](https://learn.microsoft.com/azure/azure-arc/servers/)
