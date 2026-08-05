@@ -126,6 +126,11 @@ Standard availability testの検出目安は**停止から0〜5分＋アラー�
 検証用スクリプトとAzure構成は [`monitoring/`](monitoring/) に置く。Standard testは実行回数課金なので、
 有効化前に課金承認を取る。
 
+**2026-08-05実機検証済み**: Linux / Windowsとも正常時100% → サービス停止後0% → Azure Monitor
+Active Alert（Sev1 / Fired）→ Arc Run Commandで復旧 → 100% → Alert Resolvedまで通った。停止から
+アラート発火はLinux 6分12秒、Windows 5分27秒。検証後は一時監視リソースと公開Tunnelをすべて削除し、
+両ArcマシンConnected・nginx/W3SVC稼働・ローカルHTTP 200へ戻した。詳細は [`monitoring/`](monitoring/)。
+
 ## 参考リンク
 
 - [Azure Arc-enabled servers ドキュメント](https://learn.microsoft.com/azure/azure-arc/servers/)

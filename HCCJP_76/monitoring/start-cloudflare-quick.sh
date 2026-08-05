@@ -15,6 +15,7 @@ fi
 
 systemctl stop "$UNIT" 2>/dev/null || true
 systemctl reset-failed "$UNIT" 2>/dev/null || true
+started_at="$(date --utc +'%Y-%m-%d %H:%M:%S')"
 
 systemd-run \
   --unit="${UNIT%.service}" \
@@ -23,14 +24,16 @@ systemd-run \
   "$CLOUDFLARED" tunnel --no-autoupdate --url http://127.0.0.1:80 >/dev/null
 
 for _ in $(seq 1 30); do
-  url="$({ journalctl -u "$UNIT" --no-pager -o cat 2>/dev/null || true; } \
+  url="$({ journalctl -u "$UNIT" --since "$started_at" --no-pager -o cat 2>/dev/null || true; } \
     | sed -n 's|.*\(https://[a-z0-9-]*\.trycloudflare\.com\).*|\1|p' \
     | tail -1)"
   if [[ -n "$url" ]]; then
-    printf 'PUBLIC_URL=%s\n' "$url"
-    curl -fsS -o /dev/null -w 'PUBLIC_HTTP=%{http_code}\n' "$url"
-    systemctl is-active "$UNIT"
-    exit 0
+    if http_status="$(curl -fsS -o /dev/null -w '%{http_code}' "$url")"; then
+      printf 'PUBLIC_URL=%s\n' "$url"
+      printf 'PUBLIC_HTTP=%s\n' "$http_status"
+      systemctl is-active "$UNIT"
+      exit 0
+    fi
   fi
   sleep 2
 done

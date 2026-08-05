@@ -26,9 +26,10 @@ The HCCJP 76 demo uses Azure-native monitoring instead of a custom dashboard.
 
 ## Temporary Quick Tunnel (experiment only)
 
-`start-cloudflare-quick.sh` installs `cloudflared` on `arclnx01` when necessary and starts a
-temporary `trycloudflare.com` URL as a transient systemd service. Its generated hostname changes
-after restart and has no production SLA, so use it only to prove the monitoring path.
+The `.sh` helpers manage `arclnx01` through a transient systemd service. The `.ps1` helpers manage
+`arcwin01` through a SYSTEM scheduled task. Both install `cloudflared` when necessary and start a
+temporary `trycloudflare.com` URL. Generated hostnames change after restart and have no production
+SLA, so use them only to prove the monitoring path.
 
 Send the script through Azure Arc Run Command. Base64 is used deliberately: passing a multiline
 script directly through Bash, Azure CLI, ARM, and the guest handler can collapse quoting or
@@ -73,7 +74,9 @@ az bicep build --file main.bicep
 az deployment group what-if \
   --resource-group rg-hccjp76-arc \
   --template-file main.bicep \
-  --parameters endpointUrl='https://example.trycloudflare.com'
+  --parameters \
+    linuxEndpointUrl='https://linux-example.trycloudflare.com' \
+    windowsEndpointUrl='https://windows-example.trycloudflare.com'
 ```
 
 After explicit cost approval, enable the test:
@@ -82,9 +85,40 @@ After explicit cost approval, enable the test:
 az deployment group create \
   --resource-group rg-hccjp76-arc \
   --template-file main.bicep \
-  --parameters endpointUrl='https://example.trycloudflare.com' monitoringEnabled=true
+  --parameters \
+    linuxEndpointUrl='https://linux-example.trycloudflare.com' \
+    windowsEndpointUrl='https://windows-example.trycloudflare.com' \
+    monitoringEnabled=true
 ```
 
 The experiment uses one Japan test location and alerts after one failed location to minimize live
 demo latency. A production configuration should use at least five locations and normally require
 three failures, as recommended by Microsoft.
+
+Delete only these temporary monitoring resources while preserving the resource group and Arc
+machines:
+
+```bash
+./cleanup-azure.sh
+```
+
+## Verified experiment (2026-08-05 JST)
+
+Both endpoints were monitored from Azure Monitor Japan East with a 300-second Standard test.
+
+| Event | Linux / nginx | Windows / IIS |
+|---|---:|---:|
+| Healthy baseline | 17:46, 100% | 17:46, 100% |
+| Service stopped through Arc Run Command | 17:51:03 | 17:51:46 |
+| Public endpoint response after stop | HTTP 502 | HTTP 502 |
+| Failed availability sample | 17:55, 0% | 17:55, 0% |
+| Active Azure Monitor alert fired | 17:57:15 | 17:57:13 |
+| Stop-to-alert duration | **6m 12s** | **5m 27s** |
+| Service restored through Arc Run Command | 17:58:59 | 17:59:33 |
+| Healthy availability sample | 18:00, 100% | 18:00, 100% |
+| Alert auto-resolved | 18:04:15 | 18:04:15 |
+
+After validation, all six temporary Azure monitoring resources were deleted. Both Quick Tunnels,
+scheduled jobs, downloaded `cloudflared` binaries, and temporary files were also removed. Final
+state: both Arc machines `Connected`; nginx and W3SVC running; local HTTP 200 on both servers; no
+Monitor/OperationalInsights resources remaining in `rg-hccjp76-arc`.

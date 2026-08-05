@@ -1,13 +1,13 @@
-@description('Public HTTP or HTTPS endpoint exposed by Cloudflare Tunnel.')
-param endpointUrl string
+@description('Public Linux HTTP or HTTPS endpoint exposed by Cloudflare Tunnel.')
+param linuxEndpointUrl string
 
-@description('Unique text that must appear in a healthy response.')
-param expectedContent string = 'Ubuntu 24.04 LTS'
+@description('Public Windows HTTP or HTTPS endpoint exposed by Cloudflare Tunnel.')
+param windowsEndpointUrl string
 
 @description('Azure region for the workspace and Application Insights resource.')
 param location string = 'japaneast'
 
-@description('Enable paid Standard availability test executions and its metric alert.')
+@description('Enable paid Standard availability test executions and metric alerts.')
 param monitoringEnabled bool = false
 
 @description('Optional Action Group resource ID. Leave empty when only the portal view is needed.')
@@ -16,7 +16,18 @@ param actionGroupId string = ''
 var prefix = 'hccjp76'
 var workspaceName = 'log-${prefix}'
 var appInsightsName = 'appi-${prefix}-web'
-var webTestName = '${prefix}-arclnx01-web'
+var targets = [
+  {
+    name: 'arclnx01'
+    endpointUrl: linuxEndpointUrl
+    expectedContent: 'Ubuntu 24.04 LTS'
+  }
+  {
+    name: 'arcwin01'
+    endpointUrl: windowsEndpointUrl
+    expectedContent: 'Windows Server 2025'
+  }
+]
 
 resource workspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
   name: workspaceName
@@ -45,29 +56,29 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   }
 }
 
-resource webTest 'Microsoft.Insights/webtests@2022-06-15' = {
-  name: webTestName
+resource webTests 'Microsoft.Insights/webtests@2022-06-15' = [for target in targets: {
+  name: '${prefix}-${target.name}-web'
   location: location
   kind: 'standard'
   tags: {
     'hidden-link:${appInsights.id}': 'Resource'
   }
   properties: {
-    Name: webTestName
-    Description: 'HCCJP 76 on-premises nginx availability through Cloudflare Tunnel'
+    Name: '${prefix}-${target.name}-web'
+    Description: 'HCCJP 76 on-premises ${target.name} availability through Cloudflare Tunnel'
     Enabled: monitoringEnabled
     Frequency: 300
     Timeout: 30
     Kind: 'standard'
     RetryEnabled: false
-    SyntheticMonitorId: webTestName
+    SyntheticMonitorId: '${prefix}-${target.name}-web'
     Locations: [
       {
         Id: 'apac-jp-kaw-edge'
       }
     ]
     Request: {
-      RequestUrl: endpointUrl
+      RequestUrl: target.endpointUrl
       HttpVerb: 'GET'
       FollowRedirects: true
       ParseDependentRequests: false
@@ -75,36 +86,36 @@ resource webTest 'Microsoft.Insights/webtests@2022-06-15' = {
     ValidationRules: {
       ExpectedHttpStatusCode: 200
       IgnoreHttpStatusCode: false
-      SSLCheck: startsWith(toLower(endpointUrl), 'https://')
+      SSLCheck: startsWith(toLower(target.endpointUrl), 'https://')
       ContentValidation: {
-        ContentMatch: expectedContent
+        ContentMatch: target.expectedContent
         IgnoreCase: false
         PassIfTextFound: true
       }
     }
   }
-}
+}]
 
-resource availabilityAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
-  name: '${webTestName}-failed'
+resource availabilityAlerts 'Microsoft.Insights/metricAlerts@2018-03-01' = [for (target, index) in targets: {
+  name: '${prefix}-${target.name}-web-failed'
   location: 'global'
   tags: {
     'hidden-link:${appInsights.id}': 'Resource'
-    'hidden-link:${webTest.id}': 'Resource'
+    'hidden-link:${webTests[index].id}': 'Resource'
   }
   properties: {
-    description: 'The HCCJP 76 on-premises web endpoint failed its Azure Monitor availability test.'
+    description: 'The HCCJP 76 on-premises ${target.name} web endpoint failed its Azure Monitor availability test.'
     severity: 1
     enabled: monitoringEnabled
     scopes: [
-      webTest.id
+      webTests[index].id
       appInsights.id
     ]
     evaluationFrequency: 'PT1M'
     windowSize: 'PT5M'
     criteria: {
       'odata.type': 'Microsoft.Azure.Monitor.WebtestLocationAvailabilityCriteria'
-      webTestId: webTest.id
+      webTestId: webTests[index].id
       componentId: appInsights.id
       failedLocationCount: 1
     }
@@ -114,8 +125,8 @@ resource availabilityAlert 'Microsoft.Insights/metricAlerts@2018-03-01' = {
       }
     ]
   }
-}
+}]
 
 output applicationInsightsResourceId string = appInsights.id
-output webTestResourceId string = webTest.id
+output webTestResourceIds array = [for (_, index) in targets: webTests[index].id]
 output standardTestBillingEnabled bool = monitoringEnabled
