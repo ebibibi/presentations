@@ -1,46 +1,50 @@
-# Content plan
+# Content plan — non-technical value story
 
 ## Audience starting point
 
 Knows:
 
-- Claude Code or Codex can work on a local repository.
-- Discord and Teams can host bots.
+- Claude Code and Codex are AI tools that can do development work.
+- Discord and Microsoft Teams are chat applications.
 
-Does not yet know:
+Does not need to know:
 
-- Why a Teams app manifest is only one part of the deployment.
-- Why the agent host should not be the public Bot Framework receiver.
-- What AG-UI adds beside native CLI backends.
-- Which Teams/Discord differences remain in v4.
+- Azure Bot, Storage Queue, ActivityPuller, SSE, or internal contracts.
+- The implementation details of frontend and backend abstractions.
+
+## One-sentence promise
+
+Ebi Agent Chat Relay lets people use their existing Claude and ChatGPT subscriptions from the chat app they already use, while choosing Claude Code or Codex for each job.
 
 ## Slide questions and on-screen answers
 
-1. What shipped? → v4 connects two chat frontends to four agent backends.
-2. How is v4 structured? → Frontend and backend are independent axes.
-3. Why is Teams setup hard? → The recommended path needs more than a Teams app package.
-4. What is the key design rule? → Do not expose the agent host.
-5. How does the message move? → Public receiver only verifies/enqueues; private ActivityPuller works outbound.
-6. What combinations work? → Discord/Teams × Claude Code CLI/Codex CLI/local OpenAI-compatible `/v1/responses`/AG-UI HTTP/SSE.
-7. What must an operator create? → Follow the eight official setup sections from the Entra app through three-stage validation.
-8. Where is the real security boundary? → The entire data path, not only the tenant containing the app registration.
-9. What does AG-UI mean here? → Standard HTTP/SSE events become the same internal stream.
-10. What is not yet equal? → Teams text commands/file consent and advanced AG-UI features remain narrower.
-11. Is it proven on real components? → 2,536 tests plus Teams→real Codex→Teams with Discord still live.
-12. What should viewers do? → Read the release and setup guide, then choose the deployment boundary.
+1. What is this? → A relay from everyday chat to AI agents.
+2. What did we build? → Ask Claude Code or Codex to work from Discord or Teams.
+3. Why use the CLI subscriptions? → Reuse monthly Claude/ChatGPT plans; frequent use can be more economical than direct pay-per-use API billing.
+4. Can I change AI midway? → On Discord, switch Claude Code and Codex while handing the text conversation across automatically.
+5. Why have two AIs? → Use either one per task, and keep both available.
+6. Where can I talk to it? → Choose Discord for personal/community use or Teams for organizational use.
+7. What can I do from chat? → Request work, run parallel sessions, answer prompts, and receive results.
+8. Does Teams really work? → A real Teams message reached a real Codex session and returned to Teams while Discord stayed online.
+9. Is Teams setup instant? → It needs Microsoft 365/Azure administrator setup once; users then talk from Teams normally.
+10. What changed in v4? → Monthly AI plans, selectable AI, and selectable chat entrance are now one product.
 
 ## Term introduction order
 
-- Frontend: slide 2, the chat surface where a person talks.
-- Backend: slide 2, the agent that performs the work.
-- Public receiver: slide 3, the internet-reachable verifier/enqueuer.
-- ActivityPuller: slide 5, the private outbound queue worker.
-- AG-UI: slide 6, an HTTP/SSE backend.
-- Data boundary: slide 8, every service through which content passes.
+- AI agent: slide 1, an AI that can inspect files and carry out work.
+- Relay: slide 2, the bridge between chat and the selected AI.
+- Backend: avoided on the main slides; described as “which AI does the work.”
+- API: slide 3, only as the alternative pay-per-use path.
 
 ## Takahashi-style beats
 
-- Slide 2: “2つのFrontendと4つのBackend”
-- Slide 4: “Agent Hostを公開しない”
-- Slide 8: “Tenant登録 ≠ Tenant内処理”
-- Slide 12: “入口とAgentを、分けて選ぶ”
+- Slide 2: “チャットから、AIに仕事を頼む”
+- Slide 3: “月額プランを活かす”
+- Slide 4: “会話の途中で、AIを交代”
+- Slide 10: “選べるAI。選べるチャット。”
+
+## Visual rule
+
+- Dark navy background, white text, Microsoft-like blue as the single primary accent.
+- Orange is used only for the monthly-subscription highlight and final call to action.
+- No rainbow coding by component; the story is about user value, not system topology.

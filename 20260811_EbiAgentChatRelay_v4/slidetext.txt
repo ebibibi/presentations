@@ -1,187 +1,91 @@
 --- Slide 1 ---
-AIエージェントをTeamsへ
-Ebi Agent Chat Relay v4.0.0
-Discord＋Teams × Claude Code CLI・Codex CLI・Local OpenAI互換・AG-UI
-Source: https://github.com/ebibibi/ebi-agent-chat-relay/releases/tag/v4.0.0
-2026年8月11日 ｜ ebisuda.net
+AIを、いつものチャットから
+Ebi Agent Chat Relay v4.0.0｜DiscordとTeamsに対応
+月額プラン × 選べるAI × Discord／Teams
+Source: https://github.com/ebibibi/ebi-agent-chat-relay/releases/tag/v4.0.0 / 2026年8月11日 ｜ ebisuda.net
 --- Slide 2 ---
 01
-V4.0.0 STRUCTURE
-2つのFrontendと
-4つのBackend
-会話する場所と、仕事をするAgentを別々に選べる基盤です。
+WHAT WE BUILT
+何ができるものを作ったのか？
+チャットから、AIに仕事を頼む
+DiscordやTeamsと、別の環境で動くClaude CodeやCodexをつなぎます。依頼も結果も、いつものチャットです。
 --- Slide 3 ---
 02
-TWO INDEPENDENT AXES
-FrontendとBackendを分けた
-Frontend｜人が話す場所
-Discord
-Microsoft Teams
-
-人とAgentをつなぐ会話の入口
-Backend｜実際に働くAgent
-Claude Code CLI
-OpenAI Codex CLI
-Local OpenAI互換 /v1/responses
-AG-UI HTTP/SSE
-2つのFrontendから、4つのBackendを選べる
+VALUE 1
+使った量に応じて料金が増える方式だけではない
+月額サブスクリプションを活かす
+Claude Code
+Claude Pro／Maxの契約で利用 / PC上でAIに作業させる公式ツール
+OpenAI Codex
+ChatGPT Plus／Pro／Businessで利用 / PC上でAIに作業させる公式ツール
+各プランの利用条件・上限の範囲で使える
 --- Slide 4 ---
 03
-WHY TEAMS IS HARD
-推奨構成はTeams app packageだけではない
-1  Entra app
-application
-2  Azure Bot
-Bot resource
-3  Storage Queue
-transport
-4  Public Receiver
-検証＋enqueue
-5  Private Host
-outbound pull
-推奨経路は、公開受信とprivate実行をQueueで分離
+VALUE 2
+どちらか一つに決めなくていい
+Discordなら、会話の途中でClaude Code ⇄ Codex
+仕事を担当するツールを交代。会話履歴の一部をテキストで渡すので、手作業の要約やコピー＆ペーストは不要です。
 --- Slide 5 ---
 04
-THE DESIGN RULE
-公開入口は必要。でも
-Agent Hostを公開しない
-repository access・agent credentials・Agent実行能力を、公開受信口から分離する。
+MULTIPLE BACKENDS
+仕事を担当するAIツールを選べる
+Claude Code
+この会話を担当 / 月額プランを活用
+Codex
+途中から交代も可能 / 月額プランを活用
+Discordでは会話ごとに切替可能。ほかのAIへつなぐ拡張性もあります
 --- Slide 6 ---
 05
-OUTBOUND-ONLY PRIVATE HOST
-Public側は検証とenqueueだけ
-Teams
-ユーザー
-→
-Bot Framework
-Activity配送
-→
-Public Receiver
-検証＋enqueue
-→
-Storage Queue
-Activity待機
-→
-ActivityPuller
-外向きpull
-→
-Selected Backend
-Agent実行
-Public Receiver：bot client secretなし／Agent起動不可
-　Private Host：Teams listenerを公開しない
-復路：selected backend → Bot Connector → Teams
+VALUE 3
+話しかける場所も選べる
+Discord
+個人開発・コミュニティ / スマホから気軽に依頼 / 会話ごとにスレッドを分ける
+Microsoft Teams
+組織で普段使うチャット / 仕事の会話からそのまま依頼 / 普段のチャットから文字で頼める
+自分や組織が、普段いる場所から使える
 --- Slide 7 ---
 06
-2 × 4 COMBINATIONS
-同じRelayで8通り
-Discord
-Frontend
-Claude Code CLI
-✓
-Codex CLI
-✓
-Local OpenAI互換
-/v1/responses
-✓
-AG-UI
-✓
-Microsoft Teams
-Frontend
-Claude Code CLI
-✓
-Codex CLI
-✓
-Local OpenAI互換
-/v1/responses
-✓
-AG-UI
-✓
-AG-UI＝HTTP/SSEで接続するBackend
+FROM CHAT TO RESULT
+チャットで頼めること
+1  依頼する
+スマホやPCから / やってほしいことを書く
+→
+2  AIが作業
+ファイルを調べる / 実装・調査・レビュー
+→
+3  途中で確認
+必要に応じて / 追加の指示を送る
+→
+4  結果を受け取る
+完了報告と結果が / 同じ会話へ戻る
+Discordでは、複数のスレッドで複数の仕事を同時に進められます
 --- Slide 8 ---
 07
-SETUP MAP
-Teams導入ガイドは8セクション
-1  Entra app
-2  Azure Bot
-3  Storage Queue
-4  Public Receiver
-5  Private session host
-6  Teams app package
-7  Upload & consent
-8  3段階で検証
-詳細手順：docs/teams-setup.md
+PROVEN ON REAL TEAMS
+実際のTeamsとCodexをつないで検証
+Microsoft Teams
+実際のチャットから依頼
+→
+Ebi Agent Chat Relay
+依頼を選んだAIへ届ける
+→
+Codex
+実際のCodexが依頼を処理しTeamsへ返信
+Discordを動かしたまま、Teams → Codex → Teamsの往復を確認
 --- Slide 9 ---
 08
-REAL DATA BOUNDARY
-Entra appを顧客tenantに置いても
-Tenant登録 ≠ Tenant内処理
-Bot Framework・Receiver・Queue・Private Host・Backendまでがデータ経路。
+TEAMS SETUP
+Teams版は、組織側で導入設定が必要
+Teams管理者
+組織のアプリとして登録 / 利用者へ配布できる状態にする
+中継環境
+TeamsとAIを安全につなぐ / AIを動かす環境とは分けて置く
+利用者
+セットアップ後は / いつものTeamsから話すだけ
+詳しい導入手順はnote記事と公式Teams Setup Guideで解説
 --- Slide 10 ---
 09
-AG-UI BACKEND
-HTTP/SSE Agentも同じstreamへ
-共通eventへ変換
-Run lifecycle
-Text streaming
-Reasoning
-Tool call / result
-境界を明示
-URL credential拒否
-Redirect拒否
-SSE frame上限
-Tokenを子CLIへ渡さない
-AG-UI eventをRelayの共通streamへ変換
---- Slide 11 ---
-10
-HONEST LIMITS
-v4でも同じではない部分
-Teams commands
-/backend等は通常queue経路でcommand dispatchしない
-→ configured/global Backend
-Teams files
-通常private queue経路は
-file-consent invokeをbridgeしない
-AG-UI advanced
-Durable HITL resume
-state/activity
-protobuf/client tools
-は対応機能として未提示
-未対応を、対応済みのように見せない
---- Slide 12 ---
-11
-PROVEN ON REAL COMPONENTS
-Contractだけでなく実物で往復
-2,536
-local tests
-ruff成功／pyright 0 errors
-CI
-Python 3.12／3.13
-CodeQL／merge-after
-E2E
-Teams → Azure relay
-→ Real Codex → Teams
-本番検証でもDiscordとTeamsが同時稼働
---- Slide 13 ---
-12
-NEXT STEP
-選ぶのはBotの見た目ではなく
-入口とAgentを、分けて選ぶ
-Release NotesとTeams Setup Guideから、自分のdeployment境界を決める。
---- Slide 14 ---
-13
-TRY AND FOLLOW
-v4を試す・続きを見る
-GitHub Release
-github.com/ebibibi/
-ebi-agent-chat-relay/
-releases/tag/v4.0.0
-
-Release Notes
-Teams Setup Guide
-YouTube／note
-高評価・チャンネル登録
-通知オン
-
-noteで
-設計と導入手順を解説
-Ebi Agent Chat Relay v4.0.0 — MIT License
+V4.0.0
+Ebi Agent Chat Relay v4で実現したこと
+選べるAIツール。選べるチャット。
+月額プランを活用。Discordは会話ごとに担当ツールを切替。Teamsは組織設定のツールを、普段のチャットから使う。

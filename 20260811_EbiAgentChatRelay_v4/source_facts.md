@@ -5,6 +5,10 @@ Primary source: https://github.com/ebibibi/ebi-agent-chat-relay/releases/tag/v4.
 - v4.0.0 was published on 2026-08-11.
 - Frontends: Discord and Microsoft Teams.
 - Backends: Claude Code CLI, OpenAI Codex CLI, local OpenAI-compatible `/v1/responses`, AG-UI HTTP/SSE.
+- The official CLIs can use existing subscriptions: Claude Code with Claude Pro/Max and Codex with ChatGPT Plus/Pro/Business. Direct API execution is not required for those two backends.
+- Discord supports `/backend` switching and per-thread overrides. When a live thread switches between Claude and Codex, the relay creates a bounded text-only handoff from the previous CLI transcript; no manual summary or copy/paste is required.
+- Multiple Discord threads can run independent AI sessions in parallel, including a mix of Claude Code and Codex across threads.
+- Discord messages create or continue a persistent thread-bound AI session, so users can send follow-up instructions in the same conversation.
 - All four backends are supported from both frontends.
 - The recommended Teams path is Teams/Bot Framework → public receiver → Azure Storage Queue → private ActivityPuller → selected backend → Bot Connector → Teams.
 - The public receiver verifies inbound identity and enqueues a bounded envelope. It has no bot client secret, repository access, or agent credentials and cannot run an agent.
@@ -26,6 +30,7 @@ Primary source: https://github.com/ebibibi/ebi-agent-chat-relay/releases/tag/v4.
 
 Supporting sources:
 
+- https://github.com/ebibibi/ebi-agent-chat-relay/blob/v4.0.0/README.md
 - https://github.com/ebibibi/ebi-agent-chat-relay/blob/v4.0.0/docs/teams-setup.md
 - https://github.com/ebibibi/ebi-agent-chat-relay/blob/v4.0.0/docs/backends.md
 - https://github.com/ebibibi/ebi-agent-chat-relay/blob/v4.0.0/docs/ARCHITECTURE.md
