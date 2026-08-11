@@ -1,0 +1,197 @@
+--- Slide 1 ---
+その『リソースURL』、何のURL？
+マネージドIDのトークン宛先を理解する
+Azure AI Search の例で腹落ち
+Source: https://learn.microsoft.com/ja-jp/connectors/custom-connectors/azure-active-directory-authentication / 2026年8月11日 ｜ ebisuda.net
+--- Slide 2 ---
+01
+WHY CONFUSING
+似たURLが3つ出てくる
+通信先 endpoint
+HTTPリクエストを送る住所 /  / https://myservice / .search.windows.net
+トークンの宛先
+アクセストークンを / 受け取るAPIの識別子 /  / https://search.azure.com
+Azure resource ID
+Azure上の個別リソース /  / /subscriptions/.../ / providers/Microsoft.Search/...
+名前が似ている。でも、役割はまったく違う。
+--- Slide 3 ---
+02
+THE ANSWER
+リソースURLは
+APIの住所ではない
+アクセストークンの『宛先』を指定する識別子
+--- Slide 4 ---
+03
+TOKEN FLOW
+Entra IDに『誰向けか』を伝える
+① 呼び出し元
+カスタムコネクタ / アプリ／マネージドID
+② Entra ID
+宛先を見て / トークンを発行
+③ Access Token
+aud = 対象API / API用の通行証
+④ API
+aud と権限を確認 / 一致すれば処理
+→
+→
+→
+リソースURLは ①→② で指定し、発行トークンの aud に反映される
+--- Slide 5 ---
+04
+AUDIENCE
+aud = この通行証を受け取ってよい相手
+ACCESS TOKEN / { /   "aud": "<対象API>", / }
+受信したAPIが確認
+aud が自分向け
+→ 次に権限を確認
+aud が別API向け
+→ この入口で拒否
+audの形式はトークン版やAPIで異なる。大切なのは『受信者』という役割。
+--- Slide 6 ---
+05
+THE LEARN EXAMPLE
+なぜ management.core.windows.net なのか？
+あのLearnは Azure Resource Manager API のチュートリアル
+サンプルが呼ぶAPI
+Azure Resource Manager / List all subscriptions
+Learn指定のリソースURL
+https://management / .core.windows.net/
+整理：この値は『Azure全般』ではなく、サンプルが対象にしたARM向け
+--- Slide 7 ---
+06
+ENDPOINT ≠ AUDIENCE
+通信先とトークンの宛先は
+違っていていい
+役割が違う。HTTPリクエストの通信先とは限らない。
+--- Slide 8 ---
+07
+ARM EXAMPLE
+ARMでは2つのURLが並ぶ
+現在のARM REST endpoint
+https://management / .azure.com/ /  / HTTPリクエストの通信先
+このLearnのOAuth resource
+https://management / .core.windows.net/ /  / トークン要求で指定
+現在のMI ARM例
+resource= / https://management / .azure.com/ /  / 別フローでは別表記
+補足：core.windows.net は classic管理APIでは実通信先にも使われた。推測で置換しない。
+--- Slide 9 ---
+08
+AZURE AI SEARCH
+検索するなら audience は Search API
+接続先 endpoint
+https://myservice / .search.windows.net /  / サービスごとに固有
+resource / audience
+https://search.azure.com /  / Search API全体を表す
+v2 scope
+https://search.azure.com/ / .default /  / CLI・MSAL等の要求形式
+3つは同じ文字列にするものではない
+--- Slide 10 ---
+09
+TWO PLANES
+『何をするか』で対象APIが変わる
+Management plane
+Searchサービスを作る・設定する /  / 呼ぶAPI：Azure Resource Manager / トークン：ARM向け
+Data plane
+インデックス内の文書を検索する /  / 呼ぶAPI：Azure AI Search / トークン：Search向け
+同じAzure AI Searchでも、操作の入口が違えばリソースURLも違う
+--- Slide 11 ---
+10
+RESOURCE OR SCOPE
+resource と scope は『要求時』の書式
+Entra v1系（ADAL）：resource
+resource / リソースURL /  / 対象APIの識別子を指定
+Searchの識別子
+https://search.azure.com /  / 末尾記号は入力欄の / 公式例に正確に合わせる
+Entra v2系（MSAL）：scope
+scope= / https://search.azure.com/ / .default
+resource / scope は要求側。aud は発行後の受信者。完全な同義語ではない。
+--- Slide 12 ---
+11
+DO NOT MIX
+3つの『リソース』を分離する
+endpoint
+通信先
+https://myservice.search.windows.net
+audience / resource
+トークンの宛先
+https://search.azure.com
+Azure resource ID
+RBACを付ける対象
+/subscriptions/.../providers/Microsoft.Search/...
+URLっぽいかどうかではなく、どの欄・どの処理で使う値かを見る
+--- Slide 13 ---
+12
+HOW TO FIND IT
+正しい値は『対象操作』から探す
+1
+何をする？
+作成・設定 / 検索・データ操作
+2
+どのAPI？
+ARM / Search / Storage…
+3
+トークン要求
+resource / scope の公式値
+4
+文字列をそのまま
+末尾 / と .default まで一致
+RBACの範囲は別物 → Azure resource ID。トークン要求と混ぜない。
+--- Slide 14 ---
+13
+TROUBLESHOOT
+失敗した場所で切り分ける
+400 / 401
+resource / audienceを / 公式値と正確に照合 / 末尾スラッシュも確認
+403 Search
+必要なRBACロールを確認 / 割り当て反映は / 最大10分かかる場合あり
+番号だけで断定しない
+レスポンス本文を見る / サービス固有の / 診断手順も確認
+エラー番号だけで断定せず、レスポンス本文とサービス固有の診断も見る。
+--- Slide 15 ---
+14
+MINIMUM EXAMPLE
+Azure AI Searchならこうつながる
+az account get-access-token --scope https://search.azure.com/.default
+↓
+GET https://myservice.search.windows.net/indexes('myindex')/docs?... / Authorization: Bearer <取得したアクセストークン>
+scope と endpoint が違う文字列でも、それが正しい組み合わせ
+--- Slide 16 ---
+15
+TAKEAWAY
+迷ったら問うのは
+誰向けの通行証？
+リソースURLは推測しない。対象APIの公式値をそのまま使う。
+--- Slide 17 ---
+16
+OFFICIAL SOURCES
+今回の正本
+カスタムコネクタのLearn
+learn.microsoft.com/connectors/custom-connectors/azure-active-directory-authentication
+アクセストークンのaud
+learn.microsoft.com/entra/identity-platform/access-tokens
+Access token claims
+learn.microsoft.com/entra/identity-platform/access-token-claims-reference
+Azure REST APIの基礎
+learn.microsoft.com/rest/api/gettingstarted/
+Searchキーレス接続
+learn.microsoft.com/azure/search/search-get-started-rbac
+Search REST API
+learn.microsoft.com/rest/api/searchservice/documents/search-get
+Search audience定数
+github.com/Azure/azure-sdk-for-net/.../SearchAudience.cs
+値や画面は更新されるため、実装時は最新の公式ページを再確認
+--- Slide 18 ---
+17
+OFFICIAL SOURCES
+補助ソース：値の正確性と切り分け
+Managed Identityトークン
+learn.microsoft.com/entra/identity/managed-identities-azure-resources/how-to-use-vm-token
+ADALとMSALの違い
+learn.microsoft.com/entra/msal/dotnet/how-to/differences-adal-msal-net
+Audienceの正確一致
+learn.microsoft.com/azure/logic-apps/authenticate-with-managed-identity
+SearchのManaged Identity
+learn.microsoft.com/azure/search/search-how-to-managed-identities
+SearchのRBAC診断
+learn.microsoft.com/azure/search/keyless-connections
+ARMとSearchでは、操作・認証フロー・クラウドに合う値を選ぶ

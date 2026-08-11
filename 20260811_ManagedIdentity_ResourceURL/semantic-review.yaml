@@ -1,0 +1,21 @@
+reviewed_sha256: b29e464ba74abd5ed1b2a1c36c61c6884ec71eb72caadfbba7b38ca6965695a5
+reviewed_file: マネージドIDのリソースURLを理解する.pptx
+reviewed_at: 2026-08-11
+checks:
+  source_faithfulness:
+    status: pass
+    evidence: ARM、Microsoft Entra、Azure AI Searchの公式資料と照合し、URL・audience・scopeの対応に矛盾なし。
+  visual_integrity:
+    status: pass
+    evidence: 全18枚をレンダリングし、文字切れ、重なり、スライド外配置がないことを確認。
+  narrative_flow:
+    status: pass
+    evidence: 疑問提示、用語分離、ARMの理由、Searchへの適用、トラブルシュートの順で一貫。
+  beginner_clarity:
+    status: pass
+    evidence: endpoint、audience/resource、Azure resource IDを別概念として図と具体例で説明。
+  presenter_usability:
+    status: pass
+    evidence: 各スライドの主張を一つに絞り、画面上で読み上げやすい文量に調整。
+overall: pass
+raw_evidence: semantic-review-current.md

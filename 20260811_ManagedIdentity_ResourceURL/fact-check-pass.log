@@ -1,0 +1,426 @@
+OpenAI Codex v0.146.0
+--------
+workdir: /home/ebi/wt-1536588859213619210
+model: gpt-5.6-sol
+provider: openai
+approval: never
+sandbox: read-only
+reasoning effort: high
+reasoning summaries: none
+session id: 019fef1e-6223-7ac0-8c61-d4580970f6b2
+--------
+user
+最終ファクトチェック。公式ソース抽出事実のみを正として全スライドを検証。問題がなければ「事実誤認なし」。
+# 公式ソース抽出事実
+
+取得日: 2026-08-11
+
+## 1. Power Platform カスタムコネクタのチュートリアル
+
+Source: https://learn.microsoft.com/ja-jp/connectors/custom-connectors/azure-active-directory-authentication
+
+- このチュートリアルは、Azure Resource Manager API の1つをカスタムコネクタとして登録し、Power Automateから接続する例である。
+- セキュリティ設定の「リソース URL」には `https://management.core.windows.net/` を入力し、末尾のスラッシュを含めて正確に入力するよう記載されている。
+- サンプル OpenAPI が含む操作は Resource Manager の `List all subscriptions` である。
+- 同ページの「マネージド ID の認証」は、カスタムコネクタがユーザー委任認証のクライアントシークレットの代わりにマネージドIDを使えることを説明している。
+
+## 2. アクセストークンの所有者と audience
+
+Source: https://learn.microsoft.com/en-us/entra/identity-platform/access-tokens
+
+- アクセストークンを要求するクライアントと、アクセストークンを受け入れるリソース（Web API）が存在する。
+- トークンの対象リソース（audience）は `aud` クレームで定義される。
+- クライアントはトークンを利用し、リソースがトークンを受け入れる。
+- リソースは `aud` によって自分向けのトークンを所有する。
+
+Source: https://learn.microsoft.com/en-us/entra/identity-platform/access-token-claims-reference
+
+- `aud` はトークンの意図された受信者を識別する。
+- API は `aud` が意図した audience と一致しないトークンを拒否しなければならない。
+- v1.0トークンでは `aud` がクライアントIDまたは要求に使ったリソースURIになり得る。v2.0トークンではAPIのクライアントIDになる。
+
+## 3. マネージドIDの token request における resource
+
+Source: https://learn.microsoft.com/en-us/entra/identity/managed-identities-azure-resources/how-to-use-vm-token
+
+- マネージドIDのIMDSエンドポイントでは、`resource` クエリパラメーターが対象リソースの App ID URI を示す。
+- 指定した resource は、発行されたトークンの `aud` クレームにも現れる。
+- 同ページの新しい Azure Resource Manager 例は `resource=https://management.azure.com/` を使う。
+
+## 4. management.core.windows.net と実際のARMエンドポイント
+
+Source: https://learn.microsoft.com/en-us/rest/api/gettingstarted/
+
+- OAuthの `resource` は、呼び出すREST APIが公開する identifier URI である。
+- 同ページには、Azure Resource Manager provider API の例として `https://management.core.windows.net/` が記載されている。
+- 同ページは実際の Azure Resource Manager provider API の呼び出し先を `https://management.azure.com/`、classic Azure Service Management API の呼び出し先を `https://management.core.windows.net/` と区別している。
+
+Source: https://learn.microsoft.com/en-us/entra/msal/msal-acquire-cache-tokens
+
+- Azure Resource Manager API のような一部APIは、アクセストークンの `aud` に末尾スラッシュを期待する。
+- scope の形式は、トークンを受け取るAPIと、そのAPIが受け入れる `aud` の値に依存する。
+
+Source: https://learn.microsoft.com/en-us/entra/msal/dotnet/how-to/differences-adal-msal-net
+
+- ADAL（v1系）は対象APIを `resource` で指定し、MSAL（v2系）は `scopes` で指定する。
+- v1リソースの静的スコープ一式やクライアント資格情報フローをMSALで要求する場合は、Resource IDに `/.default` を付けたscopeを使う。
+
+## 5. Azure AI Search の endpoint と token scope
+
+Source: https://learn.microsoft.com/en-us/azure/search/search-get-started-rbac
+
+- Azure AI Searchへのキーレス接続では Microsoft Entra ID とRBACを利用する。
+- Azure CLIでSearch用トークンを取得する例は `az account get-access-token --scope https://search.azure.com/.default` である。
+- Search REST API の実際の接続先はサービス固有の `https://<service-name>.search.windows.net` である。
+
+Source: https://learn.microsoft.com/en-us/rest/api/searchservice/documents/search-get
+
+- Azure AI Search data-plane REST APIのOAuthスコープは `https://search.azure.com/.default` である。
+- リクエストURLの例は `https://myservice.search.windows.net/indexes('myindex')/docs?...` である。
+
+Source: https://github.com/Azure/azure-sdk-for-net/blob/29aeb7697476ff4b6e55a26735ecee6e5d707d59/sdk/search/Azure.Search.Documents/src/SearchAudience.cs
+
+- MicrosoftのAzure SDK for .NETは、Azure Public CloudのSearch audience定数を `https://search.azure.com` と定義している。
+- Search audienceはクラウドごとに異なり、Azure Governmentは `https://search.azure.us`、Azure Chinaは `https://search.azure.cn` である。
+
+Source: https://learn.microsoft.com/en-us/azure/search/search-how-to-managed-identities
+
+- Searchサービス自体の作成・更新を行うmanagement REST APIの例は `https://management.azure.com/subscriptions/.../providers/Microsoft.Search/searchServices/...` を使用する。
+- Searchサービスは、インデクサーやベクター化などのために他のAzureリソースへ接続するマネージドIDを持てる。
+
+Source: https://learn.microsoft.com/en-us/azure/search/keyless-connections
+
+- Azure AI Searchで403が返る典型例として、IDに必要なロールがない場合が記載されている。
+- Search Index Data ReaderやSearch Index Data Contributorなどの適切なロールを割り当てるよう案内されている。
+- ロール割り当ての反映には最大10分かかる場合があると記載されている。
+
+## 6. 値は正確一致させる
+
+Source: https://learn.microsoft.com/en-us/azure/logic-apps/authenticate-with-managed-identity
+
+- Audienceには対象Azureサービスの resource ID を指定する。
+- 対象 resource ID は Microsoft Entra ID が期待する値と正確に一致させる必要があり、不一致では 400 または401になり得る。
+- 末尾スラッシュが含まれる場合は含め、含まれない場合は追加しない。
+- 例として Key Vault は `https://vault.azure.net`、Azure Storage全体は `https://storage.azure.com/` と記載されている。
+
+## この資料で行う整理（作者の説明）
+
+- UI上の「リソースURL」は、ブラウザーで開く住所ではなく、トークンを受け取るAPIを識別する audience / resource identifier と説明する。
+- 「endpoint（通信先）」「audience/resource（トークンの宛先）」「Azure resource ID（RBACのスコープに使う `/subscriptions/...`）」を別概念として整理する。
+- `resource=<URI>`、カスタムコネクタの「リソースURL」、`scope=<URI>/.default` は、OAuthのバージョンやツールによって表記が異なるが、いずれも対象APIを指定する文脈として説明する。ただし末尾スラッシュを含む正確な文字列は各API・ツールの公式ドキュメントどおりに指定する。
+- Azure Resource Managerについては新旧ドキュメント・フローで `management.core.windows.net/` と `management.azure.com/` の双方が登場するため、推測で置換せず、利用中の製品・認証フローの公式手順に従うと注意喚起する。
+====
+--- Slide 1 ---
+その『リソースURL』、何のURL？
+マネージドIDのトークン宛先を理解する
+Azure AI Search の例で腹落ち
+Source: https://learn.microsoft.com/ja-jp/connectors/custom-connectors/azure-active-directory-authentication / 2026年8月11日 ｜ ebisuda.net
+--- Slide 2 ---
+01
+WHY CONFUSING
+似たURLが3つ出てくる
+通信先 endpoint
+HTTPリクエストを送る住所 /  / https://myservice / .search.windows.net
+トークンの宛先
+アクセストークンを / 受け取るAPIの識別子 /  / https://search.azure.com
+Azure resource ID
+Azure上の個別リソース /  / /subscriptions/.../ / providers/Microsoft.Search/...
+名前が似ている。でも、役割はまったく違う。
+--- Slide 3 ---
+02
+THE ANSWER
+リソースURLは
+APIの住所ではない
+アクセストークンの『宛先』を指定する識別子
+--- Slide 4 ---
+03
+TOKEN FLOW
+Entra IDに『誰向けか』を伝える
+① 呼び出し元
+カスタムコネクタ / アプリ／マネージドID
+② Entra ID
+宛先を見て / トークンを発行
+③ Access Token
+aud = 対象API / API用の通行証
+④ API
+aud と権限を確認 / 一致すれば処理
+→
+→
+→
+リソースURLは ①→② で指定し、発行トークンの aud に反映される
+--- Slide 5 ---
+04
+AUDIENCE
+aud = この通行証を受け取ってよい相手
+ACCESS TOKEN / { /   "aud": "<対象API>", / }
+受信したAPIが確認
+aud が自分向け
+→ 次に権限を確認
+aud が別API向け
+→ この入口で拒否
+audの形式はトークン版やAPIで異なる。大切なのは『受信者』という役割。
+--- Slide 6 ---
+05
+THE LEARN EXAMPLE
+なぜ management.core.windows.net なのか？
+あのLearnは Azure Resource Manager API のチュートリアル
+サンプルが呼ぶAPI
+Azure Resource Manager / List all subscriptions
+Learn指定のリソースURL
+https://management / .core.windows.net/
+整理：この値は『Azure全般』ではなく、サンプルが対象にしたARM向け
+--- Slide 7 ---
+06
+ENDPOINT ≠ AUDIENCE
+通信先とトークンの宛先は
+違っていていい
+役割が違う。HTTPリクエストの通信先とは限らない。
+--- Slide 8 ---
+07
+ARM EXAMPLE
+ARMでは2つのURLが並ぶ
+現在のARM REST endpoint
+https://management / .azure.com/ /  / HTTPリクエストの通信先
+このLearnのOAuth resource
+https://management / .core.windows.net/ /  / トークン要求で指定
+現在のMI ARM例
+resource= / https://management / .azure.com/ /  / 別フローでは別表記
+補足：core.windows.net は classic管理APIでは実通信先にも使われた。推測で置換しない。
+--- Slide 9 ---
+08
+AZURE AI SEARCH
+検索するなら audience は Search API
+接続先 endpoint
+https://myservice / .search.windows.net /  / サービスごとに固有
+resource / audience
+https://search.azure.com /  / Search API全体を表す
+v2 scope
+https://search.azure.com/ / .default /  / CLI・MSAL等の要求形式
+3つは同じ文字列にするものではない
+--- Slide 10 ---
+09
+TWO PLANES
+『何をするか』で対象APIが変わる
+Management plane
+Searchサービスを作る・設定する /  / 呼ぶAPI：Azure Resource Manager / トークン：ARM向け
+Data plane
+インデックス内の文書を検索する /  / 呼ぶAPI：Azure AI Search / トークン：Search向け
+同じAzure AI Searchでも、操作の入口が違えばリソースURLも違う
+--- Slide 11 ---
+10
+RESOURCE OR SCOPE
+resource と scope は『要求時』の書式
+Entra v1系（ADAL）：resource
+resource / リソースURL /  / 対象APIの識別子を指定
+Searchの識別子
+https://search.azure.com /  / 末尾記号は入力欄の / 公式例に正確に合わせる
+Entra v2系（MSAL）：scope
+scope= / https://search.azure.com/ / .default
+resource / scope は要求側。aud は発行後の受信者。完全な同義語ではない。
+--- Slide 12 ---
+11
+DO NOT MIX
+3つの『リソース』を分離する
+endpoint
+通信先
+https://myservice.search.windows.net
+audience / resource
+トークンの宛先
+https://search.azure.com
+Azure resource ID
+RBACを付ける対象
+/subscriptions/.../providers/Microsoft.Search/...
+URLっぽいかどうかではなく、どの欄・どの処理で使う値かを見る
+--- Slide 13 ---
+12
+HOW TO FIND IT
+正しい値は『対象操作』から探す
+1
+何をする？
+作成・設定 / 検索・データ操作
+2
+どのAPI？
+ARM / Search / Storage…
+3
+トークン要求
+resource / scope の公式値
+4
+文字列をそのまま
+末尾 / と .default まで一致
+RBACの範囲は別物 → Azure resource ID。トークン要求と混ぜない。
+--- Slide 14 ---
+13
+TROUBLESHOOT
+失敗した場所で切り分ける
+400 / 401
+resource / audienceを / 公式値と正確に照合 / 末尾スラッシュも確認
+403 Search
+必要なRBACロールを確認 / 割り当て反映は / 最大10分かかる場合あり
+番号だけで断定しない
+レスポンス本文を見る / サービス固有の / 診断手順も確認
+エラー番号だけで断定せず、レスポンス本文とサービス固有の診断も見る。
+--- Slide 15 ---
+14
+MINIMUM EXAMPLE
+Azure AI Searchならこうつながる
+az account get-access-token --scope https://search.azure.com/.default
+↓
+GET https://myservice.search.windows.net/indexes('myindex')/docs?... / Authorization: Bearer <取得したアクセストークン>
+scope と endpoint が違う文字列でも、それが正しい組み合わせ
+--- Slide 16 ---
+15
+TAKEAWAY
+迷ったら問うのは
+誰向けの通行証？
+リソースURLは推測しない。対象APIの公式値をそのまま使う。
+--- Slide 17 ---
+16
+OFFICIAL SOURCES
+今回の正本
+カスタムコネクタのLearn
+learn.microsoft.com/connectors/custom-connectors/azure-active-directory-authentication
+アクセストークンのaud
+learn.microsoft.com/entra/identity-platform/access-tokens
+Access token claims
+learn.microsoft.com/entra/identity-platform/access-token-claims-reference
+Azure REST APIの基礎
+learn.microsoft.com/rest/api/gettingstarted/
+Searchキーレス接続
+learn.microsoft.com/azure/search/search-get-started-rbac
+Search REST API
+learn.microsoft.com/rest/api/searchservice/documents/search-get
+Search audience定数
+github.com/Azure/azure-sdk-for-net/.../SearchAudience.cs
+値や画面は更新されるため、実装時は最新の公式ページを再確認
+--- Slide 18 ---
+17
+OFFICIAL SOURCES
+補助ソース：値の正確性と切り分け
+Managed Identityトークン
+learn.microsoft.com/entra/identity/managed-identities-azure-resources/how-to-use-vm-token
+ADALとMSALの違い
+learn.microsoft.com/entra/msal/dotnet/how-to/differences-adal-msal-net
+Audienceの正確一致
+learn.microsoft.com/azure/logic-apps/authenticate-with-managed-identity
+SearchのManaged Identity
+learn.microsoft.com/azure/search/search-how-to-managed-identities
+SearchのRBAC診断
+learn.microsoft.com/azure/search/keyless-connections
+ARMとSearchでは、操作・認証フロー・クラウドに合う値を選ぶ
+
+warning: Codex could not find bubblewrap on PATH. Install bubblewrap with your OS package manager. See the sandbox prerequisites: https://developers.openai.com/codex/concepts/sandboxing#prerequisites. Codex will use the bundled bubblewrap in the meantime.
+warning: Skill descriptions were shortened to fit the 2% skills context budget. Codex can still see every skill, but some descriptions are shorter. Disable unused skills or plugins to leave more room for the rest.
+codex
+公式抽出事実だけを判定基準にします。ローカル指示に従って先に AI Wiki の索引だけ確認し、そこにある内容は判定根拠には混ぜません。🔍
+exec
+/bin/bash -lc "sed -n '1,240p' /home/ebi/.codex/skills/wiki-query/SKILL.md" in /home/ebi/wt-1536588859213619210
+ exited 2 in 0ms:
+sed: can't read /home/ebi/.codex/skills/wiki-query/SKILL.md: No such file or directory
+
+exec
+/bin/bash -lc "sed -n '1,260p' /home/ebi/ebibibi-claude-settings/skills/wiki-query/SKILL.md" in /home/ebi/wt-1536588859213619210
+ succeeded in 0ms:
+---
+name: wiki-query
+description: Obsidian AI Wiki+vault横断検索で蓄積知識から回答。「Wikiで調べて」「知ってること教えて」で起動。
+---
+
+# wiki-query — AI Wikiを検索して回答
+
+Obsidian vault（特に `04_Knowledge/wiki/`）に蓄積された知識を横断検索し、
+統合的な回答を生成するスキル。
+
+## 発動条件
+
+- ユーザーが「Wikiで調べて」「知ってることまとめて」「〇〇について何かある？」等と言った時
+- 技術的な質問で、過去のクリップやWikiに情報がありそうな時
+- **自動発動**: obsidian vault内での作業中に、技術的なトピックについて回答・判断する必要がある時（CLAUDE.md「AI Wiki 自動参照ルール」に従う）
+
+## 検索手順
+
+### 1. キーワード抽出
+
+ユーザーの質問から検索キーワードを抽出する。
+- メインキーワード（1-3語）
+- 関連キーワード（代替表記、略称等）
+
+### 2. 検索対象（優先順）
+
+知識の3点セット（wiki/KB/ADR）はグローバルとコンテキストローカルの両方にある。
+質問の種類で当たる順を変える:
+- **症状・エラー・「困った」系** → まず **KB** を見る
+- **「なぜこうなってる?」「何を選んだ?」系** → まず **ADR** を見る
+- **「○○とは?」体系的な理解** → まず **wiki** を見る
+
+1. **`04_Knowledge/wiki/`** — AI Wikiページ（体系的知識）
+2. **`04_Knowledge/KB/`** — はまり事の解決記録（横断・症状から引く）
+3. **`04_Knowledge/ADR/`** — 意思決定の記録（横断・選択の根拠）
+4. **プロジェクト固有層**（小文字）: `02_Contexts/**/adr/`・`02_Contexts/**/kb/`、および外部リポの `docs/adr/`・`docs/kb/`（Type B/C はリポをローカル or `gh`/`az repos` で）
+5. **`03_Resources/Webクリップ/`** — 生のWebクリップ
+6. **`03_Resources/IT技術メモ/`** — 技術ノート
+7. **`03_Resources/本の要約/`** — 書籍メモ
+8. **`03_Resources/YouTube動画/`** — YouTube関連ノート
+9. **`02_Contexts/`** — プロジェクトのログ・ドキュメント
+
+> frontmatter の `type:`（wiki/kb/adr）と `symptom:` / `decision:` だけ読めば
+> そのファイルが何の記録か分かる。まず frontmatter で当たりをつける。
+
+### 3. 検索方法
+
+Grep/Globツールを使って:
+- Wikiページのファイル名検索
+- vault全体のコンテンツ検索
+- 複数キーワードのAND検索
+
+### 4. 回答の構成
+
+検索結果を統合して回答する:
+
+```markdown
+## {質問のトピック}について
+
+### Wikiの蓄積
+{wiki/ から見つかった情報の要約。ページの品質情報も付記}
+
+### 関連クリップ
+- [[Webクリップ/記事名]] — {1行要約}
+
+### まとめ
+{統合的な回答}
+```
+
+### 5. Wiki保存オプション
+
+回答が有用な場合、ユーザーに提案する:
+「この回答をWikiページとして保存しますか？」
+→ Yes の場合は wiki-save スキルの **Wikipedia品質基準** に従って保存
+
+### 6. 品質フィードバック
+
+検索で見つかったWikiページの品質が低い場合（旧形式 `## サマリー` / `## 知見` 構造、薄い内容等）、回答と合わせて改善を提案する:
+- 「このページは旧形式です。Wikipedia品質にリライトしましょうか？」
+- 「内容が薄いです。今回の調査結果を統合して充実させましょうか？」
+
+## 注意事項
+
+- 検索結果が多すぎる場合は上位10件に絞る
+- Wikiページが見つからない場合は「まだWikiに蓄積がない」旨を伝え、一般知識で回答する
+- vault の情報が古い可能性があるため、最終更新日（frontmatter `updated`）を必ず付記する
+- 機密コンテキスト（02_Contexts/JBS/ 等）の情報は外部公開不可であることに注意
+
+exec
+/bin/bash -lc "sed -n '1,240p' /home/ebi/obsidian/04_Knowledge/wiki/_index.md && rg -n -i -l 'management\\.core\\.windows\\.net|search\\.azure\\.com|カスタムコネクタ|resource URL|リソースURL|audience' /home/ebi/obsidian/04_Knowledge/wiki /home/ebi/obsidian/04_Knowledge/KB /home/ebi/obsidian/04_Knowledge/ADR 2>/dev/null | head -n 20" in /home/ebi/wt-1536588859213619210
+ succeeded in 7ms:
+/home/ebi/obsidian/04_Knowledge/ADR/ADR-20260723-01-09output-structuring.md
+/home/ebi/obsidian/04_Knowledge/wiki/セキュリティと認証.md
+/home/ebi/obsidian/04_Knowledge/wiki/_log.md
+/home/ebi/obsidian/04_Knowledge/wiki/Azure管理基盤.md
+/home/ebi/obsidian/04_Knowledge/wiki/Microsoft 365.md
+/home/ebi/obsidian/04_Knowledge/KB/Copilot Studioで機能が消えたらハーネスを疑う.md
+/home/ebi/obsidian/04_Knowledge/KB/デプロイ直後スモークのBearer認証が間欠401になる（コールドスタートJWKS取得遅延）.md
+
+codex
+事実誤認なし
+tokens used
+30,755
+事実誤認なし
