@@ -1,5 +1,1 @@
-FACT_CHECK: PASS
-Reviewer: OpenAI Codex CLI (independent, read-only)
-Input: source_facts.md + slidetext.txt
-Slide text SHA-256: 34fa52f4bf0377357d03399f75b9a62d46908fdff4b04d8215bec0891272b288
-Date: 2026-08-11
+事実誤認なし

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the Ebi Agent Chat Relay v4 YouTube explainer deck."""
+"""Generate the non-technical Ebi Agent Chat Relay v4 YouTube deck."""
 
 import sys
 from pathlib import Path
@@ -14,12 +14,7 @@ from slide_helpers import (
     CARD_BORDER,
     CARD_FILL,
     EMU,
-    GREEN,
-    LABEL,
     ORANGE,
-    PURPLE,
-    RED,
-    TEAL,
     TEXT_MAIN,
     TEXT_MUTED,
     add_slide,
@@ -34,178 +29,217 @@ from slide_helpers import (
 OUT_DIR = Path("/home/ebi/wt-1534221229802782934-presentations-v4/20260811_EbiAgentChatRelay_v4")
 OUT_FILE = OUT_DIR / "Ebi Agent Chat Relay v4 - DiscordとTeamsから複数AIを使う.pptx"
 
-
-def card(slide, x, y, w, h, title, body, accent=BLUE, title_size=22, body_size=18):
-    box(slide, x, y, w, h, fill=CARD_FILL, border=CARD_BORDER, bw=1.2)
-    box(slide, x, y, 0.08 * EMU, h, fill=accent, border=accent, radius=0.01)
-    text(slide, x + 0.24 * EMU, y + 0.16 * EMU, w - 0.42 * EMU, 0.55 * EMU,
-         [{"text": title, "size": title_size, "bold": True, "color": accent}])
-    text(slide, x + 0.24 * EMU, y + 0.78 * EMU, w - 0.42 * EMU, h - 0.92 * EMU,
-         [{"text": body, "size": body_size, "color": TEXT_MAIN}])
+# Keep the deck visually calm: one primary blue and one occasional orange highlight.
+ACCENT = BLUE
+HIGHLIGHT = ORANGE
 
 
-def big_statement(prs, num, label, top, main, sub, color=ORANGE, main_size=62):
+def card(slide, x, y, w, h, title, body, *, accent=ACCENT, title_size=25, body_size=20):
+    box(slide, x, y, w, h, fill=CARD_FILL, border=CARD_BORDER, bw=1.1)
+    box(slide, x, y, 0.07 * EMU, h, fill=accent, border=accent, radius=0.01)
+    text(
+        slide,
+        x + 0.25 * EMU,
+        y + 0.22 * EMU,
+        w - 0.48 * EMU,
+        0.7 * EMU,
+        [{"text": title, "size": title_size, "bold": True, "color": accent}],
+    )
+    text(
+        slide,
+        x + 0.25 * EMU,
+        y + 1.0 * EMU,
+        w - 0.48 * EMU,
+        h - 1.15 * EMU,
+        [{"text": body, "size": body_size, "color": TEXT_MAIN}],
+    )
+
+
+def statement(prs, number, label, top, main, sub, *, color=ACCENT, main_size=60):
     slide = add_slide(prs)
-    text(slide, 0.48 * EMU, 0.38 * EMU, 0.8 * EMU, 0.4 * EMU,
-         [{"text": num, "size": 18, "bold": True, "color": color}])
-    text(slide, 1.15 * EMU, 0.4 * EMU, 6 * EMU, 0.4 * EMU,
-         [{"text": label, "size": 13, "color": LABEL}])
-    text(slide, 0.6 * EMU, 1.4 * EMU, 12.1 * EMU, 0.55 * EMU,
-         [{"text": top, "size": 24, "color": TEXT_MUTED}], align=PP_ALIGN.CENTER)
-    text(slide, 0.5 * EMU, 2.15 * EMU, 12.3 * EMU, 1.55 * EMU,
-         [{"text": main, "size": main_size, "bold": True, "color": color}],
-         align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
-    text(slide, 1.0 * EMU, 4.3 * EMU, 11.3 * EMU, 1.2 * EMU,
-         [{"text": sub, "size": 25, "color": TEXT_MAIN}], align=PP_ALIGN.CENTER)
+    header(slide, number, label, top)
+    text(
+        slide,
+        0.65 * EMU,
+        2.0 * EMU,
+        12.0 * EMU,
+        1.55 * EMU,
+        [{"text": main, "size": main_size, "bold": True, "color": color}],
+        align=PP_ALIGN.CENTER,
+        anchor=MSO_ANCHOR.MIDDLE,
+    )
+    text(
+        slide,
+        1.25 * EMU,
+        4.25 * EMU,
+        10.8 * EMU,
+        1.25 * EMU,
+        [{"text": sub, "size": 25, "color": TEXT_MAIN}],
+        align=PP_ALIGN.CENTER,
+    )
     return slide
+
+
+def arrow(slide, x, y, symbol="→"):
+    text(
+        slide,
+        x,
+        y,
+        0.7 * EMU,
+        0.7 * EMU,
+        [{"text": symbol, "size": 34, "bold": True, "color": TEXT_MUTED}],
+        align=PP_ALIGN.CENTER,
+        anchor=MSO_ANCHOR.MIDDLE,
+    )
 
 
 prs = new_deck()
 
 title_slide(
     prs,
-    title="AIエージェントをTeamsへ",
-    subtitle="Ebi Agent Chat Relay v4.0.0",
-    tagline="Discord＋Teams × Claude Code CLI・Codex CLI・Local OpenAI互換・AG-UI",
+    title="AIを、いつものチャットから",
+    subtitle="Ebi Agent Chat Relay v4.0.0｜DiscordとTeamsに対応",
+    tagline="月額プラン × 選べるAI × Discord／Teams",
     source_url="https://github.com/ebibibi/ebi-agent-chat-relay/releases/tag/v4.0.0",
     footer="2026年8月11日 ｜ ebisuda.net",
 )
 
-big_statement(
-    prs, "01", "V4.0.0 STRUCTURE", "2つのFrontendと", "4つのBackend",
-    "会話する場所と、仕事をするAgentを別々に選べる基盤です。", ORANGE,
+statement(
+    prs,
+    "01",
+    "WHAT WE BUILT",
+    "何ができるものを作ったのか？",
+    "チャットから、AIに仕事を頼む",
+    "DiscordやTeamsと、別の環境で動くClaude CodeやCodexをつなぎます。依頼も結果も、いつものチャットです。",
+    main_size=50,
 )
 
 s = add_slide(prs)
-header(s, "02", "TWO INDEPENDENT AXES", "FrontendとBackendを分けた")
-card(s, 0.7 * EMU, 2.0 * EMU, 5.55 * EMU, 3.75 * EMU,
-     "Frontend｜人が話す場所", "Discord\nMicrosoft Teams\n\n人とAgentをつなぐ会話の入口", BLUE, body_size=22)
-card(s, 7.05 * EMU, 2.0 * EMU, 5.55 * EMU, 3.75 * EMU,
-     "Backend｜実際に働くAgent", "Claude Code CLI\nOpenAI Codex CLI\nLocal OpenAI互換 /v1/responses\nAG-UI HTTP/SSE", TEAL, body_size=19)
-text(s, 0.8 * EMU, 6.25 * EMU, 11.7 * EMU, 0.55 * EMU,
-     [{"text": "2つのFrontendから、4つのBackendを選べる", "size": 23, "bold": True, "color": TEXT_MAIN}],
-     align=PP_ALIGN.CENTER)
+header(s, "02", "VALUE 1", "使った量に応じて料金が増える方式だけではない")
+text(
+    s,
+    0.65 * EMU,
+    1.55 * EMU,
+    12.0 * EMU,
+    0.95 * EMU,
+    [{"text": "月額サブスクリプションを活かす", "size": 44, "bold": True, "color": HIGHLIGHT}],
+    align=PP_ALIGN.CENTER,
+)
+card(s, 0.75 * EMU, 2.85 * EMU, 5.55 * EMU, 2.8 * EMU, "Claude Code", "Claude Pro／Maxの契約で利用\nPC上でAIに作業させる公式ツール", accent=ACCENT)
+card(s, 7.05 * EMU, 2.85 * EMU, 5.55 * EMU, 2.8 * EMU, "OpenAI Codex", "ChatGPT Plus／Pro／Businessで利用\nPC上でAIに作業させる公式ツール", accent=ACCENT)
+text(
+    s,
+    0.8 * EMU,
+    6.15 * EMU,
+    11.7 * EMU,
+    0.55 * EMU,
+    [{"text": "各プランの利用条件・上限の範囲で使える", "size": 24, "bold": True, "color": TEXT_MAIN}],
+    align=PP_ALIGN.CENTER,
+)
 
-s = add_slide(prs)
-header(s, "03", "WHY TEAMS IS HARD", "推奨構成はTeams app packageだけではない")
-items = [
-    ("1", "Entra app", "application", PURPLE),
-    ("2", "Azure Bot", "Bot resource", BLUE),
-    ("3", "Storage Queue", "transport", ORANGE),
-    ("4", "Public Receiver", "検証＋enqueue", TEAL),
-    ("5", "Private Host", "outbound pull", GREEN),
-]
-for i, (n, title_, body, color) in enumerate(items):
-    x = (0.45 + i * 2.58) * EMU
-    card(s, x, 2.2 * EMU, 2.25 * EMU, 3.5 * EMU, f"{n}  {title_}", body, color, title_size=18, body_size=17)
-text(s, 0.8 * EMU, 6.2 * EMU, 11.7 * EMU, 0.55 * EMU,
-     [{"text": "推奨経路は、公開受信とprivate実行をQueueで分離", "size": 25, "bold": True, "color": ORANGE}],
-     align=PP_ALIGN.CENTER)
-
-big_statement(
-    prs, "04", "THE DESIGN RULE", "公開入口は必要。でも", "Agent Hostを公開しない",
-    "repository access・agent credentials・Agent実行能力を、公開受信口から分離する。", RED,
+statement(
+    prs,
+    "03",
+    "VALUE 2",
+    "どちらか一つに決めなくていい",
+    "Discordなら、会話の途中でClaude Code ⇄ Codex",
+    "仕事を担当するツールを交代。会話履歴の一部をテキストで渡すので、手作業の要約やコピー＆ペーストは不要です。",
+    main_size=53,
 )
 
 s = add_slide(prs)
-header(s, "05", "OUTBOUND-ONLY PRIVATE HOST", "Public側は検証とenqueueだけ")
-flow = [
-    ("Teams", "ユーザー", BLUE),
-    ("Bot Framework", "Activity配送", PURPLE),
-    ("Public Receiver", "検証＋enqueue", ORANGE),
-    ("Storage Queue", "Activity待機", TEAL),
-    ("ActivityPuller", "外向きpull", GREEN),
-    ("Selected Backend", "Agent実行", BLUE),
-]
-for i, (title_, body, color) in enumerate(flow):
-    x = (0.28 + i * 2.16) * EMU
-    card(s, x, 2.35 * EMU, 1.82 * EMU, 2.75 * EMU, title_, body, color, title_size=15, body_size=14)
-    if i < len(flow) - 1:
-        text(s, (2.08 + i * 2.16) * EMU, 3.2 * EMU, 0.35 * EMU, 0.55 * EMU,
-             [{"text": "→", "size": 25, "bold": True, "color": TEXT_MUTED}], align=PP_ALIGN.CENTER)
-text(s, 0.6 * EMU, 5.7 * EMU, 12.1 * EMU, 0.95 * EMU,
-     [{"text": "Public Receiver：bot client secretなし／Agent起動不可", "size": 21, "bold": True, "color": ORANGE},
-      {"text": "　Private Host：Teams listenerを公開しない", "size": 21, "bold": True, "color": GREEN}],
-     align=PP_ALIGN.CENTER)
-text(s, 0.6 * EMU, 6.5 * EMU, 12.1 * EMU, 0.35 * EMU,
-     [{"text": "復路：selected backend → Bot Connector → Teams", "size": 17, "color": TEXT_MUTED}],
-     align=PP_ALIGN.CENTER)
+header(s, "04", "MULTIPLE BACKENDS", "仕事を担当するAIツールを選べる")
+card(s, 0.75 * EMU, 2.0 * EMU, 5.55 * EMU, 3.6 * EMU, "Claude Code", "この会話を担当\n月額プランを活用", accent=ACCENT, title_size=30, body_size=24)
+card(s, 7.05 * EMU, 2.0 * EMU, 5.55 * EMU, 3.6 * EMU, "Codex", "途中から交代も可能\n月額プランを活用", accent=ACCENT, title_size=30, body_size=24)
+text(
+    s,
+    0.8 * EMU,
+    6.15 * EMU,
+    11.7 * EMU,
+    0.55 * EMU,
+    [{"text": "Discordでは会話ごとに切替可能。ほかのAIへつなぐ拡張性もあります", "size": 23, "bold": True, "color": TEXT_MAIN}],
+    align=PP_ALIGN.CENTER,
+)
 
 s = add_slide(prs)
-header(s, "06", "2 × 4 COMBINATIONS", "同じRelayで8通り")
-labels = ["Claude Code CLI", "Codex CLI", "Local OpenAI互換", "AG-UI"]
-colors = [ORANGE, TEAL, GREEN, PURPLE]
-for row, frontend in enumerate(["Discord", "Microsoft Teams"]):
-    y = (2.05 + row * 2.15) * EMU
-    card(s, 0.55 * EMU, y, 2.45 * EMU, 1.55 * EMU, frontend, "Frontend", BLUE, title_size=20, body_size=15)
-    for col, (backend, color) in enumerate(zip(labels, colors)):
-        x = (3.3 + col * 2.35) * EMU
-        body = "/v1/responses\n✓" if backend == "Local OpenAI互換" else "✓"
-        card(s, x, y, 2.05 * EMU, 1.55 * EMU, backend, body, color, title_size=14, body_size=16)
-text(s, 0.65 * EMU, 6.3 * EMU, 12.0 * EMU, 0.45 * EMU,
-     [{"text": "AG-UI＝HTTP/SSEで接続するBackend", "size": 21, "color": TEXT_MUTED}],
-     align=PP_ALIGN.CENTER)
+header(s, "05", "VALUE 3", "話しかける場所も選べる")
+card(s, 0.75 * EMU, 2.0 * EMU, 5.55 * EMU, 3.75 * EMU, "Discord", "個人開発・コミュニティ\nスマホから気軽に依頼\n会話ごとにスレッドを分ける", accent=ACCENT, title_size=32, body_size=22)
+card(s, 7.05 * EMU, 2.0 * EMU, 5.55 * EMU, 3.75 * EMU, "Microsoft Teams", "組織で普段使うチャット\n仕事の会話からそのまま依頼\n普段のチャットから文字で頼める", accent=ACCENT, title_size=32, body_size=22)
+text(
+    s,
+    0.8 * EMU,
+    6.15 * EMU,
+    11.7 * EMU,
+    0.55 * EMU,
+    [{"text": "自分や組織が、普段いる場所から使える", "size": 27, "bold": True, "color": TEXT_MAIN}],
+    align=PP_ALIGN.CENTER,
+)
 
 s = add_slide(prs)
-header(s, "07", "SETUP MAP", "Teams導入ガイドは8セクション")
+header(s, "06", "FROM CHAT TO RESULT", "チャットで頼めること")
 steps = [
-    "1  Entra app", "2  Azure Bot", "3  Storage Queue", "4  Public Receiver",
-    "5  Private session host", "6  Teams app package", "7  Upload & consent", "8  3段階で検証",
+    ("1", "依頼する", "スマホやPCから\nやってほしいことを書く"),
+    ("2", "AIが作業", "ファイルを調べる\n実装・調査・レビュー"),
+    ("3", "途中で確認", "必要に応じて\n追加の指示を送る"),
+    ("4", "結果を受け取る", "完了報告と結果が\n同じ会話へ戻る"),
 ]
-for i, label in enumerate(steps):
-    row, col = divmod(i, 4)
-    x = (0.58 + col * 3.15) * EMU
-    y = (2.0 + row * 2.0) * EMU
-    card(s, x, y, 2.75 * EMU, 1.45 * EMU, label, "", [PURPLE, BLUE, TEAL, ORANGE][col], title_size=17)
-text(s, 0.65 * EMU, 6.15 * EMU, 12.0 * EMU, 0.55 * EMU,
-     [{"text": "詳細手順：docs/teams-setup.md", "size": 26, "bold": True, "color": GREEN}], align=PP_ALIGN.CENTER)
-
-big_statement(
-    prs, "08", "REAL DATA BOUNDARY", "Entra appを顧客tenantに置いても", "Tenant登録 ≠ Tenant内処理",
-    "Bot Framework・Receiver・Queue・Private Host・Backendまでがデータ経路。", PURPLE, main_size=52,
+for i, (number, title_, body) in enumerate(steps):
+    x = (0.45 + i * 3.2) * EMU
+    card(s, x, 2.15 * EMU, 2.75 * EMU, 3.65 * EMU, f"{number}  {title_}", body, accent=ACCENT, title_size=21, body_size=19)
+    if i < 3:
+        arrow(s, (3.12 + i * 3.2) * EMU, 3.55 * EMU)
+text(
+    s,
+    0.8 * EMU,
+    6.25 * EMU,
+    11.7 * EMU,
+    0.45 * EMU,
+    [{"text": "Discordでは、複数のスレッドで複数の仕事を同時に進められます", "size": 23, "bold": True, "color": TEXT_MAIN}],
+    align=PP_ALIGN.CENTER,
 )
 
 s = add_slide(prs)
-header(s, "09", "AG-UI BACKEND", "HTTP/SSE Agentも同じstreamへ")
-left = "Run lifecycle\nText streaming\nReasoning\nTool call / result"
-right = "URL credential拒否\nRedirect拒否\nSSE frame上限\nTokenを子CLIへ渡さない"
-card(s, 0.7 * EMU, 2.0 * EMU, 5.55 * EMU, 3.75 * EMU, "共通eventへ変換", left, TEAL, body_size=22)
-card(s, 7.05 * EMU, 2.0 * EMU, 5.55 * EMU, 3.75 * EMU, "境界を明示", right, ORANGE, body_size=22)
-text(s, 0.65 * EMU, 6.18 * EMU, 12.0 * EMU, 0.55 * EMU,
-     [{"text": "AG-UI eventをRelayの共通streamへ変換", "size": 25, "bold": True, "color": TEXT_MAIN}], align=PP_ALIGN.CENTER)
-
-s = add_slide(prs)
-header(s, "10", "HONEST LIMITS", "v4でも同じではない部分")
-card(s, 0.65 * EMU, 2.0 * EMU, 3.85 * EMU, 3.8 * EMU,
-     "Teams commands", "/backend等は通常queue経路でcommand dispatchしない\n→ configured/global Backend", RED, title_size=19, body_size=18)
-card(s, 4.75 * EMU, 2.0 * EMU, 3.85 * EMU, 3.8 * EMU,
-     "Teams files", "通常private queue経路は\nfile-consent invokeをbridgeしない", ORANGE, title_size=19, body_size=18)
-card(s, 8.85 * EMU, 2.0 * EMU, 3.85 * EMU, 3.8 * EMU,
-     "AG-UI advanced", "Durable HITL resume\nstate/activity\nprotobuf/client tools\nは対応機能として未提示", PURPLE, title_size=19, body_size=15)
-text(s, 0.65 * EMU, 6.25 * EMU, 12.0 * EMU, 0.45 * EMU,
-     [{"text": "未対応を、対応済みのように見せない", "size": 25, "bold": True, "color": GREEN}], align=PP_ALIGN.CENTER)
-
-s = add_slide(prs)
-header(s, "11", "PROVEN ON REAL COMPONENTS", "Contractだけでなく実物で往復")
-card(s, 0.65 * EMU, 2.0 * EMU, 3.85 * EMU, 3.75 * EMU, "2,536", "local tests\nruff成功／pyright 0 errors", GREEN, title_size=42, body_size=18)
-card(s, 4.75 * EMU, 2.0 * EMU, 3.85 * EMU, 3.75 * EMU, "CI", "Python 3.12／3.13\nCodeQL／merge-after", BLUE, title_size=42, body_size=20)
-card(s, 8.85 * EMU, 2.0 * EMU, 3.85 * EMU, 3.75 * EMU, "E2E", "Teams → Azure relay\n→ Real Codex → Teams", ORANGE, title_size=42, body_size=20)
-text(s, 0.65 * EMU, 6.2 * EMU, 12.0 * EMU, 0.5 * EMU,
-     [{"text": "本番検証でもDiscordとTeamsが同時稼働", "size": 25, "bold": True, "color": TEXT_MAIN}], align=PP_ALIGN.CENTER)
-
-big_statement(
-    prs, "12", "NEXT STEP", "選ぶのはBotの見た目ではなく", "入口とAgentを、分けて選ぶ",
-    "Release NotesとTeams Setup Guideから、自分のdeployment境界を決める。", GREEN,
+header(s, "07", "PROVEN ON REAL TEAMS", "実際のTeamsとCodexをつないで検証")
+card(s, 0.8 * EMU, 2.35 * EMU, 3.0 * EMU, 2.7 * EMU, "Microsoft Teams", "実際のチャットから依頼", accent=ACCENT, title_size=25, body_size=20)
+arrow(s, 3.95 * EMU, 3.25 * EMU)
+card(s, 4.75 * EMU, 2.35 * EMU, 3.8 * EMU, 2.7 * EMU, "Ebi Agent Chat Relay", "依頼を選んだAIへ届ける", accent=ACCENT, title_size=23, body_size=20)
+arrow(s, 8.7 * EMU, 3.25 * EMU)
+card(s, 9.5 * EMU, 2.35 * EMU, 3.0 * EMU, 2.7 * EMU, "Codex", "実際のCodexが依頼を処理しTeamsへ返信", accent=ACCENT, title_size=25, body_size=19)
+text(
+    s,
+    0.8 * EMU,
+    5.8 * EMU,
+    11.7 * EMU,
+    0.75 * EMU,
+    [{"text": "Discordを動かしたまま、Teams → Codex → Teamsの往復を確認", "size": 24, "bold": True, "color": TEXT_MAIN}],
+    align=PP_ALIGN.CENTER,
 )
 
 s = add_slide(prs)
-header(s, "13", "TRY AND FOLLOW", "v4を試す・続きを見る")
-card(s, 0.7 * EMU, 1.9 * EMU, 5.55 * EMU, 3.95 * EMU,
-     "GitHub Release", "github.com/ebibibi/\nebi-agent-chat-relay/\nreleases/tag/v4.0.0\n\nRelease Notes\nTeams Setup Guide", TEAL, title_size=25, body_size=17)
-card(s, 7.05 * EMU, 1.9 * EMU, 5.55 * EMU, 3.95 * EMU,
-     "YouTube／note", "高評価・チャンネル登録\n通知オン\n\nnoteで\n設計と導入手順を解説", ORANGE, title_size=25, body_size=19)
-text(s, 0.65 * EMU, 6.18 * EMU, 12.0 * EMU, 0.55 * EMU,
-     [{"text": "Ebi Agent Chat Relay v4.0.0 — MIT License", "size": 25, "bold": True, "color": TEXT_MAIN}], align=PP_ALIGN.CENTER)
+header(s, "08", "TEAMS SETUP", "Teams版は、組織側で導入設定が必要")
+card(s, 0.75 * EMU, 2.05 * EMU, 3.7 * EMU, 3.65 * EMU, "Teams管理者", "組織のアプリとして登録\n利用者へ配布できる状態にする", accent=ACCENT, title_size=23, body_size=20)
+card(s, 4.8 * EMU, 2.05 * EMU, 3.7 * EMU, 3.65 * EMU, "中継環境", "TeamsとAIを安全につなぐ\nAIを動かす環境とは分けて置く", accent=ACCENT, title_size=23, body_size=20)
+card(s, 8.85 * EMU, 2.05 * EMU, 3.7 * EMU, 3.65 * EMU, "利用者", "セットアップ後は\nいつものTeamsから話すだけ", accent=ACCENT, title_size=23, body_size=20)
+text(
+    s,
+    0.8 * EMU,
+    6.18 * EMU,
+    11.7 * EMU,
+    0.55 * EMU,
+    [{"text": "詳しい導入手順はnote記事と公式Teams Setup Guideで解説", "size": 24, "bold": True, "color": HIGHLIGHT}],
+    align=PP_ALIGN.CENTER,
+)
+
+statement(
+    prs,
+    "09",
+    "V4.0.0",
+    "Ebi Agent Chat Relay v4で実現したこと",
+    "選べるAIツール。選べるチャット。",
+    "月額プランを活用。Discordは会話ごとに担当ツールを切替。Teamsは組織設定のツールを、普段のチャットから使う。",
+    color=HIGHLIGHT,
+    main_size=47,
+)
 
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 prs.save(OUT_FILE)
