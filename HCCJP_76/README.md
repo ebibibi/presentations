@@ -7,6 +7,23 @@
 - **テーマ**: オンプレのサーバー壊します。直すのはAIです。 — Azure Arc × AIによる無人障害復旧
 - **Connpass**: https://hybridcloud.connpass.com/event/402528/
 
+## 当日使うもの
+
+| ファイル | 用途 |
+|---|---|
+| [`slides.md`](slides.md) | 本番スライド（Marp／HTMLコメントがそのまま発表者ノート） |
+| `slides.pdf` / `slides.pptx` | 上記の書き出し（当日はPDFで投影する） |
+| [`run-of-show.md`](run-of-show.md) | 進行台本・事前チェックリスト・分単位のタイムテーブル・リスクと逃げ道 |
+| [`images/`](images/) | 構成図3枚（論理／物理／AIの操作経路）。生成元は [`diagrams/build_diagrams.py`](diagrams/build_diagrams.py) |
+
+スライドの書き出し（Chromeのパスを明示しないと `No suitable browser found` になる）:
+
+```bash
+export CHROME_PATH=$(ls -d ~/.cache/puppeteer/chrome/*/chrome-linux64/chrome | head -1)
+npx @marp-team/marp-cli --pdf  --allow-local-files slides.md -o slides.pdf
+npx @marp-team/marp-cli --pptx --allow-local-files slides.md -o slides.pptx
+```
+
 ## 概要
 
 毎月第2金曜日14時からはHCCJPの勉強会！8月は**Azure Arc × AIエージェント**、しかも**一発勝負のライブデモ**でお届けします。
