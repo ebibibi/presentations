@@ -88,10 +88,10 @@ python3 flowask/publish.py render && \
 **約¥68/日**。イベント後は `monitoring/cleanup-azure.sh` で監視リソースだけ消す（Arcマシンは残る）。
 
 ```bash
-# 状態確認
+# 状態確認（success は bool ではなく文字列。"1" と比較する。下の注意を読むこと）
 az monitor app-insights query --app appi-hccjp76-web -g rg-hccjp76-arc \
   --subscription b0f2ddcb-c22b-4728-89b3-26e90a494ae4 \
-  --analytics-query "availabilityResults | where timestamp > ago(30m) | project timestamp, name, success"
+  --analytics-query "availabilityResults | where timestamp > ago(30m) | summarize samples=count(), ok=countif(success == \"1\") by name"
 
 # Quick Tunnel のURLが変わったら、可用性テストのURLも貼り替える（links.json を直したあと）
 cd ~/presentations/HCCJP_76/monitoring
@@ -103,6 +103,11 @@ az deployment group create -g rg-hccjp76-arc --subscription b0f2ddcb-c22b-4728-8
 
 ⚠️ **URLを貼り替え忘れると、デモを始める前から赤くなる。** 死んだURLを叩き続けるため。
 Tunnel を張り直したら `links.json` → `publish.py update` → **この再デプロイ**まで3点セットで行う。
+
+⚠️ **`countif(success == true)` は必ず0になる。** `availabilityResults.success` はこのAPIでは
+**文字列 `"1"` / `"0"`** で返るため、bool 比較が常に偽になり「全部失敗」に見える。実際に落ちているのか
+クエリのせいなのかは `message`（`Passed` / 失敗理由）と、ブラウザ・curl での実アクセスで確かめる。
+本番中に慌てないよう、**赤く見えたらまずクエリを疑う**。
 
 ---
 
