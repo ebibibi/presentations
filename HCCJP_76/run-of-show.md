@@ -64,6 +64,30 @@ python3 flowask/publish.py render && \
 固定名がどうしても欲しい場合は、`lab.ebisuda.net` などのサブドメインを Cloudflare のゾーンとして
 切り出し、Azure DNS から NS 委任する必要がある。前日にやる作業ではない。
 
+### URLはいつ変わるのか
+
+ホスト名は **cloudflared が新しいトンネルを張った瞬間に発行される**。プロセスが生きているかぎり
+同じで、ネットワーク瞬断からの再接続では変わらない。つまり「じわじわ変わる」ものではなく、
+**プロセスが再起動したときだけ**変わる。
+
+| きっかけ | Linux (arclnx01) | Windows (arcwin01) |
+|---|---|---|
+| 起動方式 | systemd `hccjp76-cloudflared-quick.service` | タスク `HCCJP76CloudflaredQuick` |
+| プロセスが異常終了 | `Restart=on-failure` で5秒後に自動復帰 → **URLが黙って変わる** | **復帰しない**（トリガーは起動時のみ）→ サイトが落ちたまま |
+| VM再起動（Windows Update含む） | 自動起動しない（`systemd-run` の一時ユニット）→ 落ちたまま | 起動時トリガーで復帰 → **URLが変わる** |
+| stop/start スクリプトを流す | 変わる | 変わる |
+| Cloudflare側の都合で切断 | 変わりうる（Quick TunnelにSLAは無い） | 同左 |
+
+**2つのホストで壊れ方が逆**なので、片方だけ見て安心しない。現在の状態（2026-08-13 時点）:
+
+- arclnx01: 11:14:35 起動、`NRestarts=0`（一度も再起動していない）、ホスト稼働 8日
+- arcwin01: 11:17:10 起動、最終ブート 8/5 00:21、Azure Update Manager のパッチ設定なし
+
+**当日の運用**: 朝に一度 stop→start で意図的に張り直し、そこで出たURLで
+`links.json` → `publish.py update` → `bicep 再デプロイ` の3点セットを回す。
+そうすれば本番中に変わる確率をいちばん小さくできる。開始直前にもう一度 `NRestarts` と
+プロセス開始時刻を見て、朝から変わっていないことを確認する。
+
 **現在の公開URL（2026-08-13 11:20 JST 時点で稼働確認）**
 
 | | URL |
