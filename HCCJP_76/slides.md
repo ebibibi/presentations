@@ -260,7 +260,7 @@ azcmagent connect --resource-group rg-hccjp76-arc \
 - ⚠️ Arc の Connected Machine heartbeat は**Web障害の信号にならない**
   （`Disconnected` 判定まで通常15〜30分）
 
-<span class="cue">【画面】Azure Monitor の「可用性」画面（今は 100% / 緑）</span>
+<span class="cue">【画面】[Azure Monitor の「可用性」画面](__AVAILABILITY__)（今は 100% / 緑）</span>
 
 ---
 
