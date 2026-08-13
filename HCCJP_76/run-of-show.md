@@ -8,16 +8,17 @@
 
 ## 1. 事前準備（当日 12:00 までに終わらせる）
 
-> ⚠️ 8/5 の検証後、**一時監視リソースと公開Tunnelはすべて削除済み**（`monitoring/README.md`）。
-> 当日はここを作り直すところから始まる。「前に動いたから大丈夫」は成立しない。
+> ✅ 2026-08-13 12:0x に **監視は構築済み・可用性100%（緑）**、Quick Tunnel も稼働中。
+> ただし Quick Tunnel のURLは cloudflared 再起動で変わり、**その時は可用性テストのURLも貼り替えが要る**
+> （下の「1.6 監視」参照）。当日朝はまず両URLが生きているかを確認する。
 
 | # | やること | 確認方法 | 状態 |
 |---|---|---|---|
 | 1 | Arc 2台が Connected | `az connectedmachine list -g rg-hccjp76-arc -o table` | ☐ |
 | 2 | Web サイトが両方 200 | `webroot/deploy.sh` を流し直して確認 | ☐ |
 | 3 | 公開URLを用意（Quick Tunnel。下の「公開経路」参照） | ブラウザで両URLが表示される | ☐ |
-| 4 | 可用性テストを有効化（**課金発生・承認済みで実行**） | `az deployment group create ... monitoringEnabled=true` | ☐ |
-| 5 | 可用性が 100%（緑）になっている | Azure Monitor の可用性画面 | ☐ |
+| 4 | 可用性テストが有効（URLが今日のものと一致しているか） | 「1.6 監視」の確認コマンド | ☐ |
+| 5 | 可用性が 100%（緑）になっている | [可用性画面](https://portal.azure.com/#@7b54e7bc-acb0-4a9b-ad82-7421b9e4e2d9/resource/subscriptions/b0f2ddcb-c22b-4728-89b3-26e90a494ae4/resourceGroups/rg-hccjp76-arc/providers/Microsoft.Insights/components/appi-hccjp76-web/availability) | ☐ |
 | 6 | アラートルールが Enabled | ポータルのアラートルール一覧 | ☐ |
 | 7 | AIエージェント側の `az` がサインイン済み・対象サブスクが既定 | `az account show` | ☐ |
 | 8 | AIに渡すプロンプトを1行だけ用意（前情報を書かない） | 「監視が赤い。原因を調べて直して」 | ☐ |
@@ -69,6 +70,39 @@ python3 flowask/publish.py render && \
 |---|---|
 | Windows / IIS | https://peninsula-ending-dictionaries-refused.trycloudflare.com |
 | Linux / nginx | https://have-seas-easter-pmc.trycloudflare.com |
+
+---
+
+## 1.6 監視（Azure Monitor）— 構築済み
+
+`monitoring/main.bicep` で 6 リソースを作ってある。**2026-08-13 デプロイ済み・可用性100%を実測**。
+
+| リソース | 役割 |
+|---|---|
+| `log-hccjp76`（Log Analytics） | Application Insights のバックエンド。保持30日 |
+| `appi-hccjp76-web`（Application Insights） | 可用性画面の置き場所 |
+| `hccjp76-arclnx01-web` / `hccjp76-arcwin01-web`（Standard 可用性テスト） | 5分間隔・Japan East 1拠点・**HTTP 200＋ページ固有文字列**を検証 |
+| `hccjp76-arclnx01-web-failed` / `-arcwin01-web-failed`（メトリックアラート） | Sev1。1拠点失敗で発報（評価1分 / 窓5分）。アクショングループ無し＝ポータル表示のみ |
+
+**課金**: Standard Web Test Execution ¥0.1173/回（Japan East 実価格）。5分間隔×2テスト＝
+**約¥68/日**。イベント後は `monitoring/cleanup-azure.sh` で監視リソースだけ消す（Arcマシンは残る）。
+
+```bash
+# 状態確認
+az monitor app-insights query --app appi-hccjp76-web -g rg-hccjp76-arc \
+  --subscription b0f2ddcb-c22b-4728-89b3-26e90a494ae4 \
+  --analytics-query "availabilityResults | where timestamp > ago(30m) | project timestamp, name, success"
+
+# Quick Tunnel のURLが変わったら、可用性テストのURLも貼り替える（links.json を直したあと）
+cd ~/presentations/HCCJP_76/monitoring
+az deployment group create -g rg-hccjp76-arc --subscription b0f2ddcb-c22b-4728-89b3-26e90a494ae4 \
+  --template-file main.bicep --parameters monitoringEnabled=true \
+    linuxEndpointUrl="$(python3 -c "import json;print(json.load(open('../links.json'))['demo_linux'])")" \
+    windowsEndpointUrl="$(python3 -c "import json;print(json.load(open('../links.json'))['demo_windows'])")"
+```
+
+⚠️ **URLを貼り替え忘れると、デモを始める前から赤くなる。** 死んだURLを叩き続けるため。
+Tunnel を張り直したら `links.json` → `publish.py update` → **この再デプロイ**まで3点セットで行う。
 
 ---
 
@@ -167,3 +201,13 @@ az connectedmachine run-command create \
 - Activity Log に全部残る＝人間の手作業より追跡しやすい
 - 次回は第77回（2026年9月11日（金）14:00〜）
 - FlowAskは終了後も開いている（`post` フェーズ）。あとから質問・感想を書いてもらえる
+
+---
+
+## 6. 終わったあと
+
+```bash
+python3 flowask/publish.py phase post     # FlowAsk を post へ
+monitoring/cleanup-azure.sh               # 監視6リソースを削除（約¥68/日を止める）
+# Quick Tunnel の停止は monitoring/stop-cloudflare-quick.{sh,ps1} を Run Command で
+```

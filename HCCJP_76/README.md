@@ -31,6 +31,13 @@ python3 flowask/publish.py phase post  # 終了後
 `flowask/state.json`（eventId / adminToken / questionId）は **git 管理外**。adminToken は Obsidian の
 `02_Contexts/HCCJP/log.md` に age 暗号化で保管してある。
 
+### 監視（Azure Monitor）
+
+`monitoring/main.bicep` で構築済み（2026-08-13デプロイ・可用性100%実測）。Standard 可用性テスト
+5分間隔×2本で **約¥68/日**。イベント後は `monitoring/cleanup-azure.sh` で削除する。
+[可用性画面](https://portal.azure.com/#@7b54e7bc-acb0-4a9b-ad82-7421b9e4e2d9/resource/subscriptions/b0f2ddcb-c22b-4728-89b3-26e90a494ae4/resourceGroups/rg-hccjp76-arc/providers/Microsoft.Insights/components/appi-hccjp76-web/availability)
+／手順は [`run-of-show.md`](run-of-show.md) の「1.6 監視」。
+
 ### デモサイトの公開URLについて
 
 `ebisuda.net` の権威DNSは Azure DNS なので、**Cloudflare の Named Tunnel（固定ホスト名）は使えない**

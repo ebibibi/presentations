@@ -109,6 +109,17 @@ machines:
 ./cleanup-azure.sh
 ```
 
+## Current deployment (2026-08-13 JST)
+
+Deployed with `monitoringEnabled=true` against the live Quick Tunnel URLs. Both tests report 100%
+availability from Japan East. Billing is active: **JPY 0.1173 per Standard Web Test execution**
+(Japan East retail price) x 288/day x 2 tests = **about JPY 68/day**. Run `cleanup-azure.sh` after
+the event.
+
+If a Quick Tunnel is restarted its hostname changes, so the web test `RequestUrl` must be
+redeployed as well — otherwise the tests go red against a dead URL before the demo even starts.
+See `../run-of-show.md`, section 1.6.
+
 ## Verified experiment (2026-08-05 JST)
 
 Both endpoints were monitored from Azure Monitor Japan East with a 300-second Standard test.

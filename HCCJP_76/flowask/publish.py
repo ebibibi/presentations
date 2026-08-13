@@ -154,6 +154,7 @@ def apply_links(md: str, event_id: str) -> str:
     md = md.replace("__EVENT_ID__", event_id)
     md = md.replace("__DEMO_WIN__", links["demo_windows"])
     md = md.replace("__DEMO_LNX__", links["demo_linux"])
+    md = md.replace("__AVAILABILITY__", links["portal_availability"])
     return md
 
 
