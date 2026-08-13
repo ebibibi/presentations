@@ -128,6 +128,35 @@ az deployment group create -g rg-hccjp76-arc --subscription b0f2ddcb-c22b-4728-8
 ⚠️ **URLを貼り替え忘れると、デモを始める前から赤くなる。** 死んだURLを叩き続けるため。
 Tunnel を張り直したら `links.json` → `publish.py update` → **この再デプロイ**まで3点セットで行う。
 
+### 結果・状態をどこで見るか（本番で映す画面）
+
+すべて Application Insights **`appi-hccjp76-web`** の中にある。左メニュー **「調査」→「可用性」**。
+
+| 見たいもの | 場所 | リンク |
+|---|---|---|
+| **本番で映すのはこれ** 2テストの成功率と赤/緑 | AI →「可用性」 | [可用性](https://portal.azure.com/#@7b54e7bc-acb0-4a9b-ad82-7421b9e4e2d9/resource/subscriptions/b0f2ddcb-c22b-4728-89b3-26e90a494ae4/resourceGroups/rg-hccjp76-arc/providers/Microsoft.Insights/components/appi-hccjp76-web/availability) |
+| 1回1回の実行結果・失敗理由 | 可用性画面の散布図の点をクリック → トランザクションの詳細 | 同上 |
+| テストの設定（URL・判定文字列・間隔） | 可用性画面のテスト一覧から編集 | [arclnx01](https://portal.azure.com/#@7b54e7bc-acb0-4a9b-ad82-7421b9e4e2d9/resource/subscriptions/b0f2ddcb-c22b-4728-89b3-26e90a494ae4/resourceGroups/rg-hccjp76-arc/providers/Microsoft.Insights/webtests/hccjp76-arclnx01-web) / [arcwin01](https://portal.azure.com/#@7b54e7bc-acb0-4a9b-ad82-7421b9e4e2d9/resource/subscriptions/b0f2ddcb-c22b-4728-89b3-26e90a494ae4/resourceGroups/rg-hccjp76-arc/providers/Microsoft.Insights/webtests/hccjp76-arcwin01-web) |
+| アラートが Fired / Resolved か | Monitor → アラート（RGで絞る） | [アラート](https://portal.azure.com/#view/Microsoft_Azure_Monitoring/AlertsManagementSummaryBlade) |
+| 生データをKQLで | AI →「ログ」 | [ログ](https://portal.azure.com/#@7b54e7bc-acb0-4a9b-ad82-7421b9e4e2d9/resource/subscriptions/b0f2ddcb-c22b-4728-89b3-26e90a494ae4/resourceGroups/rg-hccjp76-arc/providers/Microsoft.Insights/components/appi-hccjp76-web/logs) |
+
+**配信で映すときのコツ**
+
+- 時間範囲を **「過去1時間」以下**にする。既定の24時間だと5分の障害が潰れて見えない
+- **自動更新をオン**にしておく（手動リロードは画面が飛んで見づらい）
+- 赤くなったら散布図の**赤い点をクリック**すると失敗理由が出る
+  （サービス停止なら `502`、ページは返るが内容が違うなら **コンテンツ一致の失敗**）。種明かしで使える
+- タブを2つ開いて Linux / Windows を並べておくと、片方だけ赤いのが一目で伝わる
+
+ログで見るなら:
+
+```kusto
+availabilityResults
+| where timestamp > ago(1h)
+| project timestamp, name, success, message, duration
+| order by timestamp desc
+```
+
 ### コストの見方（Standard Web Test Execution）
 
 **ポータル**: [コスト分析（rg-hccjp76-arc スコープ）](https://portal.azure.com/#view/Microsoft_Azure_CostManagement/Menu/~/costanalysis/scope/%2Fsubscriptions%2Fb0f2ddcb-c22b-4728-89b3-26e90a494ae4%2FresourceGroups%2Frg-hccjp76-arc)
