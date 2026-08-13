@@ -5,6 +5,12 @@ paginate: true
 header: "HCCJP 第76回勉強会 | 2026年8月14日"
 footer: "ハイブリッドクラウド研究会"
 style: |
+  section, section h1, section h2, section h3, section h4,
+  section p, section li, section td, section th, section blockquote {
+    font-family: YuGothic, "Yu Gothic", "游ゴシック", "Hiragino Sans",
+                 "Noto Sans CJK JP", sans-serif;
+  }
+  section code, section pre { font-family: Consolas, "Courier New", monospace; }
   section.small { font-size: 25px; }
   section.small pre, section.small code { font-size: 0.82em; }
   section.x-small { font-size: 21px; }
@@ -64,6 +70,28 @@ style: |
 
 <!-- _class: small -->
 
+# 今日のリンク（ぜんぶ開いてOKです）
+
+| | URL |
+|---|---|
+| 🗳️ **投票・質問・チャット（FlowAsk）** | https://flowask.ebisuda.net/e/964080 |
+| 🪟 **デモサイト Windows** | https://hccjp76-win.ebisuda.net |
+| 🐧 **デモサイト Linux** | https://hccjp76-lnx.ebisuda.net |
+| 📺 YouTube Live | https://www.youtube.com/watch?v=uPc6T-wL8-0 |
+| 📄 Connpass | https://hybridcloud.connpass.com/event/402528/ |
+| 💾 スライド・スクリプト一式 | https://github.com/ebibibi/presentations/tree/main/HCCJP_76 |
+
+**デモサイトを開いたまま見ていてください。壊れるのも直るのも、そちらの画面で起きます。**
+
+<!--
+【14:03】ここでFlowAskのURLをチャットにも貼る。QRを出してもいい。
+デモサイトは自分で開いてもらうと「仕込みではない」ことが伝わりやすい。
+-->
+
+---
+
+<!-- _class: small -->
+
 # 今日やること
 
 ## 1. 目の前で、オンプレのサーバーを壊します
@@ -72,7 +100,7 @@ style: |
 
 ## 3. 緑に戻るまで、そのままお見せします
 
-**壊し方は、皆さんにチャットで決めていただきます。**
+**壊し方は、皆さんの投票（ボタン）で決めていただきます。**
 **AIには、何が起きたか一切教えません。**
 
 <!--
@@ -84,7 +112,7 @@ style: |
 
 # ルール（先に宣言しておきます）
 
-- 🎲 **障害はチャットで選んでもらう** — 私は当日まで何を壊すか決めません
+- 🎲 **障害は投票で選んでもらう** — 私は当日まで何を壊すか決めません
 - 🤐 **AIに与える情報は一言だけ** — 「監視が赤い。原因を調べて直して」
 - 🚫 **私はサーバーにログインしません** — 全部 Azure Arc 越し
 - 😅 **失敗したらそのまま見せます** — うまくいかない様子も含めて実態です
@@ -103,12 +131,14 @@ style: |
 - 第74回「コードで建てる検証環境」の **Nested Hyper-V ラボ**（コードで再構築できる）
 - L2 の 2台を Azure Arc に接続済み・どちらも **動いている Web サイト**を持っている
 
-| VM | OS / Web | IP | Azure Arc |
-|---|---|---|---|
-| arcwin01 | Windows Server 2025 / IIS | 10.10.0.51 | Connected（rg-hccjp76-arc / japaneast） |
-| arclnx01 | Ubuntu 24.04 / nginx | 10.10.0.41 | Connected（同上） |
+| VM | OS / Web | IP | デモサイト | ポータル |
+|---|---|---|---|---|
+| arcwin01 | Windows Server 2025 / IIS | 10.10.0.51 | [開く](https://hccjp76-win.ebisuda.net) | [arcwin01](https://portal.azure.com/#@7b54e7bc-acb0-4a9b-ad82-7421b9e4e2d9/resource/subscriptions/b0f2ddcb-c22b-4728-89b3-26e90a494ae4/resourceGroups/rg-hccjp76-arc/providers/Microsoft.HybridCompute/machines/arcwin01/overview) |
+| arclnx01 | Ubuntu 24.04 / nginx | 10.10.0.41 | [開く](https://hccjp76-lnx.ebisuda.net) | [arclnx01](https://portal.azure.com/#@7b54e7bc-acb0-4a9b-ad82-7421b9e4e2d9/resource/subscriptions/b0f2ddcb-c22b-4728-89b3-26e90a494ae4/resourceGroups/rg-hccjp76-arc/providers/Microsoft.HybridCompute/machines/arclnx01/overview) |
 
-<span class="cue">【画面】Azure ポータルの Machines 一覧 → 2台とも Connected を見せる</span>
+**デモサイトは今すぐ開けます。壊れる瞬間も、戻る瞬間も、ご自分の画面でどうぞ。**
+
+<span class="cue">【画面】ポータルの Machines 一覧 → 2台とも Connected を見せる</span>
 
 <!-- ここで一度ポータルに切り替える。緑の可用性画面も先に見せておくと、赤くなったときの対比が効く。 -->
 
@@ -256,12 +286,15 @@ azcmagent connect --resource-group rg-hccjp76-arc \
 
 # それでは、壊します 🔨
 
-## チャットで番号を選んでください
+## この下のボタンで投票してください
+
+### 次のスライドに選択肢が出ます
 
 <!--
 【14:20 目安】
-・投票は2分で締める。多数決。割れたら私が選ぶと宣言しておく
-・対象OS（Windows / Linux）も一緒に決めてもらう
+・FlowAskの選択式質問（ボタン）で投票。集計はリアルタイムで出る
+・投票は2分で締める。同数なら私が選ぶ、と先に宣言しておく
+・シナリオと対象OSは別々の質問。2回押してもらう
 -->
 
 ---
@@ -280,7 +313,30 @@ azcmagent connect --resource-group rg-hccjp76-arc \
 
 **#3 と #5 は「症状と原因が一致しない」タイプ。AIが"考えている"のが一番よく見えます。**
 
+<span class="cue">→ この直後にボタンが出ます。番号と、対象OS（Windows / Linux）を選んでください</span>
+
 <!-- リハーサル無し＝AIにとっても初見であることを、投票前にもう一度言う。 -->
+
+---
+
+<!-- _class: small -->
+
+# 壊し方以外も、募集しています 🙋
+
+- 選択肢の5つ以外に **「これを試してほしい」** があれば、遠慮なくどうぞ
+  - 例: 「先に切り分け方針を言わせてみて」「わざと嘘の情報を与えたらどうなる？」
+  - 例: 「復旧後にもう一度同じ障害を出したら、2回目は速い？」
+- **AIへの指示そのもの**を書いてもらってもOKです（そのまま打ち込みます）
+- 書く場所はどちらでも
+  - <strong>FlowAskの「AIに試してほしいこと」</strong>（自由記述・匿名OK）
+  - **YouTubeのチャット**
+
+**時間の許すかぎり、その場で拾って実行します。**
+
+<!--
+【投票の直後 & 赤くなるのを待つ数分】ここを読み上げて時間を埋める。
+拾った要望は種明かしパートでも触れると、参加してもらえた感が出る。
+-->
 
 ---
 

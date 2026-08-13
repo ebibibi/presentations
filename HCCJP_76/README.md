@@ -7,12 +7,38 @@
 - **テーマ**: オンプレのサーバー壊します。直すのはAIです。 — Azure Arc × AIによる無人障害復旧
 - **Connpass**: https://hybridcloud.connpass.com/event/402528/
 
-## 当日使うもの
+## 当日の本番は FlowAsk で進行する
+
+**イベント: https://flowask.ebisuda.net/e/964080** （eventId `964080`、現在フェーズ `pre`）
+
+スライドの投影・投票・自由記述・Q&Aをすべて FlowAsk 上で回す。PDF/PPTXは配信が落ちたときの保険。
+
+| 質問 | 種別 | 表示フェーズ |
+|---|---|---|
+| どの障害を起こしますか？（5択） | choice＝**ボタン投票** | live |
+| 壊す対象はどちらにしますか？（Win / Linux / おまかせ） | choice＝**ボタン投票** | live |
+| AIに試してほしいことを自由に書いてください | text（匿名可） | pre / live / post |
+| AIに運用を任せられそうか | rating（1-5） | live / post |
+
+セッションへの質問は FlowAsk の Q&A 機能を使う（スライドの `qa` フレームで、たまったQ&Aをupvote順に表示）。
+
+```bash
+python3 flowask/publish.py update      # slides.md / links.json の変更を反映
+python3 flowask/publish.py phase live  # 当日 14:00 に pre → live
+python3 flowask/publish.py phase post  # 終了後
+```
+
+`flowask/state.json`（eventId / adminToken / questionId）は **git 管理外**。adminToken は Obsidian の
+`02_Contexts/HCCJP/log.md` に age 暗号化で保管してある。
+
+## ファイル
 
 | ファイル | 用途 |
 |---|---|
-| [`slides.md`](slides.md) | 本番スライド（Marp／HTMLコメントがそのまま発表者ノート） |
-| `slides.pdf` / `slides.pptx` | 上記の書き出し（当日はPDFで投影する） |
+| [`slides.md`](slides.md) | 本番スライドの原本（Marp／HTMLコメントがそのまま発表者ノート） |
+| [`links.json`](links.json) | 当日のURL集約。**デモサイトのURLが確定したらここを直して `publish.py update`** |
+| [`flowask/publish.py`](flowask/publish.py) | FlowAskへのイベント作成・スライド反映・フェーズ変更 |
+| `slides.pdf` / `slides.pptx` | 予備の書き出し |
 | [`run-of-show.md`](run-of-show.md) | 進行台本・事前チェックリスト・分単位のタイムテーブル・リスクと逃げ道 |
 | [`images/`](images/) | 構成図3枚（論理／物理／AIの操作経路）。生成元は [`diagrams/build_diagrams.py`](diagrams/build_diagrams.py) |
 
