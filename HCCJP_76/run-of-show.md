@@ -128,6 +128,33 @@ az deployment group create -g rg-hccjp76-arc --subscription b0f2ddcb-c22b-4728-8
 ⚠️ **URLを貼り替え忘れると、デモを始める前から赤くなる。** 死んだURLを叩き続けるため。
 Tunnel を張り直したら `links.json` → `publish.py update` → **この再デプロイ**まで3点セットで行う。
 
+### コストの見方（Standard Web Test Execution）
+
+**ポータル**: [コスト分析（rg-hccjp76-arc スコープ）](https://portal.azure.com/#view/Microsoft_Azure_CostManagement/Menu/~/costanalysis/scope/%2Fsubscriptions%2Fb0f2ddcb-c22b-4728-89b3-26e90a494ae4%2FresourceGroups%2Frg-hccjp76-arc)
+→ グループ化を **「メーター」** にする。または「サービス名 = Azure Monitor」で絞ると
+`Standard Web Test Execution` の行が出る。
+
+⚠️ **当日すぐには出ない。** 使用量データの反映は数時間〜24時間遅れる。実際、テスト開始（8/13 12:05）
+の当日中は Arc / Update Manager のレコードだけで、Web Test のメーターはまだ載っていなかった。
+**「コスト分析に出ない＝課金されていない」ではない。**
+
+**すぐ知りたいときは実行回数から計算する**（課金は実行回数×単価なので、これがいちばん速い）:
+
+```bash
+az monitor app-insights query --app appi-hccjp76-web -g rg-hccjp76-arc \
+  --subscription b0f2ddcb-c22b-4728-89b3-26e90a494ae4 \
+  --analytics-query "availabilityResults | where timestamp > ago(24h) | summarize executions=count() | extend jpy = executions * 0.1173"
+```
+
+単価そのものは料金計算ツールか小売価格APIで引ける（¥0.1173 はこれで取得した値）:
+
+```bash
+curl -s "https://prices.azure.com/api/retail/prices?\$filter=serviceName%20eq%20'Azure%20Monitor'%20and%20armRegionName%20eq%20'japaneast'%20and%20contains(meterName,'Test')&currencyCode='JPY'"
+```
+
+なお、このサブスクリプションでは Cost Management のクエリAPIが 429（スロットリング）を返しやすく、
+古い `az consumption usage list` は `pretaxCost` が `None` で返る。**金額はポータルのコスト分析で見る**のが確実。
+
 ⚠️ **`countif(success == true)` は必ず0になる。** `availabilityResults.success` はこのAPIでは
 **文字列 `"1"` / `"0"`** で返るため、bool 比較が常に偽になり「全部失敗」に見える。実際に落ちているのか
 クエリのせいなのかは `message`（`Passed` / 失敗理由）と、ブラウザ・curl での実アクセスで確かめる。
