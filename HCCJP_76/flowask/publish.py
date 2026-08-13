@@ -2,6 +2,7 @@
 """HCCJP 第76回の FlowAsk イベントを作成／更新する。
 
   作成:  python3 flowask/publish.py create
+  質問:  python3 flowask/publish.py sync-questions    # QUESTIONS の追加分を作り、並び順を揃える
   更新:  python3 flowask/publish.py update            # slides.md と links.json を FlowAsk へ反映
   出力:  python3 flowask/publish.py render            # PDF書き出し用に slides.local.md を作る
   公開:  python3 flowask/publish.py phase live
@@ -44,7 +45,49 @@ EVENT_DESC = (
 WEBP_WIDTH = 1920
 WEBP_QUALITY = 82
 
+# QUESTIONS は「デッキに出てくる順」に並べる。この順が参加者ページの並び順にもなる。
 QUESTIONS = [
+    {
+        "key": "warmup",
+        "title": "いま、オンプレのサーバーを運用していますか？",
+        "description": "開始前にどうぞ。今日の話をどの目線で聞くかの目安にします。",
+        "type": "choice",
+        "visibleIn": ["pre", "live"],
+        "choices": [
+            {"label": "本番を運用している"},
+            {"label": "検証環境・ラボだけある"},
+            {"label": "昔はやっていた"},
+            {"label": "オンプレは無い"},
+        ],
+        "singleResponse": True,
+    },
+    {
+        "key": "arc",
+        "title": "Azure Arc、どこまで触ったことがありますか？",
+        "type": "choice",
+        "visibleIn": ["pre", "live"],
+        "choices": [
+            {"label": "本番で使っている"},
+            {"label": "検証したことがある"},
+            {"label": "名前は知っている"},
+            {"label": "今日はじめて知った"},
+        ],
+        "singleResponse": True,
+    },
+    {
+        "key": "detect",
+        "title": "オンプレの障害、いちばん最初に気づくのは何ですか？",
+        "description": "今日の監視の話の前に。正直なところをどうぞ。",
+        "type": "choice",
+        "visibleIn": ["pre", "live"],
+        "choices": [
+            {"label": "監視が自動で検知する"},
+            {"label": "利用者からの連絡"},
+            {"label": "定時の目視確認"},
+            {"label": "たぶん気づけていない"},
+        ],
+        "singleResponse": True,
+    },
     {
         "key": "scenario",
         "title": "どの障害を起こしますか？",
@@ -81,6 +124,33 @@ QUESTIONS = [
         ),
         "type": "text",
         "visibleIn": ["pre", "live", "post"],
+    },
+    {
+        "key": "predict",
+        "title": "AIは何分で緑に戻すと思いますか？",
+        "description": "赤くなるまでの待ち時間にどうぞ。当たっても何も出ません。",
+        "type": "choice",
+        "visibleIn": ["live"],
+        "choices": [
+            {"label": "5分以内"},
+            {"label": "10分くらい"},
+            {"label": "15分ギリギリ"},
+            {"label": "たぶん直らない"},
+        ],
+        "singleResponse": True,
+    },
+    {
+        "key": "boundary",
+        "title": "AIに「実行」まで任せていいのはどこまでだと思いますか？",
+        "type": "choice",
+        "visibleIn": ["live", "post"],
+        "choices": [
+            {"label": "調査だけ（読み取り専用）"},
+            {"label": "サービス再起動まで"},
+            {"label": "設定変更まで"},
+            {"label": "承認ゲートがあれば全部"},
+        ],
+        "singleResponse": True,
     },
     {
         "key": "trust",
@@ -183,9 +253,15 @@ def page_index(md: str, heading_fragment: str) -> int:
 
 def build_sequence(md: str, qids: dict[str, str]) -> list[dict]:
     total = len(re.split(r"^---$", md, flags=re.M)) - 2
+    # 「このページを出し終わったら、この投票フレームを挟む」の対応表。
     after = {
+        page_index(md, "# ルール（先に宣言しておきます）"): ["warmup"],
+        page_index(md, "# なぜ Azure Arc なのか"): ["arc"],
+        page_index(md, "# 監視は「専用ダッシュボード」を作らない"): ["detect"],
         page_index(md, "# 障害シナリオ"): ["scenario", "os"],
         page_index(md, "# 壊し方以外も"): ["freeform"],
+        page_index(md, "# ライブ中に注目してほしいところ"): ["predict"],
+        page_index(md, "# 「できる」と「やらせていい」の線引き"): ["boundary"],
         page_index(md, "# まとめ"): ["trust"],
         page_index(md, "# Q&A"): ["__qa__"],
     }
@@ -238,6 +314,38 @@ def cmd_create() -> None:
     print(f"done: https://flowask.ebisuda.net/e/{event_id}  (markdown {len(md)} 文字)")
 
 
+def cmd_sync_questions() -> None:
+    """QUESTIONS に増えた分を作り、参加者ページの並び順を QUESTIONS の順に揃える。
+
+    既存の質問は触らない。choices を作り直すと選択肢IDが変わり、投票済みの回答が
+    どの選択肢のものか分からなくなるため。文言を直したいときは手で PATCH する。
+    """
+    st = load_state()
+    event_id, admin = st["eventId"], st["adminToken"]
+    live = call("GET", f"/events/{event_id}/questions", None, x_admin_token=admin)
+    by_title = {q["title"]: q["id"] for q in live}
+
+    qids = dict(st.get("questionIds", {}))
+    for q in QUESTIONS:
+        if q["key"] in qids and qids[q["key"]] in {v for v in by_title.values()}:
+            continue
+        if q["title"] in by_title:          # state.json だけ欠けている場合を拾う
+            qids[q["key"]] = by_title[q["title"]]
+            continue
+        payload = {k: v for k, v in q.items() if k != "key"}
+        payload.setdefault("anonymousAllowed", True)
+        res = call("POST", f"/events/{event_id}/questions", payload, x_admin_token=admin)
+        qids[q["key"]] = res["id"]
+        print(f"  + {q['key']} → {res['id']}")
+
+    call("PUT", f"/events/{event_id}/questions/reorder",
+         {"questionIds": [qids[q["key"]] for q in QUESTIONS]}, x_admin_token=admin)
+
+    st["questionIds"] = qids
+    STATE.write_text(json.dumps(st, ensure_ascii=False, indent=2))
+    print(f"questions: {len(qids)} 件（並び順は QUESTIONS の順）")
+
+
 def cmd_update() -> None:
     st = load_state()
     md = build_markdown(st["eventId"])
@@ -269,6 +377,8 @@ if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else ""
     if cmd == "create":
         cmd_create()
+    elif cmd == "sync-questions":
+        cmd_sync_questions()
     elif cmd == "update":
         cmd_update()
     elif cmd == "render":

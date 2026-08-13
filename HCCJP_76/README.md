@@ -13,16 +13,26 @@
 
 スライドの投影・投票・自由記述・Q&Aをすべて FlowAsk 上で回す。PDF/PPTXは配信が落ちたときの保険。
 
-| 質問 | 種別 | 表示フェーズ |
-|---|---|---|
-| どの障害を起こしますか？（5択） | choice＝**ボタン投票** | live |
-| 壊す対象はどちらにしますか？（Win / Linux / おまかせ） | choice＝**ボタン投票** | live |
-| AIに試してほしいことを自由に書いてください | text（匿名可） | pre / live / post |
-| AIに運用を任せられそうか | rating（1-5） | live / post |
+投票はデッキ全体に散らす。提示順（`sequence`）で、下の「直後に挟むページ」を出し終えたところに質問フレームが入る。
+
+| 質問 | 種別 | 表示フェーズ | 直後に挟むページ |
+|---|---|---|---|
+| いま、オンプレのサーバーを運用していますか？ | choice＝**ボタン投票** | pre / live | ルール |
+| Azure Arc、どこまで触ったことがありますか？ | choice＝**ボタン投票** | pre / live | なぜ Azure Arc なのか |
+| オンプレの障害、いちばん最初に気づくのは何ですか？ | choice＝**ボタン投票** | pre / live | 監視は「専用ダッシュボード」を作らない |
+| どの障害を起こしますか？（5択） | choice＝**ボタン投票** | live | 障害シナリオ |
+| 壊す対象はどちらにしますか？（Win / Linux / おまかせ） | choice＝**ボタン投票** | live | 障害シナリオ |
+| AIに試してほしいことを自由に書いてください | text（匿名可） | pre / live / post | 壊し方以外も |
+| AIは何分で緑に戻すと思いますか？ | choice＝**ボタン投票** | live | ライブ中に注目してほしいところ |
+| AIに「実行」まで任せていいのはどこまでか | choice＝**ボタン投票** | live / post | できる／やらせていいの線引き |
+| AIに運用を任せられそうか | rating（1-5） | live / post | まとめ |
+
+先頭3つは `pre` でも見えるので、開始前の待ち時間に答えてもらえる。ライブ中に時間を食わない。
 
 セッションへの質問は FlowAsk の Q&A 機能を使う（スライドの `qa` フレームで、たまったQ&Aをupvote順に表示）。
 
 ```bash
+python3 flowask/publish.py sync-questions  # QUESTIONS の追加分を作り、並び順を揃える
 python3 flowask/publish.py update      # slides.md / links.json の変更を反映
 python3 flowask/publish.py phase live  # 当日 14:00 に pre → live
 python3 flowask/publish.py phase post  # 終了後
