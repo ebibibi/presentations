@@ -15,7 +15,7 @@
 |---|---|---|---|
 | 1 | Arc 2台が Connected | `az connectedmachine list -g rg-hccjp76-arc -o table` | ☐ |
 | 2 | Web サイトが両方 200 | `webroot/deploy.sh` を流し直して確認 | ☐ |
-| 3 | Named Tunnel で公開URLを用意（Quick Tunnelは使わない） | ブラウザで両URLが表示される | ☐ |
+| 3 | 公開URLを用意（Quick Tunnel。下の「公開経路」参照） | ブラウザで両URLが表示される | ☐ |
 | 4 | 可用性テストを有効化（**課金発生・承認済みで実行**） | `az deployment group create ... monitoringEnabled=true` | ☐ |
 | 5 | 可用性が 100%（緑）になっている | Azure Monitor の可用性画面 | ☐ |
 | 6 | アラートルールが Enabled | ポータルのアラートルール一覧 | ☐ |
@@ -23,12 +23,52 @@
 | 8 | AIに渡すプロンプトを1行だけ用意（前情報を書かない） | 「監視が赤い。原因を調べて直して」 | ☐ |
 | 9 | 画面レイアウト確認（ポータル / ターミナル / スライド / サイト） | OBSのシーン切替を1周 | ☐ |
 | 10 | スライドPDFを開いておく（オフライン表示できる状態） | `slides.pdf` | ☐ |
-| 11 | **Named Tunnel を `hccjp76-win` / `hccjp76-lnx` で作る** → `links.json` を直して `publish.py update` | 両URLがブラウザで開く | ☐ |
+| 11 | 出てきたURLを `links.json` に書く → `publish.py update` → `publish.py render` → PDF再出力 | スライドのリンクが新URLになっている | ☐ |
 | 12 | **FlowAsk を `live` にする** | `python3 flowask/publish.py phase live` | ☐ |
 | 13 | FlowAsk のイベントURLをチャット・Connpassに貼る | https://flowask.ebisuda.net/e/964080 | ☐ |
 
 **リハーサルはしない。** 障害を一度解かせると AI が答えを知っている状態になるため、
 準備は「壊れていない環境を作る」ところまで。
+
+---
+
+## 1.5 公開経路（ここは想定を1つ訂正した）
+
+**Named Tunnel（`hccjp76-win.ebisuda.net` 等の固定名）は使えない。**
+`ebisuda.net` の権威DNSは **Azure DNS**（`ns1-06.azure-dns.com`）で、Cloudflare のゾーンではない。
+Cloudflare Tunnel の公開ホスト名は `<tunnel-id>.cfargotunnel.com` への CNAME で成立するが、
+これは Cloudflare の権威DNSでしか解決されないため、Azure DNS 側に CNAME を書いても引けない。
+
+したがって当日は **Quick Tunnel（`*.trycloudflare.com`）** を使う。URLは起動のたびに変わるので、
+「起動 → URLを `links.json` へ → 1コマンドで全反映」を手順に組み込んである。
+
+```bash
+cd ~/presentations/HCCJP_76
+payload="$(base64 -w0 monitoring/start-cloudflare-quick.sh)"
+az connectedmachine run-command create --name hccjp76-cloudflare-quick \
+  --machine-name arclnx01 -g rg-hccjp76-arc --location japaneast \
+  --subscription b0f2ddcb-c22b-4728-89b3-26e90a494ae4 \
+  --script "echo '$payload' | base64 -d >/tmp/q.sh; bash /tmp/q.sh" \
+  --query "instanceView.output" -o tsv      # PUBLIC_URL=... が出る
+# Windows は monitoring/start-cloudflare-quick.ps1 を同様に arcwin01 へ
+# ※ Windows 側スクリプトの自己疎通チェックはサーバーのDNSキャッシュ差で失敗することがある。
+#    URLは出ているので、こちらから curl して 200 なら成功と判断してよい。
+
+vi links.json                        # demo_windows / demo_linux を書き換え
+python3 flowask/publish.py update    # FlowAsk のスライドに反映
+python3 flowask/publish.py render && \
+  npx @marp-team/marp-cli --pdf --allow-local-files slides.local.md -o slides.pdf
+```
+
+固定名がどうしても欲しい場合は、`lab.ebisuda.net` などのサブドメインを Cloudflare のゾーンとして
+切り出し、Azure DNS から NS 委任する必要がある。前日にやる作業ではない。
+
+**現在の公開URL（2026-08-13 11:20 JST 時点で稼働確認）**
+
+| | URL |
+|---|---|
+| Windows / IIS | https://peninsula-ending-dictionaries-refused.trycloudflare.com |
+| Linux / nginx | https://have-seas-easter-pmc.trycloudflare.com |
 
 ---
 
@@ -97,7 +137,7 @@ az connectedmachine run-command create \
 |---|---|
 | AIが直せない | **そのまま見せる。** 14:40 で打ち切り、何が足りなかったかを一緒に考える枠にする |
 | AIが誤った対象を触る | 止めずに見せてから、後半の「権限の話」で回収する（生きた教材になる） |
-| Tunnel が落ちて全部赤になる | オンプレのローカルHTTPが200なことを見せ、監視経路の障害だと切り分けて説明する |
+| Tunnel が落ちて全部赤になる | オンプレのローカルHTTPが200なことを見せ、監視経路の障害だと切り分けて説明する。Quick Tunnelを張り直すとURLが変わるので `links.json` → `publish.py update` |
 | Arc が Disconnected になる | Run Command が通らない。L1/L2 の再起動は間に合わないので、その場でシナリオを中止し種明かしパートへ |
 | 赤くならない（検知が遅い） | 5分間隔＋アラート処理待ちであることを説明。それでも来なければ可用性画面の生データを直接見せる |
 | 時間が押した | 「種明かし」を優先し、「権限の話」を圧縮する（順序は変えない） |

@@ -2,7 +2,8 @@
 """HCCJP 第76回の FlowAsk イベントを作成／更新する。
 
   作成:  python3 flowask/publish.py create
-  更新:  python3 flowask/publish.py update            # slides.md と links.json を反映
+  更新:  python3 flowask/publish.py update            # slides.md と links.json を FlowAsk へ反映
+  出力:  python3 flowask/publish.py render            # PDF書き出し用に slides.local.md を作る
   公開:  python3 flowask/publish.py phase live
 
 state.json（eventId と adminToken）はこのディレクトリに置くが git には含めない。
@@ -147,14 +148,18 @@ def data_uri(png: Path) -> str:
     return "data:image/webp;base64," + base64.b64encode(buf.getvalue()).decode()
 
 
+def apply_links(md: str, event_id: str) -> str:
+    """slides.md のプレースホルダ URL を links.json の実値へ置き換える。"""
+    links = json.loads((DECK / "links.json").read_text(encoding="utf-8"))
+    md = md.replace("__EVENT_ID__", event_id)
+    md = md.replace("__DEMO_WIN__", links["demo_windows"])
+    md = md.replace("__DEMO_LNX__", links["demo_linux"])
+    return md
+
+
 def build_markdown(event_id: str) -> str:
     """slides.md を FlowAsk に載せられる形にする（画像を data-URI へ、URLを実値へ）。"""
-    md = (DECK / "slides.md").read_text(encoding="utf-8")
-    links = json.loads((DECK / "links.json").read_text(encoding="utf-8"))
-
-    md = md.replace("__EVENT_ID__", event_id)
-    md = md.replace("https://hccjp76-win.ebisuda.net", links["demo_windows"])
-    md = md.replace("https://hccjp76-lnx.ebisuda.net", links["demo_linux"])
+    md = apply_links((DECK / "slides.md").read_text(encoding="utf-8"), event_id)
 
     for ref in sorted(set(re.findall(r"images/([\w.-]+\.png)", md))):
         md = md.replace(f"images/{ref}", data_uri(DECK / "images" / ref))
@@ -244,6 +249,15 @@ def cmd_update() -> None:
     print(f"updated ({len(md)} 文字): https://flowask.ebisuda.net/e/{st['eventId']}")
 
 
+def cmd_render() -> None:
+    """PDF/PPTX 書き出し用に、リンクだけ実値へ置換した markdown を吐く（画像はローカルパスのまま）。"""
+    st = json.loads(STATE.read_text()) if STATE.exists() else {"eventId": "__EVENT_ID__"}
+    out = DECK / "slides.local.md"   # 画像の相対パスを保つためデッキ直下に置く
+    out.write_text(apply_links((DECK / "slides.md").read_text(encoding="utf-8"), st["eventId"]),
+                   encoding="utf-8")
+    print(out)
+
+
 def cmd_phase(phase: str) -> None:
     st = load_state()
     call("PATCH", f"/events/{st['eventId']}", {"phase": phase}, x_admin_token=st["adminToken"])
@@ -256,6 +270,8 @@ if __name__ == "__main__":
         cmd_create()
     elif cmd == "update":
         cmd_update()
+    elif cmd == "render":
+        cmd_render()
     elif cmd == "phase" and len(sys.argv) > 2:
         cmd_phase(sys.argv[2])
     else:

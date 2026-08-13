@@ -74,9 +74,9 @@ style: |
 
 | | URL |
 |---|---|
-| 🗳️ **投票・質問・チャット（FlowAsk）** | https://flowask.ebisuda.net/e/964080 |
-| 🪟 **デモサイト Windows** | https://hccjp76-win.ebisuda.net |
-| 🐧 **デモサイト Linux** | https://hccjp76-lnx.ebisuda.net |
+| 🗳️ **投票・質問・チャット（FlowAsk）** | https://flowask.ebisuda.net/e/__EVENT_ID__ |
+| 🪟 **デモサイト Windows** | __DEMO_WIN__ |
+| 🐧 **デモサイト Linux** | __DEMO_LNX__ |
 | 📺 YouTube Live | https://www.youtube.com/watch?v=uPc6T-wL8-0 |
 | 📄 Connpass | https://hybridcloud.connpass.com/event/402528/ |
 | 💾 スライド・スクリプト一式 | https://github.com/ebibibi/presentations/tree/main/HCCJP_76 |
@@ -133,8 +133,8 @@ style: |
 
 | VM | OS / Web | IP | デモサイト | ポータル |
 |---|---|---|---|---|
-| arcwin01 | Windows Server 2025 / IIS | 10.10.0.51 | [開く](https://hccjp76-win.ebisuda.net) | [arcwin01](https://portal.azure.com/#@7b54e7bc-acb0-4a9b-ad82-7421b9e4e2d9/resource/subscriptions/b0f2ddcb-c22b-4728-89b3-26e90a494ae4/resourceGroups/rg-hccjp76-arc/providers/Microsoft.HybridCompute/machines/arcwin01/overview) |
-| arclnx01 | Ubuntu 24.04 / nginx | 10.10.0.41 | [開く](https://hccjp76-lnx.ebisuda.net) | [arclnx01](https://portal.azure.com/#@7b54e7bc-acb0-4a9b-ad82-7421b9e4e2d9/resource/subscriptions/b0f2ddcb-c22b-4728-89b3-26e90a494ae4/resourceGroups/rg-hccjp76-arc/providers/Microsoft.HybridCompute/machines/arclnx01/overview) |
+| arcwin01 | Windows Server 2025 / IIS | 10.10.0.51 | [開く](__DEMO_WIN__) | [arcwin01](https://portal.azure.com/#@7b54e7bc-acb0-4a9b-ad82-7421b9e4e2d9/resource/subscriptions/b0f2ddcb-c22b-4728-89b3-26e90a494ae4/resourceGroups/rg-hccjp76-arc/providers/Microsoft.HybridCompute/machines/arcwin01/overview) |
+| arclnx01 | Ubuntu 24.04 / nginx | 10.10.0.41 | [開く](__DEMO_LNX__) | [arclnx01](https://portal.azure.com/#@7b54e7bc-acb0-4a9b-ad82-7421b9e4e2d9/resource/subscriptions/b0f2ddcb-c22b-4728-89b3-26e90a494ae4/resourceGroups/rg-hccjp76-arc/providers/Microsoft.HybridCompute/machines/arclnx01/overview) |
 
 **デモサイトは今すぐ開けます。壊れる瞬間も、戻る瞬間も、ご自分の画面でどうぞ。**
 
