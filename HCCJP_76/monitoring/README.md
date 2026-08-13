@@ -59,9 +59,16 @@ az connectedmachine run-command create \
 
 ## Event-day endpoint
 
-Replace the Quick Tunnel with a named Cloudflare Tunnel and a stable DNS name. Keep the origin
-private and accept only outbound HTTPS from `cloudflared`. The Azure Monitor test should validate
-both HTTP 200 and unique page content so a generic proxy error cannot be mistaken for success.
+A named Cloudflare Tunnel with a stable hostname under `ebisuda.net` is **not available**: the zone is
+authoritative on Azure DNS, and a public hostname for a Cloudflare Tunnel resolves only through
+Cloudflare's own authoritative servers (`<tunnel-id>.cfargotunnel.com`). A CNAME written in Azure DNS
+does not resolve. Use the Quick Tunnel on the day and publish the generated URL through
+`../links.json` (see `../run-of-show.md`, section 1.5). A stable name would require delegating a
+subdomain zone such as `lab.ebisuda.net` to Cloudflare.
+
+Keep the origin private and accept only outbound HTTPS from `cloudflared`. The Azure Monitor test
+should validate both HTTP 200 and unique page content so a generic proxy error cannot be mistaken
+for success.
 
 ## Azure Monitor deployment
 

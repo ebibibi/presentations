@@ -31,6 +31,13 @@ python3 flowask/publish.py phase post  # 終了後
 `flowask/state.json`（eventId / adminToken / questionId）は **git 管理外**。adminToken は Obsidian の
 `02_Contexts/HCCJP/log.md` に age 暗号化で保管してある。
 
+### デモサイトの公開URLについて
+
+`ebisuda.net` の権威DNSは Azure DNS なので、**Cloudflare の Named Tunnel（固定ホスト名）は使えない**
+（`*.cfargotunnel.com` への CNAME は Cloudflare の権威DNSでしか解決されない）。当日は Quick Tunnel
+（`*.trycloudflare.com`）を張り、出てきたURLを `links.json` に書いて反映する。手順は
+[`run-of-show.md`](run-of-show.md) の「1.5 公開経路」にある。
+
 ## ファイル
 
 | ファイル | 用途 |
@@ -42,12 +49,15 @@ python3 flowask/publish.py phase post  # 終了後
 | [`run-of-show.md`](run-of-show.md) | 進行台本・事前チェックリスト・分単位のタイムテーブル・リスクと逃げ道 |
 | [`images/`](images/) | 構成図3枚（論理／物理／AIの操作経路）。生成元は [`diagrams/build_diagrams.py`](diagrams/build_diagrams.py) |
 
-スライドの書き出し（Chromeのパスを明示しないと `No suitable browser found` になる）:
+スライドの書き出し。`slides.md` の URL はプレースホルダ（`__DEMO_WIN__` 等）なので、
+**必ず `render` で実値を埋めた `slides.local.md` から出力する**。
+Chromeのパスを明示しないと `No suitable browser found` になる。
 
 ```bash
+python3 flowask/publish.py render
 export CHROME_PATH=$(ls -d ~/.cache/puppeteer/chrome/*/chrome-linux64/chrome | head -1)
-npx @marp-team/marp-cli --pdf  --allow-local-files slides.md -o slides.pdf
-npx @marp-team/marp-cli --pptx --allow-local-files slides.md -o slides.pptx
+npx @marp-team/marp-cli --pdf  --allow-local-files slides.local.md -o slides.pdf
+npx @marp-team/marp-cli --pptx --allow-local-files slides.local.md -o slides.pptx
 ```
 
 ## 概要

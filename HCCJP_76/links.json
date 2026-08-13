@@ -3,10 +3,10 @@
   "youtube": "https://www.youtube.com/watch?v=uPc6T-wL8-0",
   "connpass": "https://hybridcloud.connpass.com/event/402528/",
   "repo": "https://github.com/ebibibi/presentations/tree/main/HCCJP_76",
-  "demo_windows": "https://hccjp76-win.ebisuda.net",
-  "demo_linux": "https://hccjp76-lnx.ebisuda.net",
+  "demo_windows": "https://peninsula-ending-dictionaries-refused.trycloudflare.com",
+  "demo_linux": "https://have-seas-easter-pmc.trycloudflare.com",
   "portal_rg": "https://portal.azure.com/#@7b54e7bc-acb0-4a9b-ad82-7421b9e4e2d9/resource/subscriptions/b0f2ddcb-c22b-4728-89b3-26e90a494ae4/resourceGroups/rg-hccjp76-arc/overview",
   "portal_arcwin01": "https://portal.azure.com/#@7b54e7bc-acb0-4a9b-ad82-7421b9e4e2d9/resource/subscriptions/b0f2ddcb-c22b-4728-89b3-26e90a494ae4/resourceGroups/rg-hccjp76-arc/providers/Microsoft.HybridCompute/machines/arcwin01/overview",
   "portal_arclnx01": "https://portal.azure.com/#@7b54e7bc-acb0-4a9b-ad82-7421b9e4e2d9/resource/subscriptions/b0f2ddcb-c22b-4728-89b3-26e90a494ae4/resourceGroups/rg-hccjp76-arc/providers/Microsoft.HybridCompute/machines/arclnx01/overview",
-  "_note": "demo_windows / demo_linux は当日 Named Tunnel をこの名前で作ってから有効になる。作成後にこのファイルを直し `python3 flowask/publish.py update` を実行する。"
+  "_note": "デモサイトは Cloudflare Quick Tunnel の使い捨てURL。cloudflared を再起動すると変わる。ebisuda.net は Azure DNS 管理なので Cloudflare の Named Tunnel（*.cfargotunnel.com への CNAME）は使えない。URLが変わったらこのファイルを直して `python3 flowask/publish.py update` と `flowask/publish.py render` → PDF再出力。"
 }
