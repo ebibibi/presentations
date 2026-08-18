@@ -1,0 +1,17 @@
+source_faithfulness:
+  status: pass
+  rationale: "AD DSとEntra ID、DNS／SRV、OUとコンテナ、GPO処理、認証方式とCredSSP、複製、FSMO、GC、信頼、復旧、2025機能レベルなどは公式抽出事実と整合する。『共有名簿』『次の券をもらう券』『場所が分からない』は学習用の比喩として明示され、設計・運用上の助言も『目安』『原則』『段階的に』などの表現で公式事実と区別されている。"
+japanese_clarity:
+  status: pass
+  rationale: "「OUは管理場所、グループは権限のまとまり」「サイト＝ネットワークの近さ」「信頼関係＝認証を受け入れる経路」など、見出しとラベルから後続内容を予測できる。英語見出しにも日本語の定義が直結しており、表示上の余分な区切り記号はあるものの意味理解を妨げない。"
+taxonomy_challenge:
+  status: pass
+  rationale: "論理構造・物理構造・提供機能という分類軸が先に示され、フォレスト／ドメイン／OU、DC／サイト／サイトリンク、認証／LDAP／GPOなどが根拠に沿って配置されている。DCと複製が複数の観点にまたがることも重なり例として明示し、OUとグループ、ADドメインとDNS、Kerberos／NTLMとCredSSPの混同も個別に解いている。"
+first_time_teachback:
+  status: pass
+  rationale: "初見でも、AD DSはオブジェクトを階層的に保持し、DNSでDCを発見し、DCが認証・LDAP・複製を担い、OUへリンクしたGPOがユーザーやPCへ設定を届ける仕組みだと言い直せる。フォレスト、ドメイン、サイト、信頼、GC、バックアップの位置関係も終盤の概念マップまでに接続されている。"
+presenter_usability:
+  status: pass
+  rationale: "各スライドに定義、対比、関係、注意点が画面内にあり、予習なしでも順番に説明できる。GPOの例外、NTLMが残る条件、Recycle Binはバックアップではないこと、信頼は権限を自動付与しないこと、セキュリティ強化前の監査と互換性確認など、安全に話すための重要な留保も表示されている。"
+reviewed_sha256: "ee4dc9989b67789597bb094b0bf37c45502f0cf2117527267ceec8aaa534f1d6"
+overall: pass

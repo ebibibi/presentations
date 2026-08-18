@@ -1,0 +1,447 @@
+--- Slide 1 ---
+Active Directory 入門
+2026年版 Part 1｜まず把握すべき概念と用語
+用語を、地図に置く
+Source: https://www.youtube.com/watch?v=lZ8Ps6U_kvY / 2026年8月18日 ｜ 胡田昌彦 ｜ ebisuda.net
+--- Slide 2 ---
+02
+REMAKE POLICY
+内容の強みは残す。見づらさは残さない
+音
+BGMなし / 声と説明に集中
+文字
+大きく、短く / 1枚1メッセージ
+色
+純黒×赤文字を避ける / 色だけで区別しない
+濃紺の背景＋白文字＋明るい補助色で統一
+--- Slide 3 ---
+03
+TODAY'S GOAL
+丸暗記ではなく
+用語を、地図に置く
+初めて聞く言葉も『論理・物理・機能』の視点で眺めれば迷いにくい
+--- Slide 4 ---
+04
+FIRST DISTINCTION
+Active Directory と Microsoft Entra ID は別物
+Active Directory Domain Services
+Windows Serverで運用 /  / ドメイン参加／GPO / Kerberos・NTLM／LDAP / 社内サーバー・PC管理
+Microsoft Entra ID
+クラウドのIDサービス /  / SaaS／条件付きアクセス / MFA・パスワードレス / Microsoft Entra join
+併用 / できる
+この動画の『AD』は Active Directory Domain Services（AD DS）
+--- Slide 5 ---
+05
+LEARNING METAPHOR
+AD DSを3つの役割で覚える
+共有名簿
+誰がいる？ / どのPC？ / どのグループ？
+本人確認
+誰として / サインインした？
+ルール配布
+どの設定を / 誰のPCへ？
+学習用の比喩：保存・認証・アクセス制御・ポリシー管理を3役に整理
+--- Slide 6 ---
+06
+THREE LENSES
+用語を3つの視点で見る
+① 論理構造
+フォレスト / ドメイン / OU／コンテナ
+② 物理構造
+DC / サイト／サブネット / サイトリンク
+③ 提供機能
+DNS／LDAP／認証 / GPO／複製 / 信頼／復旧
+重なり例｜DC＝AD DSを動かすサーバー＋認証応答　複製＝DC間構成＋同期機能
+--- Slide 7 ---
+07
+DIRECTORY DATA
+管理対象を『オブジェクト』として保存する
+ユーザー
+名前／所属／ / 認証に必要な情報
+コンピューター
+端末名／OS／所属
+グループ
+メンバー／権限付与
+サービスアカウント
+サービス用ID／ / サービス名の登録
+オブジェクト = 管理対象 ／ 属性 = その対象が持つ情報項目
+--- Slide 8 ---
+08
+DISTINGUISHED NAME
+ディレクトリ内の住所は DN で表す
+CN=佐藤, OU=営業部, DC=corp, DC=example, DC=com
+CN
+オブジェクト名
+OU
+組織単位
+DC
+DNS名の各要素
+画面のフォルダー表示ではなく、階層を持つディレクトリデータ
+--- Slide 9 ---
+09
+LOGICAL MODEL
+フォレストが最上位、ドメインがデータ区画
+FOREST
+corp.example.com
+フォレストルートドメイン / 自分のディレクトリ区画を持つ
+child.corp.example.com
+必要なら子ドメインを追加 / 同じフォレストの一員
+→
+同じフォレストはスキーマ・構成・グローバルカタログを共有
+--- Slide 10 ---
+10
+DESIGN PRINCIPLE
+フォレストやドメインは
+要件が先、構造は後
+設計の目安｜『分けられる』と『分けるべき』は別。まず単純な構成から
+--- Slide 11 ---
+11
+DOMAIN ≠ DNS
+ADドメインはDNS名を使う。でもDNSそのものではない
+AD DSのドメイン
+ユーザーやPCを持つ / ディレクトリのデータ区画 /  / 例：corp.example.com
+DNSのドメイン／ゾーン
+名前からIPやサービスを探す / 名前解決の範囲 /  / 例：corp.example.com
+同じ名前 / 別の役割
+AD DSはDNSを使ってドメインコントローラーとサービスを見つける
+--- Slide 12 ---
+12
+DNS DEPENDENCY
+DNSが壊れると、ADは『場所が分からない』
+クライアント
+corpのDCは / どこ？
+→
+DC Locator
+DNSでSRVレコードを検索 / サイト等の条件でDCを選択
+→
+DC
+LDAP／Kerberosへ / 接続
+切り分けの目安｜DNS参照先でADドメインのSRVレコードを解決できるか
+--- Slide 13 ---
+13
+SRV RECORD
+SRVレコード = サービスの場所を知らせるDNSレコード
+_ldap._tcp.dc._msdcs.corp.example.com
+_ldap._tcp
+LDAPをTCPで提供
+dc._msdcs
+対象ドメインのDCを検索
+結果
+ホスト・ポート / 優先度・重み
+Aレコードだけ見て『DNSは正常』と判断しない
+--- Slide 14 ---
+14
+DOMAIN CONTROLLER
+DC = AD DSを提供するサーバー
+保持
+自ドメインの / ディレクトリ情報
+提供
+認証／LDAP / 時刻同期
+同期
+他のDCと / 変更を複製
+DNS Server役割はDCへの併設が多いが必須ではない
+--- Slide 15 ---
+15
+PHYSICAL MODEL
+サイト = ネットワークの『近さ』を表す
+東京サイト
+10.10.0.0/16 / DC-TYO-01／02 /  / 高速・安定したLAN
+大阪サイト
+10.20.0.0/16 / DC-OSA-01 /  / 別拠点のLAN
+WAN／VPN
+サイトは組織図ではない。IPサブネットをサイトへ対応付ける
+--- Slide 16 ---
+16
+SITE LINK
+サイトリンク = サイト間の接続条件
+経路
+どのサイト同士を / 接続するか
+コスト
+複製経路の選択に / 影響する値
+スケジュール
+いつ複製を / 許可するか
+近いDCの選択と、遠隔地への複製制御を物理構造で設計
+--- Slide 17 ---
+17
+OU OR CONTAINER
+OUは『管理するため』の入れ物
+Organizational Unit（OU）
+オブジェクトを整理 / 管理権限を委任 / GPOをリンクできる
+Container
+Users／Computersなど / 汎用的な入れ物 / GPOのリンク先ではない
+OU設計は会社の部署図コピーではなく『委任と設定』から決める
+--- Slide 18 ---
+18
+OU ≠ GROUP
+OUは管理場所、グループは権限のまとまり
+OU
+原則として1オブジェクトは / 同時に1つのOU階層へ所属 /  / GPO／委任の対象
+セキュリティグループ
+複数グループへ所属できる /  / 共有フォルダー等の / アクセス権を付与
+『営業部OUだから営業フォルダーへ入れる』ではなく、権限はグループで
+--- Slide 19 ---
+19
+GROUP POLICY
+Group Policy Object（GPO）= 設定を一括配布
+Local
+端末ローカル
+→
+Site
+ネットワーク上のサイト
+→
+Domain
+ドメイン全体
+→
+OU
+対象OU
+後で処理するGPOが原則優先。強制／継承ブロック／セキュリティフィルターで変わる
+--- Slide 20 ---
+20
+DOMAIN JOIN
+ドメイン参加 = PCにもアカウントを持たせる
+PC
+ドメインへ / 参加する端末
+→
+ドメイン参加
+必要な権限で / PCアカウントを作成
+→
+安全な関係
+端末とドメインを / 結び付ける
+前提：DNS・ネットワーク到達性・権限・時刻同期
+--- Slide 21 ---
+21
+AUTHENTICATION LAYERS
+Kerberos／NTLM と
+CredSSPは同じ列ではない
+Kerberos・NTLMは認証方式。CredSSPは資格情報をリモート先へ委任する仕組み
+--- Slide 22 ---
+22
+KERBEROS
+Kerberos = パスワードを毎回渡さず、チケットで進む
+① サインイン
+ユーザーが / 本人確認
+→
+② KDC
+TGTを発行 / ＝次の券をもらう券
+→
+③ サービス券
+TGTを提示し / 対象用の券を取得
+→
+④ 利用
+ファイル等へ / アクセス
+時刻同期が重要。Kerberosを利用できない条件ではNTLMが残る場合がある
+--- Slide 23 ---
+23
+LDAP
+LDAP = ディレクトリへアクセスするプロトコル
+検索
+ユーザーは？ / グループ所属は？
+更新
+属性の追加・変更 / 権限の範囲内で実行
+保護
+署名／TLS／ / Channel Binding
+互換性を監査し、署名・Channel Binding・TLS利用を段階的に強化
+--- Slide 24 ---
+24
+DIRECTORY + FILES
+AD DSで複製する主要データは2系統
+NTDS.dit
+ユーザー／PC／グループ / などのオブジェクトと属性 /  / AD DSの複製で同期
+SYSVOL
+GPOテンプレート / サインインスクリプト /  / DFS Replication（DFSR）で同期
+ディレクトリデータとSYSVOLは、別の複製系統として確認する
+--- Slide 25 ---
+25
+REPLICATION
+多くの変更は、どの書き込み可能DCでも受け付ける
+DC-A
+ユーザー属性を / 変更
+⇄
+DC-B
+グループを / 変更
+⇄
+DC-C
+変更を受け取り / 複製
+マルチマスターが基本。ただし全処理が完全に対等ではない → FSMOへ
+--- Slide 26 ---
+26
+DELETION LIFECYCLE
+削除状態も、保持するDC間で複製する
+① 削除
+オブジェクトを / 削除
+→
+② 削除状態
+保持するDC間で / 複製
+→
+③ 復元可能期間
+Recycle Bin有効時 / 多くの属性を保って復元
+→
+④ 消去
+保持後に / 最終消去
+Tombstoneは削除の複製・消去に関係。Recycle Binは復元機能で、バックアップではない
+--- Slide 27 ---
+27
+SCHEMA
+スキーマ = ディレクトリの『型定義』
+Class
+User / Computer / Group
+Attribute
+displayName / mail / member
+Forest-wide
+フォレスト全体で / 1つを共有
+クラスと属性の定義を、フォレスト内のドメインで共有する
+--- Slide 28 ---
+28
+FSMO
+5つの操作役割は『担当DCを一つ』に決める
+フォレストに各1つ
+Schema Master / スキーマ変更を1台で受け付ける /  / Domain Naming Master / ドメイン追加・削除を調整
+各ドメインに各1つ
+RID Master｜重複しないID部品をDCへ配る / PDC Emulator｜パスワード変更を優先 / Infrastructure Master｜他ドメイン参照を更新
+FSMO = Flexible Single Master Operations。『すべてを処理する主DC』ではない
+--- Slide 29 ---
+29
+TRUST
+信頼関係 = 別ドメインの認証結果を受け入れる経路
+Domain A
+ユーザーを認証 / 『この人です』
+→
+Domain B
+認証結果を信頼 / 権限を別途確認
+信頼があってもアクセス権が自動で付くわけではない
+--- Slide 30 ---
+30
+GLOBAL CATALOG
+Global Catalog（GC）= フォレスト横断の索引
+Domain A の情報
+オブジェクトと / 属性
+GC機能を持つDC
+自ドメイン：全属性 / 他ドメイン：検索用属性
+Domain B の情報
+オブジェクトと / 属性
+→
+←
+GCは独立サーバーではなくDCへ追加する役割。フォレスト横断検索を助ける
+--- Slide 31 ---
+31
+RECOVERY
+DCを増やしても
+複製はバックアップではない
+誤削除・侵害・論理破損も複製される。可用性と復旧は別に設計する
+--- Slide 32 ---
+32
+HEALTH CHECK
+ADの健全性を確認する代表的な5観点
+DNS
+dcdiag /test:dns
+複製
+repadmin /replsummary
+DC探索
+nltest /dsgetdc:<domain>
+時刻
+w32tm /monitor
+復旧
+System Stateを含む / AD対応バックアップ / ＋復元テスト
+運用の目安｜成功表示だけでなく『期待するDC・経路・時刻・復旧性か』を見る
+--- Slide 33 ---
+33
+WHAT CHANGED BY 2026
+2026年版で追加して覚える4点
+Server 2025
+機能レベルを追加 / その段階のDCは / Server 2025のみ
+SYSVOL複製
+FRS（旧方式） / → DFS Replication / （DFSR）
+Kerberos暗号
+旧式RC4の利用元を監査 / AES対応へ移行
+LDAP保護
+署名／TLS／ / Channel Binding / ＝TLS接続との結び付け
+機能レベルはクライアントOSではなく、DCのOSとAD DS機能を規定
+--- Slide 34 ---
+34
+SECURITY TRANSITION
+監査と互換性確認から、段階的に強化
+① 監査
+古い暗号RC4の利用元 / 保護の弱いLDAP接続元 /  / ログで発見
+② 互換性を解消
+端末・サービスを更新 / KerberosはAES対応 / LDAPは署名・TLS対応
+③ 段階的な強化
+更新・設定の / 適用状態を確認 / 保護を段階的に強化
+順番：ログで利用元を特定 → 対応 → 強化。既定値だけに頼らず確認
+--- Slide 35 ---
+35
+CONCEPT MAP
+全体はこの線でつながる
+ドメイン
+論理データ区画
+→
+DNS＋DC Locator
+SRVでDCを発見
+→
+DC
+AD DSを提供
+→
+認証／LDAP
+本人確認・検索・更新
+OU
+管理と設定の単位
+→
+GPO
+設定をリンク
+→
+ユーザー／PC
+設定を受け取る
+Site
+近さ
+→
+近いDC
+選択
+DC間の複製：サイトトポロジーとネットワーク接続を考慮して変更を複製
+--- Slide 36 ---
+36
+NEXT STEP
+次は『実物』を見て、地図と結び付ける
+GUI
+ADユーザーとコンピューター / ADサイトとサービス / DNSマネージャー
+PowerShell
+Get-ADForest / Get-ADDomain / Get-ADDomainController
+確認
+SRVレコード / GPO適用結果 / 複製状態
+Part 2：構造をGUIとPowerShellで確認する
+--- Slide 37 ---
+37
+OFFICIAL SOURCES
+今回の正本（基礎）
+元動画
+youtube.com/watch?v=lZ8Ps6U_kvY
+AD DS overview
+learn.microsoft.com/windows-server/identity/ad-ds/.../active-directory-domain-services-overview
+AD logical model
+learn.microsoft.com/windows-server/identity/ad-ds/plan/understanding-the-active-directory-logical-model
+AD DS vs Entra ID
+learn.microsoft.com/entra/fundamentals/compare
+Site topology
+learn.microsoft.com/windows-server/identity/ad-ds/plan/designing-the-site-topology
+Replication concepts
+learn.microsoft.com/windows-server/identity/ad-ds/.../active-directory-replication-concepts
+Group Policy processing
+learn.microsoft.com/windows-server/identity/ad-ds/manage/group-policy/group-policy-processing
+完全なURLと抽出事実は同梱の source_facts.md に保存
+--- Slide 38 ---
+38
+OFFICIAL SOURCES
+今回の正本（2026差分・運用）
+Functional levels
+learn.microsoft.com/windows-server/identity/ad-ds/active-directory-functional-levels
+What's new Server 2025
+learn.microsoft.com/windows-server/get-started/whats-new-windows-server-2025
+Kerberos RC4
+learn.microsoft.com/windows-server/security/kerberos/detect-remediate-rc4-kerberos
+CredSSP
+learn.microsoft.com/windows/win32/secauthn/credential-security-support-provider
+SYSVOL to DFSR
+learn.microsoft.com/windows-server/storage/dfs-replication/migrate-sysvol-to-dfsr
+FSMO roles
+learn.microsoft.com/windows-server/identity/ad-ds/manage/understand-fsmo-roles
+DCDiag
+learn.microsoft.com/windows-server/administration/windows-commands/dcdiag
+仕様や既定値は更新される。実装時は必ず最新の公式情報を確認
