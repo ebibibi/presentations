@@ -85,7 +85,7 @@
 
 YouTube Live（HCCJPチャンネル）で配信します。
 
-配信URL: TBD
+配信URL: https://www.youtube.com/watch?v=wk7hgvEM8Yw
 
 ## セッション内容
 
@@ -117,7 +117,8 @@ YouTube Live（HCCJPチャンネル）で配信します。
 
 ## 作成後にやること
 
-- [ ] YouTube Live を予約し、URL を説明欄の TBD と差し替え
+- [x] YouTube Live を予約（https://www.youtube.com/watch?v=wk7hgvEM8Yw）
+- [ ] Connpass の説明欄に YouTube URL を反映（手動）
 - [ ] Connpass グループへ告知メールを送信（`hccjp-promote`）
 - [ ] hccjp.org に第77回を掲載（`content.json` → master）
 - [ ] X / BlueSky / LinkedIn / Discord で告知（`hccjp-promote`）
