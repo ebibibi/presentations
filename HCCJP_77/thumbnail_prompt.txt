@@ -1,13 +1,16 @@
-A striking 16:9 image for a Japanese IT webinar thumbnail. Dark navy tech background (#0A1628) with faint blue circuit-board lines.
+A clean, high-end 16:9 key visual for a Japanese enterprise IT webinar. Cinematic dark navy (#08111F) background.
 
-ABSOLUTELY NO TEXT ANYWHERE IN THE IMAGE. Do not draw any letters, words, numbers, labels, captions, legends, logos, watermarks, badges, tick marks, banners, side cards or annotation boxes. The image must contain zero characters of any language. Symbols only.
+ABSOLUTELY NO TEXT. Do not draw any letters, words, numbers, labels, captions, legends, logos, watermarks, badges, banners, side cards or annotation boxes. Zero characters of any language anywhere in the image. Symbols and shapes only.
 
-Composition:
-- LEFT SIDE: a single on-premises server rack, glowing white-blue, standing on a dark floor. Around the rack, a large circular arrow sweeping COUNTER-CLOCKWISE (a rewind / turn-back motion), drawn as a thick glowing amber ribbon with a clear arrowhead. Faint translucent "ghost" duplicates of the same rack trail behind the arrow to suggest the machine being pulled back to an earlier state.
-- TOP RIGHT: a large clean glowing blue cloud symbol, bright and modern, with several small hexagon shapes floating around it moving FORWARD to the right, suggesting the cloud has moved ahead.
-- BETWEEN THEM: a glowing cyan link line connecting the cloud and the server rack. The line is drawn as a dashed beam with a visible gap in the middle, suggesting the two sides are temporarily out of sync.
-- LOWER RIGHT, small: a simple glowing green shield with a check mark inside, indicating recovery is possible. Keep it symbolic and small, no text.
+STRICT LAYOUT — the left 45% of the canvas must stay almost EMPTY:
+- LEFT 45%: nearly flat deep navy gradient. Only a very faint, subtle circuit texture at low opacity. No objects, no glow sources, no bright elements. This area will hold large headline text added later, so it must stay dark, calm and uncluttered.
+- RIGHT 55%: the entire illustration lives here, well inside the right side, with comfortable margins.
 
-Lighting: cinematic, deep navy base, cyan and amber accents, subtle bloom and light particles.
+Illustration on the right side only:
+- A single modern on-premises server rack, standing lower-right, rendered in cool white-blue light with soft reflections on a dark glossy floor.
+- Wrapped around the rack, one bold circular arrow sweeping COUNTER-CLOCKWISE like a rewind gesture, drawn as a thick glowing amber ribbon with a clear arrowhead. Two faint translucent ghost copies of the rack trail behind it, suggesting the machine is being pulled back to an earlier state.
+- Upper-right: a large luminous blue cloud symbol built from a delicate polygonal network, with small hexagons drifting to the right, suggesting the cloud has moved ahead.
+- A cyan beam connects the cloud and the rack, drawn as a dashed line with one clear GAP in the middle, showing the two sides are temporarily out of sync.
+- A small glowing green shield with a check mark, tucked near the lower right of the rack, symbolizing successful recovery. Keep it small and secondary.
 
-Leave the ENTIRE LEFT HALF and the BOTTOM STRIP of the image relatively dark, simple and uncluttered - large headline text will be composited there later by a separate program. Keep the TOP-RIGHT corner (about 320x320 pixels) clean, empty dark background for a logo to be placed later.
+Style: premium tech keynote visual, cinematic rim lighting, deep navy base with cyan and amber accents, gentle bloom, fine light particles, lots of negative space. High contrast between the empty left side and the illuminated right side.
