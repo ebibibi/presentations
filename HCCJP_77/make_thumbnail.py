@@ -67,31 +67,36 @@ def build() -> Image.Image:
     # 下半分を暗く落として文字を読みやすくする
     veil = Image.new("RGBA", base.size, (0, 0, 0, 0))
     vd = ImageDraw.Draw(veil)
-    for i in range(300):
-        y = height - 300 + i
-        vd.line([(0, y), (width, y)], fill=(4, 10, 26, int(215 * (i / 300) ** 0.7)))
+    for i in range(400):
+        y = height - 400 + i
+        vd.line([(0, y), (width, y)], fill=(4, 10, 26, int(225 * (i / 400) ** 0.7)))
     composed = Image.alpha_composite(base, veil)
     draw = ImageDraw.Draw(composed)
 
-    # 見出し（下部・左寄せ）
-    f0 = _font(40)
-    f1 = _font(58)
+    # 見出し（下部・左寄せ）。Azure Arc を見出しと同格の大きさで最上段に置く
+    f0 = _font(72)
+    f1 = _font(50)
     f2 = _font(104)
     x = 56
-    y1 = height - 250
+    y0 = height - 360
+    y1 = y0 + 100
+    y2 = y1 + 72
 
-    # テーマラベル。見出しの上に小さく置き、何の話かを一目で分かるようにする
+    # Azure Arc — Azureブルーの帯に白抜き。サムネが小さく表示されても主題が読める
     lw = draw.textbbox((0, 0), LABEL, font=f0)[2]
     bar = Image.new("RGBA", composed.size, (0, 0, 0, 0))
-    ImageDraw.Draw(bar).rounded_rectangle(
-        [x - 14, y1 - 66, x + lw + 16, y1 - 8], radius=12, fill=(12, 92, 150, 205)
+    bdr = ImageDraw.Draw(bar)
+    bdr.rounded_rectangle(
+        [x - 26, y0 - 20, x + lw + 30, y0 + 96], radius=18, fill=(0, 120, 212, 240)
+    )
+    bdr.rounded_rectangle(
+        [x - 26, y0 - 20, x + lw + 30, y0 + 96], radius=18, outline=(150, 225, 255, 255), width=4
     )
     composed = Image.alpha_composite(composed, bar)
     draw = ImageDraw.Draw(composed)
-    _outlined(draw, (x, y1 - 60), LABEL, f0, (150, 225, 255, 255), width=3)
+    _outlined(draw, (x, y0), LABEL, f0, WHITE, width=4)
 
     _outlined(draw, (x, y1), LINE1, f1, CYAN, width=5)
-    y2 = y1 + 74
     _outlined(draw, (x, y2), LINE2, f2, WHITE, width=7)
 
     # 開催日（右下）
