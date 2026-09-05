@@ -1,0 +1,13 @@
+A striking 16:9 image for a Japanese IT webinar thumbnail. Dark navy tech background (#0A1628) with faint blue circuit-board lines.
+
+ABSOLUTELY NO TEXT ANYWHERE IN THE IMAGE. Do not draw any letters, words, numbers, labels, captions, legends, logos, watermarks, badges, tick marks, banners, side cards or annotation boxes. The image must contain zero characters of any language. Symbols only.
+
+Composition:
+- LEFT SIDE: a single on-premises server rack, glowing white-blue, standing on a dark floor. Around the rack, a large circular arrow sweeping COUNTER-CLOCKWISE (a rewind / turn-back motion), drawn as a thick glowing amber ribbon with a clear arrowhead. Faint translucent "ghost" duplicates of the same rack trail behind the arrow to suggest the machine being pulled back to an earlier state.
+- TOP RIGHT: a large clean glowing blue cloud symbol, bright and modern, with several small hexagon shapes floating around it moving FORWARD to the right, suggesting the cloud has moved ahead.
+- BETWEEN THEM: a glowing cyan link line connecting the cloud and the server rack. The line is drawn as a dashed beam with a visible gap in the middle, suggesting the two sides are temporarily out of sync.
+- LOWER RIGHT, small: a simple glowing green shield with a check mark inside, indicating recovery is possible. Keep it symbolic and small, no text.
+
+Lighting: cinematic, deep navy base, cyan and amber accents, subtle bloom and light particles.
+
+Leave the ENTIRE LEFT HALF and the BOTTOM STRIP of the image relatively dark, simple and uncluttered - large headline text will be composited there later by a separate program. Keep the TOP-RIGHT corner (about 320x320 pixels) clean, empty dark background for a logo to be placed later.
