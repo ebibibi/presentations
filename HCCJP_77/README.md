@@ -48,10 +48,18 @@ Azure Local、Azure Arc、Windows Server関連の最新情報を毎月恒例で�
 
 | ファイル | 用途 |
 |---|---|
+| `run-of-show.md` | **進行台本 ─ 実演カタログ**（どのスライドで何を見せるか・コマンド・保険） |
 | `connpass_event.md` | Connpass 掲載内容（フォーム項目＋説明欄） |
 | `thumbnail.png` | サムネイル（1280x720） |
 | `thumbnail_prompt.txt` | 背景生成プロンプト（画像内の文字は全面禁止） |
 | `make_thumbnail.py` | 見出し・開催日・ロゴの合成スクリプト |
+
+## 進行スライド
+
+https://presentations.ebisuda.net/decks/hccjp-77-arc-operations （25枚・owner-only）
+
+各スライドのノートに「ここで何を見せるか」を書いてある。実機に切り替える回はスライド右下に
+`LIVE` バッジが出る。コマンドと保険は `run-of-show.md` を見る。
 
 ## 実測データ
 
