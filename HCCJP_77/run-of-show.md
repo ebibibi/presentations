@@ -17,6 +17,28 @@ Connpass: https://hybridcloud.connpass.com/event/406031/
 | `arcwin01` | Windows Server 2025 | nestedhyperv > nested-lab-01 (10.20.0.20) 上のネスト VM |
 | `arclnx01` | Ubuntu 24.04 | 同上 |
 
+> ### ⚠️ 環境の地図（毎回ここで詰まる）
+>
+> ```
+> 胡田さんのPC
+>   └─ RDP →  L0  nestedhyperv  192.168.1.253（LAN）
+>               │   Hyper-Vマネージャーに映るのは nested-lab-01 など。arcwin01 は映らない
+>               └─ 中のVM →  L1  nested-lab-01  10.20.0.20
+>                              │   ここが arcwin01 を持っている Hyper-V ホスト
+>                              └─ 中のVM →  L2  arcwin01 10.10.0.51 ／ arclnx01 10.10.0.41
+> ```
+>
+> **`arcwin01` は L0 の Hyper-V マネージャーに出てこない。** 持ち主は L1。
+> ただし **L1 に RDP する必要はない** ─ L0 の PowerShell から実行できるスクリプトを
+> `C:\hccjp77\` に置いてある（パスワードはファイル内。配信画面に映らない）。
+>
+> | スクリプト | 何をするか | 所要 |
+> |---|---|---|
+> | `C:\hccjp77\1-status.ps1` | チェックポイント一覧＋**実機が持っている割り当て** | 約20秒 |
+> | `C:\hccjp77\2-rollback.ps1` | **arcwin01 を `T1-hccjp77`（9/5）へ巻き戻して起動** | 約12秒 |
+> | `C:\hccjp77\3-evict-ghost.ps1` | 実機の居残り割り当てを外してキューを空ける | 約20秒 |
+> | `C:\hccjp77\9-restore.ps1` | **配信後**：`T6-demo-ready` へ戻す | 約12秒 |
+
 ---
 
 ## 0. スライドとノートの出し方（2画面でやる）
@@ -58,6 +80,7 @@ Connpass: https://hybridcloud.connpass.com/event/406031/
 
 | # | やること | 理由 |
 |---|---|---|
+| 0 | **L0 に RDP → PowerShell（管理者）で `C:\hccjp77\1-status.ps1`** | `T1-hccjp77` と `T6-demo-ready` が見えることを確認する。**無ければデモが成立しない** |
 | 1 | Update Manager で `arcwin01` / `arclnx01` の**評価を実行**しておく | 評価は2〜4分かかる。デモ②で結果だけ見せるため |
 | 2 | Run Command を**1回空打ち**しておく | **初回は10分近くかかる**（2026-09-07 実測: PUT から `Succeeded` まで約9分。RunCommand の初回セットアップが走るため）。温めておかないと本番で必ず待たされる |
 | 3 | `az ssh arc` を使うなら**接続を1回試す** | 2026-09-07 時点で HybridConnectivity のエンドポイントが空。**今のままでは Arc SSH は通らない**ので、使うなら事前に作り直す（下の「5. 未確認・要リハーサル」参照） |
@@ -120,7 +143,7 @@ az graph query -q "patchassessmentresources | where type =~ 'microsoft.hybridcom
 `nested-lab-01`（10.20.0.20）へ RDP し、Hyper-V マネージャーで `arcwin01` / `arclnx01` と
 チェックポイント **`T1-hccjp77`**（両VMに残置）を見せる。「この実験は本物の機械でやりました」を1回だけ見せる。
 
-- 余裕があるときだけの上級編: その場で `arcwin01` を `T1-hccjp77` に巻き戻し、RESULT 1 の「Windows は約9分」をタイマーで回しながら進める。**進行が押していたらやらない。**
+- **巻き戻しは上級編ではなく本編になった。** スライド `experiment`（14:28頃）で `C:\hccjp77\2-rollback.ps1` を流し、以降のスライドを話す時間がそのまま計測時間になる。詳細は下の「6. 巻き戻しデモ」。
 - ホスト側の確認コマンド（moviegen から）:
   ```bash
   ssh nestedhyperv 'powershell -NoProfile -Command "Get-VM | Format-Table Name,State -Auto"'
@@ -221,3 +244,56 @@ resources
 
 **デモが転んだときの原則**: 30秒粘って戻らなければスライドの実測値に戻る。今日の主題は「動くこと」ではなく
 「壊れたあとに戻せること」なので、転んだこと自体を題材にしてよい。
+
+
+---
+
+## 6. 巻き戻しデモ ─ 何をすると、どうなるか（2026-09-09 実測）
+
+### 打つコマンドは1行だけ
+
+```powershell
+C:\hccjp77\2-rollback.ps1
+```
+
+L0（nestedhyperv）の PowerShell で実行する。**Hyper-V マネージャーは開かない。**
+約12秒で終わり、スクリプトが終了時刻を表示する。**その時刻を口で宣言すること。**
+
+### 起きるはずのこと
+
+| 巻き戻しからの経過 | 実測（2026-09-09） |
+|---|---|
+| 0秒 | 復元＋起動が **11.5秒**で完了。OSはコールドブートする |
+| 0〜16分 | **マシン構成は4件とも準拠のまま。Arc も Connected のまま** |
+| 約17分 | 1件目 `WindowsDefenderExploitGuard` が非準拠へ |
+| 約20分 | 2件目 `AuditSecureProtocol` |
+| 約23分 | 3件目 `SetSecureProtocol`（適用型） |
+| 以降 | 適用型はキューが空いていれば **4分30秒**で自力復旧。監査型は**永久に非準拠** |
+
+`SetWindowsTimeZone` は準拠のまま動かないことがある。これは無事だからではなく、
+**巻き戻し前の評価結果が残っているだけ**（実測で最終評価が72分前＝巻き戻しより前）。
+ポータルの「最終評価」列を指して説明する。
+
+### 14:28 に巻き戻すと、17分後は 14:45
+
+ちょうど `recovery-runbook` のスライドに着地する。そこで答え合わせをする。
+
+```powershell
+C:\hccjp77\1-status.ps1
+```
+
+**実機が持っている割り当ての件数**を出し、ポータルのマシン構成の件数と見比べる。
+食い違っていたら、それが「順番待ちで直らない」の正体。
+
+### 17分たっても全部緑だったら
+
+**それも結果。** 「17分たってもポータルは緑のままでした」と言えば今日の主張は強くなる。
+慌ててログを掘りに行かない。
+
+### 配信が終わったら
+
+```powershell
+C:\hccjp77\9-restore.ps1
+```
+
+`T6-demo-ready` へ戻る。10分ほどで4件とも準拠に戻る。
