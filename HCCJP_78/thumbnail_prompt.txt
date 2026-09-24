@@ -1,0 +1,16 @@
+A clean, high-end 16:9 key visual for a Japanese enterprise IT webinar. Cinematic dark navy (#08111F) background.
+
+ABSOLUTELY NO TEXT. Do not draw any letters, words, numbers, labels, captions, legends, logos, watermarks, badges, banners, side cards or annotation boxes. Zero characters of any language anywhere in the image. Symbols and shapes only.
+
+STRICT LAYOUT — the left 45% of the canvas must stay almost EMPTY:
+- LEFT 45%: nearly flat deep navy gradient. Only a very faint, subtle circuit texture at low opacity. No objects, no glow sources, no bright elements. This area will hold large headline text added later, so it must stay dark, calm and uncluttered.
+- RIGHT 55%: the entire illustration lives here, well inside the right side, with comfortable margins.
+
+Illustration on the right side only:
+- Lower-right: a compact on-premises hyperconverged cluster of three sleek server nodes, rendered in cool white-blue light with soft reflections on a dark glossy floor.
+- Upper-right: a large luminous blue cloud symbol built from a delicate polygonal network.
+- Connecting the cluster to the cloud: one bold, clearly enclosed glowing cyan TUNNEL (a translucent tube with fine ring segments along it) carrying bright data particles upward. A small glowing padlock shape sits on the tube, symbolizing a private path.
+- Beside the tunnel, a faint, dim, broken grey dashed line that fades out into darkness, representing the public internet route that is NOT used. Keep it clearly secondary and desaturated.
+- A thin amber ring around the cluster with a few short arrows pointing only toward the tunnel entrance, suggesting all north-south traffic is funneled into the private path.
+
+Style: premium tech keynote visual, cinematic rim lighting, deep navy base with cyan and amber accents, gentle bloom, fine light particles, lots of negative space. High contrast between the empty left side and the illuminated right side.
