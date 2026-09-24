@@ -5,7 +5,7 @@
 - **日時**: 2026年10月9日（金）14:00-15:30
 - **形式**: オンライン（YouTube Live）
 - **テーマ**: Azureへの通信経路をプライベートに！？プライベートパス構成で読み解くAzure Localのネットワーク
-- **Connpass**: TBD
+- **Connpass**: https://hybridcloud.connpass.com/event/407828/
 - **YouTube Live**: https://www.youtube.com/watch?v=OzM0kAtUcDA
 
 ## 概要
