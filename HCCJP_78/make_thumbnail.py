@@ -9,9 +9,12 @@ HCCJPの実ロゴを合成して thumbnail.png を出力する。
   - 画像生成に文字を描かせると年号やラベルが捏造されるため、日本語はすべてここで載せる
   - ロゴもAIに描かせず実ファイル（Images/hcc-logo02f.png）を合成する
 
-背景の再生成:
+背景の再生成（2段階。2段目で "Azure Local" を絵の中に描き込む）:
     python3 ~/.claude/skills/image-gen/scripts/gpt_image.py \
         --prompt-file thumbnail_prompt.txt --size 1536x1024 --quality high \
+        --output thumbnail_bg_raw.png
+    python3 ~/.claude/skills/image-gen/scripts/gpt_image.py -i thumbnail_bg_raw.png \
+        --prompt-file thumbnail_edit_prompt.txt --size 1536x1024 --quality high \
         --output thumbnail_bg_raw.png
     python3 -c "from PIL import Image; im=Image.open('thumbnail_bg_raw.png').resize((1280,853), Image.LANCZOS); im.crop((0,66,1280,786)).save('thumbnail_bg.png')"
 
@@ -30,7 +33,6 @@ BG_PATH = HERE / "thumbnail_bg.png"
 LOGO_PATH = HERE.parent / "Images" / "hcc-logo02f.png"
 OUT_PATH = HERE / "thumbnail.png"
 
-LABEL = "Azure Local"
 LINE1 = "Azureへの通信経路を"
 LINE2 = "プライベートに！？"
 DATE_TEXT = "HCCJP 第78回   2026.10.9(金) 14:00〜"
@@ -88,23 +90,11 @@ def build() -> Image.Image:
     composed = Image.alpha_composite(base, veil)
     draw = ImageDraw.Draw(composed)
 
-    f_label = _fit(LABEL, 66, zone - 60)
     f1 = _fit(LINE1, 54, zone)
     f2 = _fit(LINE2, 86, zone)
 
-    y_label = 250
-    lw = draw.textbbox((0, 0), LABEL, font=f_label)[2]
-    lh = draw.textbbox((0, 0), LABEL, font=f_label)[3]
-    bar = Image.new("RGBA", composed.size, (0, 0, 0, 0))
-    ImageDraw.Draw(bar).rounded_rectangle(
-        [MARGIN_X - 22, y_label - 16, MARGIN_X + lw + 26, y_label + lh + 20],
-        radius=16, fill=AZURE_BLUE,
-    )
-    composed = Image.alpha_composite(composed, bar)
-    draw = ImageDraw.Draw(composed)
-    _outlined(draw, (MARGIN_X, y_label), LABEL, f_label, WHITE, width=3)
-
-    y1 = y_label + lh + 58
+    # "Azure Local" は背景の絵の中に描き込み済み（後から重ねると浮くため）
+    y1 = 290
     _outlined(draw, (MARGIN_X, y1), LINE1, f1, CYAN, width=4)
 
     y2 = y1 + draw.textbbox((0, 0), LINE1, font=f1)[3] + 26
