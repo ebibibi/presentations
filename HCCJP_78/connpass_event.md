@@ -101,10 +101,11 @@ NTTコミュニケーションズ株式会社 / 日商エレクトロニクス�
 - [x] アジェンダ確定（松本さん・高添さん）
 - [x] README / Connpass 原稿 / サムネイル作成
 - [ ] 松本さんへ事前確認（表記・持ち時間・資料公開可否・リハーサル）（メール下書きは Obsidian の HCCJP 第78回フォルダ）
-- [ ] Connpass イベント作成（手動・上記を貼る／画像は `thumbnail.png`）
+- [x] Connpass イベント作成（https://hybridcloud.connpass.com/event/407828/）
 - [x] YouTube Live を予約（https://www.youtube.com/watch?v=OzM0kAtUcDA）
-- [ ] Connpass の説明欄に YouTube URL を反映（手動）
-- [ ] hccjp.org に第78回を掲載（hccjp リポの `content.json`・Connpass 公開後）
+- [x] Connpass の説明欄に YouTube URL を反映
+- [x] hccjp.org に第78回を掲載（https://www.hccjp.org/events/78/）
 - [ ] 告知: Connpass メール / X / BlueSky / LinkedIn / Discord（`hccjp-promote`）
 - [ ] HCCJP Teams・JBS の Teams に紹介
-- [ ] 前日: 登壇者へ Teams 招待・リマインドメール
+- [x] 登壇者へ Teams 会議出席依頼（13:30〜15:30）
+- [ ] 前日: リマインドメール
