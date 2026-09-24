@@ -36,7 +36,6 @@ OUT_PATH = HERE / "thumbnail.png"
 LINE1 = "Azureへの通信経路を"
 LINE2 = "プライベートに！？"
 DATE_TEXT = "HCCJP 第78回   2026.10.9(金) 14:00〜"
-SPEAKER_TEXT = "三井情報 松本 秀太 氏"
 
 MARGIN_X = 52          # 左マージン
 TEXT_ZONE_RIGHT = 610  # ここより右は図。文字を絶対にはみ出させない
@@ -94,15 +93,11 @@ def build() -> Image.Image:
     f2 = _fit(LINE2, 86, zone)
 
     # "Azure Local" は背景の絵の中に描き込み済み（後から重ねると浮くため）
-    y1 = 290
+    y1 = 320
     _outlined(draw, (MARGIN_X, y1), LINE1, f1, CYAN, width=4)
 
     y2 = y1 + draw.textbbox((0, 0), LINE1, font=f1)[3] + 26
     _outlined(draw, (MARGIN_X, y2), LINE2, f2, WHITE, width=6)
-
-    # 登壇者は見出しの下
-    y3 = y2 + draw.textbbox((0, 0), LINE2, font=f2)[3] + 34
-    _outlined(draw, (MARGIN_X, y3), SPEAKER_TEXT, _fit(SPEAKER_TEXT, 40, zone), WHITE, width=3)
 
     # 開催日は最下部。テキストゾーンの中に収める
     fd = _fit(DATE_TEXT, 30, zone)
