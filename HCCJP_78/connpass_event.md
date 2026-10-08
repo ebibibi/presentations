@@ -105,7 +105,10 @@ NTTコミュニケーションズ株式会社 / 日商エレクトロニクス�
 - [x] YouTube Live を予約（https://www.youtube.com/watch?v=OzM0kAtUcDA）
 - [x] Connpass の説明欄に YouTube URL を反映
 - [x] hccjp.org に第78回を掲載（https://www.hccjp.org/events/78/）
-- [ ] 告知: Connpass メール / X / BlueSky / LinkedIn / Discord（`hccjp-promote`）
+- [x] 告知: BlueSky / LinkedIn / Discord（9/24・10/8 前日リマインド）
+- [ ] 告知: Connpass メール / X（手動）
 - [ ] HCCJP Teams・JBS の Teams に紹介
 - [x] 登壇者へ Teams 会議出席依頼（13:30〜15:30）
-- [ ] 前日: リマインドメール
+- [x] FlowAsk イベント作成（https://flowask.ebisuda.net/e/628673、`flowask/publish.py`）
+- [ ] 前日: Connpass リマインドメール（手動）
+- [ ] 当日: FlowAsk を `publish.py phase live` に切り替え、終了後 `post`
