@@ -1,0 +1,15 @@
+A clean, high-end 16:9 key visual for a Japanese enterprise IT webinar. Cinematic dark navy (#08111F) background.
+
+ABSOLUTELY NO TEXT. Do not draw any letters, words, numbers, labels, captions, legends, logos, watermarks, badges, banners, side cards or annotation boxes. Zero characters of any language anywhere in the image. Symbols and shapes only.
+
+STRICT LAYOUT — the left 45% of the canvas must stay almost EMPTY:
+- LEFT 45%: nearly flat deep navy gradient. Only a very faint, subtle circuit texture at low opacity. No objects, no glow sources, no bright elements. This area will hold large headline text added later, so it must stay dark, calm and uncluttered.
+- RIGHT 55%: the entire illustration lives here, well inside the right side, with comfortable margins.
+
+Illustration on the right side only:
+- Lower-right: a sleek modern laptop and, just behind it, a compact on-premises domain controller server, rendered in cool white-blue light with soft reflections on a dark glossy floor.
+- Upper-right: a large luminous blue cloud symbol built from a delicate polygonal network.
+- Between them: a single glowing golden ticket-shaped card with a small key symbol, rising in one direct, fast, clean arc of cyan light from the laptop straight into the cloud.
+- Off to the side of the arc: a dim, desaturated grey hourglass with cracks, its sand frozen and fading into darkness, representing a long wait that is no longer needed. Keep it clearly secondary.
+
+Style: premium tech keynote visual, cinematic rim lighting, deep navy base with cyan and amber accents, gentle bloom, fine light particles, lots of negative space. High contrast between the empty left side and the illuminated right side.

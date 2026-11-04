@@ -1,0 +1,7 @@
+Edit this image. Keep the composition, colors, lighting, the cloud, the arc of light, the ticket, the hourglass, the laptop, the server and the empty dark left side exactly as they are.
+
+Add exactly one piece of text: the words "Entra Kerberos" (exactly this spelling, two words, nothing else), integrated INTO the scene, not pasted on top:
+- Render it as a glowing holographic cyan-white sign floating just in front of the lower part of the cloud, in a clean modern sans-serif.
+- It must share the scene's lighting: soft cyan bloom and slight perspective matching the cloud.
+- Size: clearly readable but not dominant, roughly as wide as the cloud's lower half.
+- Do not place any text on the left 45% of the canvas. Do not add any other letters, numbers, logos or labels anywhere.
