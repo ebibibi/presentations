@@ -5,7 +5,7 @@
 - **日時**: 2026年11月13日（金）14:00-15:30
 - **形式**: オンライン（YouTube Live）
 - **テーマ**: さよなら同期待ち — Entra Kerberosで変わるハイブリッド参加
-- **Connpass**: TBD
+- **Connpass**: https://hybridcloud.connpass.com/event/412097/
 - **YouTube Live**: https://www.youtube.com/watch?v=WXi_NyED8XQ
 
 ## 概要
