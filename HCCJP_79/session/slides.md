@@ -469,7 +469,7 @@ Cloud Sync はデバイスを同期しないので、**待っても解決しま�
 
 # デモ3: TDO を作る
 
-`dc01` で実行（Entra へのサインイン画面が出るので、MFA で承認する）
+`dc01` で実行（Entra へのサインイン画面が出るので、`labadmin` でサインインする）
 
 ```powershell
 $domainCred = Get-Credential CORP\Administrator
