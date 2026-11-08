@@ -469,9 +469,10 @@ Cloud Sync はデバイスを同期しないので、**待っても解決しま�
 
 # デモ3: TDO を作る
 
-`dc01` で実行
+`dc01` で実行（Entra へのサインイン画面が出るので、MFA で承認する）
 
 ```powershell
+$domainCred = Get-Credential CORP\Administrator
 Set-AzureADKerberosServer -Domain corp.contoso.local `
     -UserPrincipalName labadmin@hccjplab.onmicrosoft.com `
     -DomainCredential $domainCred -SetupCloudTrust
