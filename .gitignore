@@ -4,3 +4,6 @@ GEMINI.md
 HCCJP_70/20260113_HCCJP_AdaptiveCloudUpdate.mp4.mov
 __pycache__/
 ~$*
+
+# Claude Code per-user permissions (may contain approved commands verbatim)
+**/.claude/settings.local.json
