@@ -24,13 +24,15 @@ def call(method, path, body=None, **headers):
         sys.exit(f"{method} {path}: {e.code} {e.read()[:400].decode(errors='replace')}")
 
 def data_uri(p):
-    im = Image.open(p).convert("RGB"); buf = io.BytesIO(); im.save(buf, "WEBP", quality=88, method=6)
+    im = Image.open(p).convert("RGB"); im.thumbnail((1280, 720), Image.LANCZOS); buf = io.BytesIO(); im.save(buf, "WEBP", quality=55, method=6)
     return "data:image/webp;base64," + base64.b64encode(buf.getvalue()).decode()
 
 def markdown():
     md = (HERE / "slides.md").read_text(encoding="utf-8")
-    for ref in sorted(set(re.findall(r"\]\(([\w.-]+\.png)\)", md))):
+    for ref in sorted(set(re.findall(r"\]\(([\w./-]+\.png)\)", md))):
         md = md.replace(f"]({ref})", f"]({data_uri(HERE / ref)})")
+    if len(md) > 1_000_000:
+        sys.exit(f"markdown too long for FlowAsk: {len(md)} chars (limit 1,000,000)")
     return md
 
 if sys.argv[1] == "create":
