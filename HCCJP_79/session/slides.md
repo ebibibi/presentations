@@ -103,6 +103,24 @@ HCCJP 第79回勉強会　2026年11月13日
 
 ---
 
+<!-- _class: small -->
+
+# 身分証は2段階
+
+| | 仮の身分証 | 正式な身分証 |
+|---|---|---|
+| もの | **自己署名証明書** | **デバイス証明書** |
+| 発行者 | PC 自身（だれでも作れる） | **DRS**（`MS-Organization-Access`） |
+| 秘密鍵 | TPM | TPM（別の鍵） |
+| 置き場所 | **AD の `userCertificate` だけ** | 証明書ストア `LocalMachine\My` |
+| 役目 | 「AD の pc01 本人です」と示す | Entra とのやり取りに使う |
+
+自称の身分証は Entra に信用されない。だから**本人確認に使って、正式な身分証と取り替える**
+（鍵と置き場所はデモ環境の Windows 11 で確認）
+
+---
+
+
 # 従来の流れを、1コマずつ追う
 
 次のページから、処理の順番に沿って図を進めます
@@ -451,9 +469,10 @@ Cloud Sync はデバイスを同期しないので、**待っても解決しま�
 
 # デモ3: TDO を作る
 
-`dc01` で実行
+`dc01` で実行（Entra へのサインイン画面が出るので、MFA で承認する）
 
 ```powershell
+$domainCred = Get-Credential CORP\Administrator
 Set-AzureADKerberosServer -Domain corp.contoso.local `
     -UserPrincipalName labadmin@hccjplab.onmicrosoft.com `
     -DomainCredential $domainCred -SetupCloudTrust
