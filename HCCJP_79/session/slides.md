@@ -40,7 +40,7 @@ HCCJP 第79回勉強会　2026年11月13日
 
 # 今日の流れ
 
-1. 従来のハイブリッド参加は、何を待っていたのか
+1. ハイブリッド参加のしくみ（どこで、何が、どの順番で動くか）
 2. プレビューで何が変わるのか
 3. 必要なもの、構成するもの
 4. **デモ**: 失敗する PC を、その場で参加させる
@@ -50,7 +50,20 @@ HCCJP 第79回勉強会　2026年11月13日
 
 <!-- _class: lead -->
 
-# 1. 従来のハイブリッド参加
+# 1. ハイブリッド参加のしくみ
+
+---
+
+# ハイブリッド参加とは
+
+**AD にドメイン参加している Windows を、Entra ID にもデバイスとして登録すること**
+
+- オンプレの AD とグループ ポリシーはそのまま使い続けられる
+- Entra 側から「会社の PC」として認識できるようになる
+- その結果、たとえば次のことができる
+  - 条件付きアクセスで「ハイブリッド参加済みのデバイス」を条件にする
+  - Microsoft 365 などへのシングル サインオン
+  - Intune との共同管理
 
 ---
 
@@ -58,47 +71,125 @@ HCCJP 第79回勉強会　2026年11月13日
 
 # 登場人物
 
-| 名前 | 役割 |
-|---|---|
-| **AD** | オンプレのディレクトリ。PC はここにドメイン参加している |
-| **Entra ID** | クラウドのディレクトリ。ここにデバイスを登録したい |
-| **DRS** | Device Registration Service。Entra 側でデバイス登録を受け付ける |
-| **SCP** | AD に置く案内板。「この AD の PC はこのテナントに登録する」と書いてある |
-| **Entra Connect Sync** | AD を Entra へ同期する従来のサーバー。**デバイスも同期する** |
-| **Cloud Sync** | 新しい同期の仕組み。**ユーザーとグループを同期し、デバイスは同期しない** |
-
----
-
-# なぜ「待ち」が生まれるのか
-
-PC はまだ Entra に存在しないので、**自分で名乗っても認証してもらえない**
-
-そのため、従来は次の遠回りをしていました
-
-1. PC が自分の証明書を作って AD に書く
-2. 同期サーバーがそれを Entra へ運ぶ
-3. Entra に自分の情報が届いてから、やっと認証して登録できる
-
----
-
-![bg contain](old.png)
+| 場所 | 名前 | 役割 |
+|---|---|---|
+| クライアント | **タスク スケジューラ** | 決まったきっかけで登録処理を起動する |
+| クライアント | **dsregcmd.exe** | 登録処理の本体 |
+| クライアント | **TPM / 証明書ストア** | 鍵を守る / デバイス証明書を保存する |
+| オンプレ | **SCP** | AD に置く案内板。登録先のテナントが書いてある |
+| オンプレ | **Entra Connect Sync** | AD を Entra へ同期する。**デバイスも同期する** |
+| クラウド | **DRS** | Device Registration Service。デバイス登録を受け付ける |
+| クラウド | **Entra ID** | デバイスオブジェクトを持つ |
 
 ---
 
 <!-- _class: small -->
 
-# Microsoft の手順で見る従来の流れ
+# クライアント側の主役: タスク スケジューラ
 
-| 手順 | 何が起きるか |
-|---|---|
-| A | ドメイン参加やサインインをきっかけにタスクが動く（1時間ごとに再試行） |
-| B | AD の **SCP** を読んで、登録先のテナントを知る |
-| C | **自己署名証明書**を作り、AD のコンピューターの `userCertificate` に書く |
-| D | Entra Connect が変更を検知し、**次の同期サイクル**で Entra にデバイスを作る |
-| E | タスクが証明書で認証して、ID トークンをもらう |
-| F〜H | TPM に鍵を作って DRS に登録し、デバイス証明書を受け取る |
+`\Microsoft\Windows\Workplace Join\` に3つのタスクがある（デモ環境の Windows 11 で確認）
 
-**D が終わるまで、E は成功しません**
+| タスク | 実行ユーザー | 動作 |
+|---|---|---|
+| **Automatic-Device-Join** | SYSTEM | `dsregcmd.exe` を実行する。**ハイブリッド参加の本体** |
+| Device-Sync | SYSTEM | 登録後の同期 |
+| Recovery-Check | ログオンユーザー | 回復の確認（既定は無効） |
+
+**Automatic-Device-Join** が動くきっかけ
+
+- ユーザーのサインインの **1分後**
+- 登録イベント（`User Device Registration/Admin` の **4096**）が出たとき、以後 **1時間ごと**
+- 1回の実行は最長 **5分**
+
+---
+
+# 従来の流れを、1コマずつ追う
+
+次のページから、処理の順番に沿って図を進めます
+
+- 青い矢印: いま起きている処理
+- 灰色の矢印: すでに終わった処理
+- 赤: 失敗
+
+---
+
+<!-- _header: "" -->
+<!-- _footer: "" -->
+<!-- _paginate: false -->
+
+![bg contain](frames/hj_old_00.png)
+
+---
+
+<!-- _header: "" -->
+<!-- _footer: "" -->
+<!-- _paginate: false -->
+
+![bg contain](frames/hj_old_01.png)
+
+---
+
+<!-- _header: "" -->
+<!-- _footer: "" -->
+<!-- _paginate: false -->
+
+![bg contain](frames/hj_old_02.png)
+
+---
+
+<!-- _header: "" -->
+<!-- _footer: "" -->
+<!-- _paginate: false -->
+
+![bg contain](frames/hj_old_03.png)
+
+---
+
+<!-- _header: "" -->
+<!-- _footer: "" -->
+<!-- _paginate: false -->
+
+![bg contain](frames/hj_old_04.png)
+
+---
+
+<!-- _header: "" -->
+<!-- _footer: "" -->
+<!-- _paginate: false -->
+
+![bg contain](frames/hj_old_05.png)
+
+---
+
+<!-- _header: "" -->
+<!-- _footer: "" -->
+<!-- _paginate: false -->
+
+![bg contain](frames/hj_old_06.png)
+
+---
+
+<!-- _header: "" -->
+<!-- _footer: "" -->
+<!-- _paginate: false -->
+
+![bg contain](frames/hj_old_07.png)
+
+---
+
+<!-- _header: "" -->
+<!-- _footer: "" -->
+<!-- _paginate: false -->
+
+![bg contain](frames/hj_old_08.png)
+
+---
+
+<!-- _header: "" -->
+<!-- _footer: "" -->
+<!-- _paginate: false -->
+
+![bg contain](frames/hj_old_09.png)
 
 ---
 
@@ -132,7 +223,59 @@ Microsoft が挙げている用途
 
 ---
 
-![bg contain](new.png)
+<!-- _header: "" -->
+<!-- _footer: "" -->
+<!-- _paginate: false -->
+
+![bg contain](frames/hj_new_00.png)
+
+---
+
+<!-- _header: "" -->
+<!-- _footer: "" -->
+<!-- _paginate: false -->
+
+![bg contain](frames/hj_new_01.png)
+
+---
+
+<!-- _header: "" -->
+<!-- _footer: "" -->
+<!-- _paginate: false -->
+
+![bg contain](frames/hj_new_02.png)
+
+---
+
+<!-- _header: "" -->
+<!-- _footer: "" -->
+<!-- _paginate: false -->
+
+![bg contain](frames/hj_new_03.png)
+
+---
+
+<!-- _header: "" -->
+<!-- _footer: "" -->
+<!-- _paginate: false -->
+
+![bg contain](frames/hj_new_04.png)
+
+---
+
+<!-- _header: "" -->
+<!-- _footer: "" -->
+<!-- _paginate: false -->
+
+![bg contain](frames/hj_new_05.png)
+
+---
+
+<!-- _header: "" -->
+<!-- _footer: "" -->
+<!-- _paginate: false -->
+
+![bg contain](frames/hj_new_06.png)
 
 ---
 
