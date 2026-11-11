@@ -89,52 +89,52 @@ def render(name, zones, boxes, steps, upto, title):
     .box.bad em{{background:#c62828}} .box.good em{{background:#1b8a3a}}
     .lbl{{background:#0b6bcb;color:#fff;font-size:19px;border-radius:10px;padding:5px 10px;text-align:center;line-height:1.25;display:inline-block}} .lbl.badl{{background:#c62828}}
     foreignObject div{{margin:0 auto}} foreignObject{{text-align:center}}
-    .head{{position:absolute;left:0;right:0;top:-100px}}
+    .head{{position:absolute;left:28px;right:28px;top:655px;font-size:21px;font-weight:700;color:#304a6a;line-height:28px}} .head span{{float:right}}
     .cap{{position:absolute;left:20px;right:20px;top:690px;height:190px;border-radius:16px;background:#17233a;color:#fff;display:flex;gap:22px;padding:22px 28px;align-items:flex-start}}
     .num{{min-width:64px;height:64px;border-radius:50%;background:#ffcc00;color:#17233a;font-size:34px;font-weight:800;display:flex;align-items:center;justify-content:center}}
     .ct{{font-size:32px;font-weight:700;margin-bottom:8px}} .cd{{font-size:23px;line-height:1.45;color:#dfe7f2}}
     .cd code{{background:#2d3d57;border-radius:6px;padding:1px 7px;font-family:Consolas,monospace;font-size:21px}}
-    </style></head><body>{"".join(parts)}{"".join(svg)}{cap}</body></html>"""
+    </style></head><body>{"".join(parts)}{"".join(svg)}{head}{cap}</body></html>"""
     p = OUT / f"{name}.html"; p.write_text(doc, encoding="utf-8")
 
 OLD = [
-    {"n": "0", "title": "登場人物と、どこで動くか", "desc": "クライアントでは<b>タスク スケジューラ</b>が <code>dsregcmd.exe</code> を動かす。オンプレには AD と同期サーバー、クラウドには認証・登録の窓口がある", "lit": []},
-    {"n": "1", "title": "タスクが起動する", "desc": "<code>Automatic-Device-Join</code> は SYSTEM で動く。きっかけは<b>サインインの1分後</b>、<b>登録イベント 4096</b>、以後<b>1時間ごと</b>。中身は <code>dsregcmd.exe</code>",
+    {"n": "0", "title": "同期方式の登録を、PC・AD・Entraが分担する", "desc": "PCのタスクが登録を開始し、<b>Connect SyncがADのデバイス情報をEntraへ送る</b>。PCは、その情報を使った認証に成功するとDRSへの登録を完了できる", "lit": []},
+    {"n": "1", "title": "PCのタスクがEntraへの登録を開始する", "desc": "<code>Automatic-Device-Join</code> は SYSTEM で動く。きっかけは<b>サインインの1分後</b>、<b>登録イベント 4096</b>、以後<b>1時間ごと</b>。中身は <code>dsregcmd.exe</code>",
      "lit": ["task", "dsreg"], "arrows": [("task", "b", "dsreg", "t", "起動")]},
-    {"n": "2", "title": "SCP を読んで、登録先を知る", "desc": "LDAP で AD の構成パーティションにある SCP を読む。<code>azureADName</code> / <code>azureADId</code> から、どのテナントに登録するかが分かる",
+    {"n": "2", "title": "PCがSCPから登録先テナントを調べる", "desc": "LDAP で AD の構成パーティションにある SCP を読む。<code>azureADName</code> / <code>azureADId</code> から、どのテナントに登録するかが分かる",
      "lit": ["dsreg", "scp"], "arrows": [("dsreg", "r", "scp", "t", "LDAP で読む")]},
-    {"n": "3", "title": "仮の身分証（自己署名証明書）を作って AD に置く", "desc": "<b>鍵は TPM で作る</b>。その鍵で自己署名証明書を作り、<b>証明書ストアには入れず</b> AD の <code>userCertificate</code> にだけ書く。証明書の名前がそのままデバイス ID になる（実機で確認）",
-     "lit": ["dsreg", "tpm", "comp"], "badge": {"comp": "仮の身分証"}, "arrows": [("dsreg", "b", "tpm", "r"), ("dsreg", "r", "comp", "t", "LDAP で書く")]},
-    {"n": "4", "title": "まだ認証できない", "desc": "証明書で Entra に認証しようとしても、Entra にはまだこの PC がいない。<b>「デバイスが見つからない」で失敗</b>し、次のきっかけ（最長1時間後）を待つ",
+    {"n": "3", "title": "PCが初期認証の証明書をADへ書き込む", "desc": "PCはTPMで作った鍵を使い、自己署名証明書を作成する。証明書をADのコンピューターの <code>userCertificate</code> に書く（今回のラボではローカル証明書ストアに保存されなかった）",
+     "lit": ["dsreg", "tpm", "comp"], "badge": {"comp": "初期認証の証明書"}, "arrows": [("dsreg", "b", "tpm", "r"), ("dsreg", "r", "comp", "t", "LDAP で書く")]},
+    {"n": "4", "title": "同期前のPCは、Entraでの認証に失敗する", "desc": "EntraにはPCの証明書と照合するデバイス情報がまだ届いていない。PCの認証は<b>「デバイスが見つからない」で失敗</b>する。同期後に登録を再試行する必要がある",
      "lit": ["dsreg", "login"], "bad": ["login"], "badge": {"login": "見つからない"}, "arrows": [("dsreg", "r", "login", "b", "証明書で認証", "bad")]},
-    {"n": "5", "title": "同期サーバーが変更を拾う", "desc": "Entra Connect Sync が、次の同期サイクル（<b>既定 30 分周期</b>）で <code>userCertificate</code> の付いたコンピューターを読み取る",
+    {"n": "5", "title": "Connect SyncがADのコンピューター情報を読む", "desc": "Entra Connect Sync が、次の同期サイクル（<b>既定 30 分周期</b>）で <code>userCertificate</code> の付いたコンピューターを読み取る",
      "lit": ["comp", "sync"], "arrows": [("comp", "r", "sync", "l", "差分を読む")]},
-    {"n": "6", "title": "Entra にデバイスができる", "desc": "同期サーバーが証明書・objectGUID・SID を送り、Entra に<b>デバイス オブジェクト</b>ができる。ここまでが「同期待ち」",
+    {"n": "6", "title": "同期データからEntraにデバイスが作られる", "desc": "Connect SyncがADの証明書・objectGUID・SIDを送ると、Entraに<b>登録完了前のデバイス情報</b>が作られる。PCはこの情報を使って初期認証できるようになる",
      "lit": ["sync", "entra"], "badge": {"entra": "pc01（保留）"}, "arrows": [("sync", "t", "entra", "b", "デバイスを同期")]},
-    {"n": "7", "title": "次のタスク実行で、やっと認証できる", "desc": "サインインか1時間ごとの実行で、タスクがもう一度動く。今度は Entra に自分がいるので、証明書の秘密鍵で認証して <b>ID トークン</b>をもらえる",
+    {"n": "7", "title": "同期後の再試行で、PCがEntraに認証される", "desc": "PCのタスクが再試行する。Entraは同期済みの証明書情報と、PCの秘密鍵による証明を照合する。認証に成功したPCは、登録に使う<b>IDトークン</b>を取得する",
      "lit": ["task", "dsreg", "login"], "good": ["login"], "badge": {"login": "ID トークン"}, "arrows": [("task", "b", "dsreg", "t"), ("dsreg", "r", "login", "b", "証明書で認証")]},
-    {"n": "8", "title": "TPM で鍵を作り、DRS に登録する", "desc": "TPM で<b>新しい鍵（デバイス鍵）</b>と転送鍵を作り、証明書の要求と ID トークンを DRS に送る。正式な身分証をもらう手続き",
+    {"n": "8", "title": "PCがデバイス鍵を作り、DRSへ登録を要求する", "desc": "PCはTPMでデバイス鍵と転送鍵を用意する。デバイス証明書の要求、転送公開鍵、認証で得たIDトークンなどを<b>DRS（デバイス登録サービス）へ送る</b>",
      "lit": ["tpm", "dsreg", "drs"], "arrows": [("dsreg", "b", "tpm", "r", "鍵"), ("dsreg", "r", "drs", "b", "登録の要求")]},
-    {"n": "9", "title": "正式な身分証（デバイス証明書）を受け取って完了", "desc": "DRS がデバイス証明書（発行者 <code>MS-Organization-Access</code>）を返し、<b>こちらは証明書ストアに入る</b>。<code>dsregcmd /status</code> が <b>AzureAdJoined : YES</b> になる",
+    {"n": "9", "title": "PCがデバイス証明書を受け取り、登録を完了する", "desc": "DRSが発行したデバイス証明書を、PCがローカル証明書ストアへ保存する。登録後は<b>AD参加YES・Entra参加YES</b>となり、ハイブリッド参加が完了する",
      "lit": ["drs", "store", "entra"], "good": ["store", "entra"], "badge": {"store": "デバイス証明書", "entra": "pc01（登録済み）"}, "arrows": [("drs", "b", "store", "r", "証明書を返す")]},
 ]
 NEW = [
-    {"n": "0", "title": "新しい方式の登場人物", "desc": "同期サーバーの代わりに、<b>WS2025 の DC の KDC</b> と <b>Entra の Kerberos</b> が登場する。PC 側の入口は同じタスク スケジューラ", "lit": []},
-    {"n": "1", "title": "タスクが起動し、SCP を読む", "desc": "ここまでは従来と同じ。<code>Automatic-Device-Join</code> が <code>dsregcmd.exe</code> を動かし、SCP から登録先のテナントを知る",
+    {"n": "0", "title": "Kerberos方式では、ADとEntraのKDCがPCを認証する", "desc": "PCはADのDCから紹介チケットを取得し、EntraのKDCからDRS宛てのチケットを取得する。<b>デバイス情報を事前同期する経路を使わず、PCを認証して登録する</b>", "lit": []},
+    {"n": "1", "title": "PCのタスクが起動し、SCPから登録先を調べる", "desc": "<code>Automatic-Device-Join</code> がSYSTEMで <code>dsregcmd.exe</code> を実行する。PCはAD内のSCPを読み、登録先のEntraテナントを調べる",
      "lit": ["task", "dsreg", "scp"], "arrows": [("task", "b", "dsreg", "t"), ("dsreg", "r", "scp", "t", "LDAP で読む")]},
-    {"n": "2", "title": "新方式を試す: DEVICE_AUTO_KERB", "desc": "ビルドが新しい Windows 11 は、まず Kerberos での参加を試す。<b>本人確認を Kerberos チケットで行う</b>。このラボでは専用の追加設定なし。仮の身分証も従来どおり AD に書かれる（実機で確認）",
+    {"n": "2", "title": "PCがKerberos方式での登録を試みる", "desc": "対応ビルドのWindows 11は、<code>DEVICE_AUTO_KERB</code> の登録経路を試す。<b>PCの本人確認にKerberosチケットを使う</b>。今回のラボではADの <code>userCertificate</code> への書き込みも観測した",
      "lit": ["dsreg", "lsa", "comp"], "badge": {"comp": "証明書あり"}, "arrows": [("dsreg", "b", "lsa", "t", "チケットを要求"), ("dsreg", "r", "comp", "t")]},
-    {"n": "3", "title": "DC から TGT と「紹介状」をもらう", "desc": "PC のコンピューター アカウントで DC から TGT を取り、<b>TDO があるので</b> Entra 宛ての紹介チケット <code>krbtgt/KERBEROS.MICROSOFTONLINE.COM</code> ももらう",
-     "lit": ["lsa", "kdc"], "badge": {"kdc": "紹介状を発行"}, "arrows": [("lsa", "r", "kdc", "l", "Kerberos")]},
-    {"n": "4", "title": "Entra の KDC からチケットをもらう", "desc": "紹介状を HTTPS で Entra の Kerberos に出し、<b>DRS 宛てのサービス チケット</b> <code>adrs/enterpriseregistration.windows.net</code> をもらう",
+    {"n": "3", "title": "ADのDCがPCへTGTと紹介チケットを発行する", "desc": "PCはコンピューターアカウントでADに認証する。ADのDCはTGTに加え、<b>TDOの信頼に基づき</b> Entra領域宛ての <code>krbtgt/KERBEROS.MICROSOFTONLINE.COM</code> を発行する",
+     "lit": ["lsa", "kdc"], "badge": {"kdc": "紹介チケットを発行"}, "arrows": [("lsa", "r", "kdc", "l", "Kerberos")]},
+    {"n": "4", "title": "EntraがPCへDRS宛てのサービスチケットを発行する", "desc": "PCはAD発行の紹介チケットを、KDCプロキシ経由のHTTPSでEntraへ提示する。Entraは<b>DRS宛てのサービスチケット</b> <code>adrs/enterpriseregistration.windows.net</code> を発行する",
      "lit": ["lsa", "ekdc"], "good": ["ekdc"], "arrows": [("lsa", "r", "ekdc", "b", "KDC プロキシ（HTTPS）")]},
-    {"n": "5", "title": "チケットを身分証にして DRS に登録", "desc": "<code>KerberosPolicy:ExchangeForJwt</code> を構成した認証・交換の経路を使い、DRS に登録する。デバイス情報の事前同期を待たずに本人確認できる（内部APIの全順序は省略）",
+    {"n": "5", "title": "PCがKerberos認証を使い、DRSへ登録を要求する", "desc": "PCはDRSのSPN・タグで有効にしたKerberos認証・トークン交換の経路を使い、DRSへ登録を要求する。<b>Entraにデバイス情報が事前同期されていなくても認証を進められる</b>（内部APIは省略）",
      "lit": ["dsreg", "drs", "tpm"], "arrows": [("dsreg", "b", "tpm", "r", "鍵"), ("dsreg", "r", "drs", "b", "チケット＋登録の要求")]},
-    {"n": "6", "title": "その場で完了", "desc": "DRS がデバイスを作ってデバイス証明書を返す。<b>同期を待つ工程が無い</b>。デモ環境では 16〜18 秒で終わった",
+    {"n": "6", "title": "DRSがデバイスを作り、PCの登録が完了する", "desc": "DRSはEntraにデバイスを作成し、PCへデバイス証明書を返す。PCは証明書を保存して登録を完了する。<b>登録前のデバイス同期待ちはない</b>（ラボでは約7秒／16〜18秒。保証値ではない）",
      "lit": ["drs", "store", "entra"], "good": ["store", "entra"], "badge": {"store": "デバイス証明書", "entra": "pc01（登録済み）"}, "arrows": [("drs", "r", "entra", "l", "作成"), ("drs", "b", "store", "r", "証明書を返す")]},
 ]
-for i in range(len(OLD)): render(f"hj_old_{i:02d}", ZONES_OLD, BOX_OLD, OLD, i, "従来")
-for i in range(len(NEW)): render(f"hj_new_{i:02d}", ZONES_OLD, BOX_NEW, NEW, i, "新方式")
+for i in range(len(OLD)): render(f"hj_old_{i:02d}", ZONES_OLD, BOX_OLD, OLD, i, "同期方式：ADのデバイス情報を先にEntraへ同期")
+for i in range(len(NEW)): render(f"hj_new_{i:02d}", ZONES_OLD, BOX_NEW, NEW, i, "Kerberos方式：ADのチケットでPCを認証して登録")
 from playwright.sync_api import sync_playwright
 with sync_playwright() as pw:
     b = pw.chromium.launch(executable_path=CHROME, args=["--no-sandbox"])
