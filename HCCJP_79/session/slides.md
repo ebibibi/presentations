@@ -166,6 +166,12 @@ Cloud Syncにもデバイス同期機能がある。今回のラボはデバイ�
 
 ![bg contain](frames/hj_new_03.png)
 
+<!--
+TDOはcomputerではなくtrustedDomainクラスのADオブジェクト。信頼先・信頼の向き・認証用の信頼情報を保持する。今回の信頼先はKERBEROS.MICROSOFTONLINE.COM。AzureADKerberosというコンピューターオブジェクトとは別物。DCからTDOへの矢印はADの信頼情報の参照であり、別サーバーへの通信ではない。
+根拠: https://learn.microsoft.com/en-us/windows/win32/adschema/c-trusteddomain
+https://learn.microsoft.com/en-us/entra/identity/authentication/configure-microsoft-entra-kerberos-trust
+-->
+
 ---
 
 <!-- _header: "" -->
