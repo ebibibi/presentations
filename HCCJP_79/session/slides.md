@@ -20,113 +20,27 @@ style: |
 
 # さよなら同期待ち
 
-## Entra Kerberos で変わるハイブリッド参加
+## Entra Kerberosで変わるハイブリッド参加
 
-HCCJP 第79回勉強会　2026年11月13日
+HCCJP 第79回勉強会｜2026年11月13日
 
 胡田 昌彦
 
 ---
 
-# Kerberos方式は、デバイス同期を待たずに登録する
-
-**ADに参加済みのPCを、デバイス情報の事前同期なしでEntraに登録します**
-
-- オンプレADが発行する **Kerberosチケット**を使い、PCを認証して登録する
-- このKerberosによるハイブリッド参加機能は、現在 **プレビュー**
-- デモでは **デバイス同期未構成の同じPC** で、Kerberosの構成前後の登録結果を比べる
-
----
-
 # 今日の流れ
 
-1. ADとEntraにPCを登録する、ハイブリッド参加の仕組み
-2. 同期方式とKerberos方式では、PCの本人確認がどう違うか
-3. Kerberos方式に必要なOSと、AD・Entraの設定
+1. ハイブリッド参加の仕組み
+2. 同期方式とKerberos方式の違い
+3. Kerberos方式に必要なもの
 4. **デモ**：デバイス同期を使わずにハイブリッド参加する
 5. 導入時の注意点と、今回のデモで検証した範囲
 
----
-
-<!-- _class: lead -->
-
-# 1. 同期方式によるハイブリッド参加の仕組み
-
----
-
-# ハイブリッド参加は、AD参加済みPCのEntra登録
-
-**AD にドメイン参加している Windows を、Entra ID にもデバイスとして登録すること**
-
-- PCはADへのドメイン参加を維持し、グループポリシーも引き続き使う
-- EntraにもデバイスIDを持ち、クラウド側でPCを識別できるようになる
-- 条件付きアクセスで、ハイブリッド参加済みという状態を利用できる
-- ユーザーのSSOやIntune管理の土台になるが、それぞれ別の設定・検証が必要
-
----
-
-<!-- _class: small -->
-
-# 同期方式の登録処理は、PC・AD・Entraで分担する
-
-| 場所 | 名前 | 役割 |
-|---|---|---|
-| クライアント | **タスク スケジューラ** | 決まったきっかけで登録処理を起動する |
-| クライアント | **dsregcmd.exe** | PCのEntra登録を実行する |
-| クライアント | **TPM / 証明書ストア** | 鍵を守る / デバイス証明書を保存する |
-| オンプレ | **SCP** | PCが登録先のEntraテナントを調べるためのAD内の情報 |
-| オンプレ | **Entra Connect Sync** | AD を Entra へ同期する。**デバイスも同期する** |
-| クラウド | **DRS** | Device Registration Service。デバイス登録を受け付ける |
-| クラウド | **Entra ID** | 登録されたPCのデバイス情報を保持する |
-
----
-
-<!-- _class: small -->
-
-# PCの自動登録は、SYSTEMで動くタスクが開始する
-
-`\Microsoft\Windows\Workplace Join\` に3つのタスクがある（デモ環境の Windows 11 で確認）
-
-| タスク | 実行ユーザー | 動作 |
-|---|---|---|
-| **Automatic-Device-Join** | SYSTEM | `dsregcmd.exe`を実行し、**PCをEntraへ登録する** |
-| Device-Sync | SYSTEM | 登録後の同期 |
-| Recovery-Check | ログオンユーザー | 回復の確認（既定は無効） |
-
-**Automatic-Device-Join** が動くきっかけ
-
-- ユーザーのサインインの **1分後**
-- 登録イベント（`User Device Registration/Admin` の **4096**）が出たとき、以後 **1時間ごと**
-- 1回の実行は最長 **5分**
-
----
-
-<!-- _class: small -->
-
-# 同期方式では、初期認証と登録完了後で証明書が異なる
-
-| | 初期認証に使う証明書 | 登録完了後に使う証明書 |
-|---|---|---|
-| もの | **自己署名証明書** | **デバイス証明書** |
-| 発行者 | PC自身 | **DRS**（`MS-Organization-Access`） |
-| 秘密鍵 | TPM | TPM（別の鍵） |
-| 置き場所 | **AD の `userCertificate` だけ** | 証明書ストア `LocalMachine\My` |
-| 役目 | ADから同期された情報と照合し、PCを認証する | 登録後のPCの認証に使う |
-
-**自己署名証明書を作るだけでは不十分。ADから届いた情報との照合が必要です**
-
-鍵と保存先は今回のWindows 11ラボでの観測。表は用途の区別で、古い証明書の削除を示すものではありません
-
----
-
-
-# 同期方式は、デバイス情報の同期後に登録を完了する
-
-次の図では、マネージド環境の同期ベースのハイブリッド参加を順に説明します
-
-- 青い矢印: いま起きている処理
-- 灰色の矢印: すでに終わった処理
-- 赤: 失敗
+<!--
+ハイブリッド参加はAD参加とEntra登録の両方を持つ状態。
+Kerberos方式ではADのチケットを本人確認に使い、デバイスの事前同期を待たずに登録する。
+Cloud Syncにもデバイス同期機能がある。今回のラボはデバイス同期未構成で、Kerberos構成前後の結果を比較する。
+-->
 
 ---
 
@@ -210,57 +124,6 @@ HCCJP 第79回勉強会　2026年11月13日
 
 ---
 
-<!-- _class: small -->
-
-# デバイスの同期待ちは、ハイブリッド参加の完了を遅らせる
-
-- **Autopilotのハイブリッド参加**：デバイス同期を待つ時間が発生する
-- **条件付きアクセス**：参加完了前は「ハイブリッド参加済み」の条件を満たせない
-- **非永続VDI**：同期完了前にVMが破棄されると、登録も完了できない
-- **デバイス同期を構成していない環境**: 同期ベースの登録は完了しない
-
-PCは **デバイス情報がEntraへ届くことと、その後の登録再試行** を待ちます
-
----
-
-<!-- _class: small -->
-
-# デバイス同期を使う登録と、Kerberosを使う登録は別の経路
-
-**現在のCloud Syncにも、デバイス同期の公式手順があります**
-
-| 経路 | 登録の前に必要なこと |
-|---|---|
-| 同期ベース | デバイス情報が同期でEntraに届くこと |
-| Kerberos方式 | AD発行の紹介チケットを起点に本人確認すること |
-
-**Kerberos方式では、登録前にデバイス情報を同期しておく必要がありません**
-
-今回のラボではユーザー同期を有効にし、デバイス同期は構成していません
-
-出典: [Cloud Sync Device Sync](https://learn.microsoft.com/en-us/entra/identity/hybrid/cloud-sync/device-sync)
-
----
-
-<!-- _class: lead -->
-
-# 2. Kerberos方式がデバイス同期を待たない仕組み
-
----
-
-# Kerberos方式は、ADのチケットでPCを認証する
-
-**EntraはAD発行のチケットを信頼し、デバイス情報の事前同期なしで登録を受け付けます**
-
-Microsoftが、このプレビュー機能の利用例として挙げている環境
-
-- 非永続 VDI のハイブリッド参加
-- ユーザー同期にCloud Syncを使う環境
-- Azure Virtual Desktop / Windows 365 のプロビジョニング改善
-- Entra Connect Sync を使えない分断フォレスト
-
----
-
 <!-- _header: "" -->
 <!-- _footer: "" -->
 <!-- _paginate: false -->
@@ -317,106 +180,56 @@ Microsoftが、このプレビュー機能の利用例として挙げている�
 
 ---
 
-# TDOは、EntraがADを信頼するための記録
+# TDO：ADとEntraの信頼
 
-TDO（Trusted Domain Object）は、ADに置く **別のKerberos領域との信頼関係の記録** です
-
-- 別のドメインと信頼関係を結ぶと、AD に同じ種類のオブジェクトができる
-- 今回の相手は別の AD ではなく、**Entra の Kerberos 領域** `KERBEROS.MICROSOFTONLINE.COM`
-- 今回の構成では **Entraが、このADの発行した紹介チケットを受け入れる**
-- ADのDCはPCへ **EntraのKerberos領域宛ての紹介チケット** を発行できる
-
----
-
-# AD側のInboundは、EntraがADを信頼するという意味
-
-| | |
+| | 今回の構成 |
 |---|---|
-| 信頼する側 | **Entra**（AD発行の紹介チケットを受け入れる） |
+| 信頼する側 | **Entra** |
 | 信頼される側 | **AD** |
-| アクセスの向き | **AD の PC → Entra のサービス** |
-| AD から見た方向 | `Inbound`（受信） |
+| AD側の表示 | **Inbound** |
 
-**InboundはAD側から見た信頼の表記です。PCがアクセスする方向とは区別します**
+Entraが **AD発行の紹介チケット** を受け入れる
 
----
-
-<!-- _class: small -->
-
-# PCの登録と、ユーザーのオンプレ認証では使う構成が異なる
-
-`Set-AzureADKerberosServer` は、役割の違うものを AD に作ります
-
-| | ユーザーがオンプレ資源を使う経路 | PCをEntraへ登録する経路 |
-|---|---|---|
-| 作られるもの | `krbtgt_AzureAD`、`AzureADKerberos` | **TDO**（`-SetupCloudTrust` を付けたとき） |
-| アクセスの向き | クラウドの身分証 → オンプレの資源 | **オンプレの PC → クラウドのサービス** |
-| 代表例 | WHfB Cloud Kerberos Trust、FIDO2 | SQL MI の受信フロー、**デバイス登録** |
-
-WHfB Cloud Kerberos Trustが構成済みでも、**今回のTDOがあるとは限りません**
-
----
-
-<!-- _class: lead -->
-
-# 3. Kerberos方式の前提条件と構成手順
+<!--
+TDOはTrusted Domain Object。相手のKerberos領域はKERBEROS.MICROSOFTONLINE.COM。
+アクセスはADのPCからEntraのサービスへ。信頼の表示方向とは区別する。
+WHfB Cloud Kerberos Trustのユーザー認証とは別の構成。既存のAzureADKerberos等があってもTDOの存在は別途確認する。
+-->
 
 ---
 
 <!-- _class: small -->
 
-# Kerberos方式には、対応OSとDCへの通信が必要
+# 必要なOSと通信
 
-| 項目 | 内容 |
+| 対象 | 前提条件 |
 |---|---|
-| DC | Windows Server 2025 **ビルド 26100.6905 以降**を、**ドメインごとに1台以上** |
-| クライアント | Windows 11 **ビルド 26100.6584 以降** |
-| ネットワーク | 参加のときに、クライアントから WS2025 の DC へ到達できること |
-| AD の権限 | Domain Admins と Enterprise Admins |
-| Entra の権限 | ハイブリッド ID 管理者、アプリケーション管理者 |
-| ライセンス | このプレビュー機能自体に追加要件なし |
+| DC | **WS2025 26100.6905以降**／ドメインごとに1台以上 |
+| PC | **Windows 11 26100.6584以降** |
+| 通信 | PCから対応DC・Entraへ到達可能 |
+
+構成権限：AD管理者／EntraのハイブリッドID管理者・アプリケーション管理者
+
+<!--
+ADの構成権限はDomain AdminsとEnterprise Admins。TDOはハイブリッドID管理者、DRS設定はアプリケーション管理者。
+このプレビュー機能自体に追加のライセンス要件なし。条件付きアクセスやIntune等の要件とは別。
+参加時には対応するWS2025 DCへの通信が必要。ドメイン内のWS2025 DCの更新状況も確認する。
+-->
 
 ---
 
-<!-- _class: small -->
+# 構成するのは4つ
 
-# Kerberos方式の導入では、同期・信頼・DRS・SCPを構成する
+1. **ユーザー同期** を有効化
+2. **TDO** を作成
+3. **DRSのSPN・タグ** を設定
+4. **SCP** で登録先を指定
 
-| # | やること |
-|---|---|
-| 1 | **同期を有効にする**（Connect Sync または Cloud Sync） |
-| 2 | **TDO を作る**: `Set-AzureADKerberosServer -SetupCloudTrust` |
-| 3 | **DRSのサービスプリンシパルにSPNとタグを設定する** |
-| 4 | **SCPを置く** |
-
-このラボでは、対応OS・AD参加・通信の前提を満たしたPCに専用の追加設定はしていません
-
-既存のKDCプロキシGPOがある環境は、公式手順に従い調整します
-
-**同期はTDO作成の前に有効化**します（ラボで未有効時の失敗を確認）
-
----
-
-<!-- _class: small -->
-
-# Kerberos方式でも、AD参加とユーザー同期は必要
-
-| | |
-|---|---|
-| 登録のために不要になるもの | デバイス情報の事前同期、AD FSによる初期認証 |
-| 引き続き必要なもの | ADドメイン参加、SCP、**ユーザー同期** |
-| Kerberos方式に必要なDC | 対応ビルドのWindows Server 2025 |
-| ラボで観測した動作 | Kerberos方式でもADの`userCertificate`へ書き込まれた |
-
-**Autopilot のハイブリッド参加がクラウドネイティブになるわけではありません。** 速くなるのは登録の部分で、ドメイン参加は従来どおりです
-
----
-
-<!-- _class: lead -->
-
-# 4. デモ：Kerberosの構成前後で登録結果を比較
-
-デバイス同期未構成の同じPCで、構成前の登録失敗と構成後の登録成功を確認します
+<!--
+同期はConnect SyncまたはCloud Sync。ラボでは同期未有効だとTDO作成に失敗した。
+対応OS・AD参加・通信などの前提を満たしたPCに、今回のラボでは専用の追加設定はしていない。
+既存のKDCプロキシGPOを配布する環境は、公式手順に従って調整する。
+-->
 
 ---
 
@@ -428,55 +241,38 @@ WHfB Cloud Kerberos Trustが構成済みでも、**今回のTDOがあるとは�
 
 ---
 
-<!-- _class: small -->
-
-# デモ：Kerberosの構成前後で登録結果を比較する
-
-| # | やること | 見るところ |
-|---|---|---|
-| 1 | `pc01`の参加状態を確認 | AD参加済み、Entra未参加 |
-| 2 | Kerberos未構成で登録を試行 | Kerberos経路も、同期ベースの経路も失敗 |
-| 3 | TDOとDRSを構成 | 信頼関係と、DRSのSPN・タグを確認 |
-| 4 | 同じPCで登録を再試行 | AD参加・Entra参加の両方がYESになる |
-| 5 | PCのKerberosチケットを確認 | AD発行の紹介チケットと、Entra発行のDRS宛てチケット |
-
-ポイント: **Connect Sync は未導入。Cloud Sync のデバイス同期も使いません**
-
----
-
 <!-- _class: demo small -->
 
-# デモ1：pc01はAD参加済みで、Entraには未登録
+# デモ1：開始状態
 
-`pc01` で実行
+**pc01：AD参加済み・Entra未参加**
 
 ```powershell
 dsregcmd /status | Select-String "AzureAdJoined", "DomainJoined"
 ```
-
-期待する結果
 
 ```text
 AzureAdJoined : NO
 DomainJoined : YES
 ```
 
-Entra 管理センターのデバイス一覧にも、`pc01` はまだありません
+<!--
+Entraの対象デバイス、TDO、DRSの対象SPN・タグも未設定であることを事前に確認。
+Connect Sync未導入、Cloud Syncのデバイス同期も未構成。
+-->
 
 ---
 
 <!-- _class: demo small -->
 
-# デモ2：Kerberos未構成のpc01で、Entraへの登録を試す
+# デモ2：構成前は登録に失敗
 
-`pc01` の管理者PowerShellで、実行開始時刻を記録してタスクを起動する
+pc01で実行。**タスク完了後に今回のログを確認**
 
 ```powershell
 $since = Get-Date
 schtasks /run /tn "\Microsoft\Windows\Workplace Join\Automatic-Device-Join"
 ```
-
-タスク完了後に、**今回の実行時刻以降**のログを確認する
 
 ```powershell
 Get-WinEvent -FilterHashtable @{
@@ -485,30 +281,21 @@ Get-WinEvent -FilterHashtable @{
 } | Sort-Object TimeCreated | Select-Object TimeCreated, Id, Message
 ```
 
----
+事前検証：**Kerberos方式で420 → 同期方式で304**
 
-<!-- _class: demo small -->
-
-# デモ2：Kerberos未構成とデバイス同期なしのため、登録に失敗
-
-今回のラボでは **Kerberos経路を試した後、同期方式の経路でも失敗** しました
-
-| 順 | 方式 | 結果 |
-|---|---|---|
-| 1 | Kerberos方式 `DEVICE_AUTO_KERB` | Kerberos チケットが取れない（イベント 420） |
-| 2 | 同期方式 `DEVICE_AUTO` | `The device object ... is not found.`（イベント 304） |
-
-このラボはデバイス同期未構成のため、**待つだけでは従来経路は進みません**
-
-TDOが残りDRSが未設定の場合、Kerberos経路も304になることがあります。ログの時刻と本文を読みます
+<!--
+Kerberos未構成でチケットを取得できず、その後の同期方式もデバイス情報がないため失敗する。
+TDOが残るとKerberos経路も304になることがある。番号だけでなく実行時刻と本文を見る。
+Cloud Sync自体がデバイスを同期できないという一般論ではなく、このラボがデバイス同期未構成という条件。
+-->
 
 ---
 
 <!-- _class: demo small -->
 
-# デモ3：ADとEntraの信頼関係をTDOで構成する
+# デモ3：TDOを作る
 
-`dc01` の管理者PowerShellで実行。Entraには `labadmin` で対話サインインする
+**dc01で実行**／Entraにはlabadminでサインイン
 
 ```powershell
 $domainCred = Get-Credential CORP\Administrator
@@ -519,21 +306,20 @@ Set-AzureADKerberosServer -Domain corp.contoso.local `
 Get-ADTrust -Filter * | Select-Object Name, Direction
 ```
 
-期待する結果
+確認：**KERBEROS.MICROSOFTONLINE.COM／Inbound**
 
-```text
-Name                         Direction
-----                         ---------
-KERBEROS.MICROSOFTONLINE.COM   Inbound
-```
+<!--
+AD側の資格情報とEntra側のサインインは、それぞれの管理境界を構成するために使う。
+TDOを作った段階ではPCの登録はまだ完了していない。
+-->
 
 ---
 
 <!-- _class: demo small -->
 
-# デモ3：DRSに追加するSPNとタグを準備する
+# デモ3：DRS設定の準備
 
-`dc01` の管理者PowerShell。対象テナントへサインインし、既存値を保持します
+**dc01の同じPowerShellで続ける**
 
 ```powershell
 Connect-Entra -TenantId hccjplab.onmicrosoft.com `
@@ -547,15 +333,18 @@ $kerbSpn = "adrs/enterpriseregistration.windows.net"
 $kerbTag = "KerberosPolicy:ExchangeForJwt"
 ```
 
-`01cb2876-...` はDRSのアプリID。次のページも **同じPowerShell** で続けます
+<!--
+対象テナントにサインインし、既存のSPN・タグを取得する。
+$appIdはDRSアプリの識別子、$drs.Idはテナント内のサービスプリンシパルのオブジェクトID。
+-->
 
 ---
 
 <!-- _class: demo small -->
 
-# デモ3：DRSのSPN・タグを設定し、反映を確認する
+# デモ3：DRSへSPN・タグを追加
 
-既存のSPN・タグを残し、**同じ値を二重追加しません**
+**未設定の値だけ追加**し、既存値を保持する
 
 ```powershell
 if ($spns -notcontains $kerbSpn) { $spns += $kerbSpn }
@@ -567,21 +356,19 @@ $drs.ServicePrincipalNames -contains $kerbSpn
 $drs.Tags -contains $kerbTag
 ```
 
-最後の2行が **両方 `True`** なら、SPNとタグが登録されています
+確認：**最後の2行が両方True**
 
 ---
 
 <!-- _class: demo small -->
 
-# デモ4：Kerberos構成後にpc01の登録を再試行する
+# デモ4：構成後に登録を再試行
 
-`pc01` の管理者PowerShellで、デモ2と同じタスクを起動する
+**pc01で起動 → タスク完了後に状態確認**
 
 ```powershell
 schtasks /run /tn "\Microsoft\Windows\Workplace Join\Automatic-Device-Join"
 ```
-
-**schtasksの成功表示は、タスク起動の受付です。** 登録処理の完了後に、次の状態を確認します
 
 ```powershell
 $fields = "AzureAdJoined", "DomainJoined", "TpmProtected",
@@ -589,92 +376,68 @@ $fields = "AzureAdJoined", "DomainJoined", "TpmProtected",
 dsregcmd /status | Select-String $fields
 ```
 
----
-
-<!-- _class: demo small -->
-
-# デモ4：AD参加とEntra参加の両方がYESなら登録完了
-
-pc01の `dsregcmd /status` で、次の状態を確認します
-
-期待する結果
-
 ```text
-AzureAdJoined : YES
-DomainJoined : YES
-TpmProtected : YES
-DeviceAuthStatus : SUCCESS
+AzureAdJoined : YES       DomainJoined : YES
+TpmProtected  : YES       DeviceAuthStatus : SUCCESS
 ```
 
-Entra側と `DeviceId` を照合します。参加成功はユーザーSSOの確認とは別です
+**Entra側とDeviceIdを照合**
 
-<!-- DeviceAuthStatusはデバイスの存在・有効性。約7秒／16〜18秒はラボ値で性能保証ではない。 -->
+<!--
+schtasksの成功表示はタスク起動の受付。登録完了とは別で、処理中なら再確認する。
+DeviceAuthStatusはEntra側のデバイスの存在・有効性の確認。ユーザーSSOやIntune準拠の検証ではない。
+約7秒／16〜18秒はラボでの観測値で、性能保証ではない。
+-->
 
 ---
 
 <!-- _class: demo small -->
 
-# デモ5：PCが取得した3種類のKerberosチケットを確認する
+# デモ5：PCのチケットを確認
 
-`pc01` の管理者PowerShellで、SYSTEM（`0x3e7`）のチケットを見る
+pc01の管理者PowerShellで、**SYSTEMのチケット** を見る
 
 ```powershell
 klist -li 0x3e7
 ```
 
-期待する結果（抜粋）
+| 宛先 | 発行元 |
+|---|---|
+| `krbtgt/CORP.CONTOSO.LOCAL` | ADのdc01 |
+| `krbtgt/KERBEROS.MICROSOFTONLINE.COM` | ADのdc01（紹介チケット） |
+| `adrs/enterpriseregistration.windows.net` | **EntraのKDC** |
 
-| # | チケットの宛先 | 発行元 |
-|---|---|---|
-| 1 | `krbtgt/CORP.CONTOSO.LOCAL` | `dc01`（AD の身分証） |
-| 2 | `krbtgt/KERBEROS.MICROSOFTONLINE.COM` | `dc01`（**Entra への紹介状**） |
-| 3 | `adrs/enterpriseregistration.windows.net` | **`KdcProxy:login.microsoftonline.com`** |
-
-**DRS宛てのサービスチケットはEntraが発行**します。PCがKerberos経路を使ったことを確認できます
-
----
-
-<!-- _class: lead -->
-
-# 5. Kerberos方式で変わる点と導入時の注意
+<!--
+0x3e7はSYSTEMのログオンセッション。通常のklistではログオンユーザーのチケットを見てしまう。
+ほかのチケットが並んでもよい。チケットの存在だけで登録完了を判定せず、デモ4の状態と合わせて確認する。
+-->
 
 ---
 
-# Kerberos方式は、登録前のデバイス同期待ちをなくす
+# まとめ：同期を待たずに登録
 
-- 従来の同期ベースの登録は、**デバイス情報が Entra に届くのを待っていた**
-- Kerberos方式では、**AD発行のチケットでPCを認証して登録する**
-- **対応OS・DCへの通信**に加え、**同期・TDO・DRS・SCP**の構成が必要
-- **Connect Syncやデバイス同期待ちを使わずに**ハイブリッド参加できる
+- **デバイスの事前同期は不要**
+- **AD参加・ユーザー同期は継続**
+- 現在 **プレビュー**。導入前に要件を確認
 
----
+今回の検証は **デバイス登録まで**（ユーザーSSO・PRTは未検証）
 
-<!-- _class: small -->
-
-# Kerberos方式の前提条件と、今回の未検証項目
-
-- **プレビュー**です。本番環境で使う前に、最新のドキュメントを確認してください
-- 登録前のデバイス同期は不要になりますが、**ユーザー同期**は引き続き必要です
-- 参加するとき、クライアントから **WS2025 の DC に到達できる**必要があります
-- ドメインに WS2025 の DC が複数あるなら、**すべて対象ビルド以降**にします
-- 今回検証したのは **デバイス登録とチケット取得まで**。ユーザーのサインイン・PRTは未検証です
+<!--
+ドメイン参加そのものやDCへの到達性が不要になるわけではない。
+Autopilot全体がクラウドネイティブになる話でもない。
+ADのuserCertificateへの書き込みは新方式でも観測した。属性を書かないことと同期を待たないことは別。
+-->
 
 ---
 
 <!-- _class: small -->
 
-# 仕様・前提条件・構成手順の確認先
+# 参考資料・質疑応答
 
-- [Microsoft Entra hybrid join using Microsoft Entra Kerberos (preview)](https://learn.microsoft.com/en-us/entra/identity/devices/how-to-hybrid-join-using-microsoft-entra-kerberos)
+- [Kerberosによるハイブリッド参加：要件と設定](https://learn.microsoft.com/en-us/entra/identity/devices/how-to-hybrid-join-using-microsoft-entra-kerberos)
+- [デバイス登録の仕組み](https://learn.microsoft.com/en-us/entra/identity/devices/device-registration-how-it-works)
 - [Cloud Syncのデバイス同期](https://learn.microsoft.com/en-us/entra/identity/hybrid/cloud-sync/device-sync)
-- [How Microsoft Entra device registration works](https://learn.microsoft.com/en-us/entra/identity/devices/device-registration-how-it-works)
-- [Windows Authentication for Microsoft Entra ID with the incoming trust-based flow](https://learn.microsoft.com/en-us/azure/azure-sql/managed-instance/winauth-azuread-setup-incoming-trust-based-flow)
-- デモ環境の自動構築: [hyperv-nestlab](https://github.com/ebibibi/hyperv-nestlab)
+- [TDOの構成手順](https://learn.microsoft.com/en-us/azure/azure-sql/managed-instance/winauth-azuread-setup-incoming-trust-based-flow)
+- デモ環境の構築：[hyperv-nestlab](https://github.com/ebibibi/hyperv-nestlab)
 
----
-
-<!-- _class: lead -->
-
-# 質疑応答：ハイブリッド参加とKerberos方式について
-
-ご質問はコメント欄・FlowAsk からどうぞ
+質問はコメント欄・FlowAskへ
