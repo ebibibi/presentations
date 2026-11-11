@@ -24,7 +24,7 @@ def call(method, path, body=None, **headers):
         sys.exit(f"{method} {path}: {e.code} {e.read()[:400].decode(errors='replace')}")
 
 def data_uri(p):
-    im = Image.open(p).convert("RGB"); im.thumbnail((1280, 720), Image.LANCZOS); buf = io.BytesIO(); im.save(buf, "WEBP", quality=55, method=6)
+    im = Image.open(p).convert("RGB"); im.thumbnail((1280, 720), Image.LANCZOS); buf = io.BytesIO(); im.save(buf, "WEBP", quality=50, method=6)
     return "data:image/webp;base64," + base64.b64encode(buf.getvalue()).decode()
 
 def markdown():
