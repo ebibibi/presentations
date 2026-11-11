@@ -211,14 +211,35 @@ HCCJP 第79回勉強会　2026年11月13日
 
 ---
 
+<!-- _class: small -->
+
 # 同期待ちが生んでいた問題
 
 - **Autopilot**: 同期が終わるまで、ユーザーを待たせる
 - **条件付きアクセス**: ハイブリッド参加を求めるポリシーに弾かれる
 - **非永続 VDI**: 同期が終わる前にマシンが消える
-- **Cloud Sync だけの環境**: デバイスを同期しないので、**そもそも完了しない**
+- **デバイス同期を構成していない環境**: 同期ベースの登録は完了しない
 
-その結果、デバイス同期のためだけに Connect Sync を残している環境があります
+待っているのは **デバイス情報の到着と、その後の再試行**です
+
+---
+
+<!-- _class: small -->
+
+# Cloud Syncの「同期」と今回の違い
+
+**現在のCloud Syncにも、デバイス同期の公式手順があります**
+
+| 経路 | 登録の前に必要なこと |
+|---|---|
+| 同期ベース | デバイス情報が同期でEntraに届くこと |
+| 今回のKerberos方式 | AD発行の紹介チケットを起点に本人確認すること |
+
+**今回外すのは「デバイスの同期待ち」。ユーザー同期とは別の話です**
+
+デモのラボではデバイス同期を構成せず、Kerberosの登録経路を見せます
+
+出典: [Cloud Sync Device Sync](https://learn.microsoft.com/en-us/entra/identity/hybrid/cloud-sync/device-sync)
 
 ---
 
@@ -354,24 +375,26 @@ AD から見ると「相手から信頼されている」ので **Inbound** に�
 | ネットワーク | 参加のときに、クライアントから WS2025 の DC へ到達できること |
 | AD の権限 | Domain Admins と Enterprise Admins |
 | Entra の権限 | ハイブリッド ID 管理者、アプリケーション管理者 |
-| ライセンス | 不要 |
+| ライセンス | このプレビュー機能自体に追加要件なし |
 
 ---
 
 <!-- _class: small -->
 
-# 構成するのは4つ。クライアントは何もしない
+# 構成するのは4つ
 
-| 手順 | やること |
+| # | やること |
 |---|---|
 | 1 | **同期を有効にする**（Connect Sync または Cloud Sync） |
 | 2 | **TDO を作る**: `Set-AzureADKerberosServer -SetupCloudTrust` |
-| 3 | **DRS のサービスプリンシパルを設定**: SPN `adrs/enterpriseregistration.windows.net` とタグ `KerberosPolicy:ExchangeForJwt` |
-| 4 | **SCP を置く** |
+| 3 | **DRSのサービスプリンシパルにSPNとタグを設定する** |
+| 4 | **SCPを置く** |
 
-⚠️ 同期が無効のまま手順2を実行すると、次のエラーで失敗します
+このラボでは、対応OS・AD参加・通信の前提を満たしたPCに専用の追加設定はしていません
 
-`Identity synchronization is not yet activated for this company`
+既存のKDCプロキシGPOがある環境は、公式手順に従い調整します
+
+**同期はTDO作成の前に有効化**します（ラボで未有効時の失敗を確認）
 
 ---
 
@@ -381,7 +404,7 @@ AD から見ると「相手から信頼されている」ので **Inbound** に�
 
 | | |
 |---|---|
-| ❌ 不要になる | デバイスの同期、同期待ち、登録のための AD FS |
+| ❌ この登録経路で待たない | デバイス情報の同期。登録のための AD FS も不要 |
 | ✅ 残る | ドメイン参加そのもの、SCP、**ユーザーの同期** |
 | ✅ 新しく要る | WS2025 の DC |
 | 🤔 検証で分かった | `userCertificate` は今も AD に書かれる |
@@ -415,10 +438,10 @@ AD から見ると「相手から信頼されている」ので **Inbound** に�
 | 1 | `pc01` の状態を確認する | まだハイブリッド参加していない |
 | 2 | 構成前に参加させる | **失敗する**。新方式を試したあと、従来方式でも失敗する |
 | 3 | TDO を作り、DRS を設定する | AD に TDO ができる |
-| 4 | もう一度参加させる | **数十秒で成功する** |
+| 4 | もう一度参加させる | **参加完了の状態を確認する** |
 | 5 | チケットを確認する | Entra が発行したチケットがある |
 
-ポイント: **Cloud Sync だけの環境で、Connect Sync は入れていません**
+ポイント: **Connect Sync は未導入。Cloud Sync のデバイス同期も使いません**
 
 ---
 
@@ -447,21 +470,38 @@ Entra 管理センターのデバイス一覧にも、`pc01` はまだありま�
 
 # デモ2: 構成前に参加させる
 
-`pc01` で、ハイブリッド参加のタスクを実行してログを見る
+`pc01` の管理者PowerShellで、実行開始時刻を記録してタスクを起動する
 
 ```powershell
+$since = Get-Date
 schtasks /run /tn "\Microsoft\Windows\Workplace Join\Automatic-Device-Join"
-Get-WinEvent -LogName "Microsoft-Windows-User Device Registration/Admin" -MaxEvents 5
 ```
 
-期待する結果（**2回失敗する**）
+タスク完了後に、**今回の実行時刻以降**のログを確認する
+
+```powershell
+Get-WinEvent -FilterHashtable @{
+    LogName = "Microsoft-Windows-User Device Registration/Admin"
+    StartTime = $since
+} | Sort-Object TimeCreated | Select-Object TimeCreated, Id, Message
+```
+
+---
+
+<!-- _class: demo small -->
+
+# デモ2（続き）: 失敗の理由を見る
+
+TDOなしでの事前検証結果（**新方式 → 従来方式の2つが失敗**）
 
 | 順 | 方式 | 結果 |
 |---|---|---|
 | 1 | 新方式 `DEVICE_AUTO_KERB` | Kerberos チケットが取れない（イベント 420） |
 | 2 | 従来方式 `DEVICE_AUTO` | `The device object ... is not found.`（イベント 304） |
 
-Cloud Sync はデバイスを同期しないので、**待っても解決しません**
+このラボはデバイス同期未構成のため、**待つだけでは従来経路は進みません**
+
+TDOが残ると最初も304になることがあります。番号だけでなく、時刻と本文を確認します
 
 ---
 
@@ -469,7 +509,7 @@ Cloud Sync はデバイスを同期しないので、**待っても解決しま�
 
 # デモ3: TDO を作る
 
-`dc01` で実行（Entra へのサインイン画面が出るので、`labadmin` でサインインする）
+`dc01` の管理者PowerShellで実行。Entraには `labadmin` で対話サインインする
 
 ```powershell
 $domainCred = Get-Credential CORP\Administrator
@@ -492,21 +532,43 @@ KERBEROS.MICROSOFTONLINE.COM   Inbound
 
 <!-- _class: demo small -->
 
-# デモ3（続き）: DRS を設定する
+# デモ3（続き）: DRS の設定を準備する
 
-Microsoft Entra PowerShell で実行
+`dc01` の管理者PowerShell。対象テナントへサインインし、既存値を保持します
 
 ```powershell
-Connect-Entra -Scopes "Application.ReadWrite.All"
-$drs = Get-EntraServicePrincipal -Filter "AppId eq '01cb2876-7ebd-4aa4-9cc9-d28bd4d359a9'"
-$spns = [Collections.Generic.List[string]]::new($drs.ServicePrincipalNames)
-$tags = [Collections.Generic.List[string]]::new($drs.Tags)
-$spns.Add("adrs/enterpriseregistration.windows.net")
-$tags.Add("KerberosPolicy:ExchangeForJwt")
-Set-EntraServicePrincipal -ObjectId $drs.Id -ServicePrincipalNames $spns -Tags $tags
+Connect-Entra -TenantId hccjplab.onmicrosoft.com `
+    -Scopes "Application.ReadWrite.All"
+$appId = "01cb2876-7ebd-4aa4-9cc9-d28bd4d359a9"
+$drs = Get-EntraServicePrincipal -Filter "AppId eq '$appId'"
+if (-not $drs) { throw "DRS service principal not found" }
+$spns = @($drs.ServicePrincipalNames | Where-Object { $null -ne $_ })
+$tags = @($drs.Tags | Where-Object { $null -ne $_ })
+$kerbSpn = "adrs/enterpriseregistration.windows.net"
+$kerbTag = "KerberosPolicy:ExchangeForJwt"
 ```
 
-`01cb2876-...` は Device Registration Service のアプリ ID です
+`01cb2876-...` はDRSのアプリID。次のページも **同じPowerShell** で続けます
+
+---
+
+<!-- _class: demo small -->
+
+# デモ3（続き）: 未設定の値だけ追加する
+
+既存のSPN・タグを残し、**同じ値を二重追加しません**
+
+```powershell
+if ($spns -notcontains $kerbSpn) { $spns += $kerbSpn }
+if ($tags -notcontains $kerbTag) { $tags += $kerbTag }
+Set-EntraServicePrincipal -ObjectId $drs.Id `
+    -ServicePrincipalNames $spns -Tags $tags
+$drs = Get-EntraServicePrincipal -ObjectId $drs.Id
+$drs.ServicePrincipalNames -contains $kerbSpn
+$drs.Tags -contains $kerbTag
+```
+
+最後の2行が **両方 `True`** なら、SPNとタグが登録されています
 
 ---
 
@@ -514,23 +576,32 @@ Set-EntraServicePrincipal -ObjectId $drs.Id -ServicePrincipalNames $spns -Tags $
 
 # デモ4: もう一度参加させる
 
-`pc01` で、デモ2と同じタスクを実行
+`pc01` の管理者PowerShellで、デモ2と同じタスクを起動する
 
 ```powershell
 schtasks /run /tn "\Microsoft\Windows\Workplace Join\Automatic-Device-Join"
-dsregcmd /status | Select-String "AzureAdJoined", "TpmProtected", "DeviceAuthStatus"
+```
+
+**起動成功は参加完了ではありません。** タスク完了後に確認し、処理中なら再確認します
+
+```powershell
+$fields = "AzureAdJoined", "DomainJoined", "TpmProtected",
+          "DeviceAuthStatus", "DeviceId"
+dsregcmd /status | Select-String $fields
 ```
 
 期待する結果
 
 ```text
 AzureAdJoined : YES
+DomainJoined : YES
 TpmProtected : YES
 DeviceAuthStatus : SUCCESS
 ```
 
-Entra のデバイス一覧に `pc01` が「Microsoft Entra hybrid joined」で現れます
-（事前の検証では、参加処理は 16〜18 秒で終わりました）
+Entra側と `DeviceId` を照合します。参加成功はユーザーSSOの確認とは別です
+
+<!-- DeviceAuthStatusはデバイスの存在・有効性。約7秒／16〜18秒はラボ値で性能保証ではない。 -->
 
 ---
 
@@ -538,7 +609,7 @@ Entra のデバイス一覧に `pc01` が「Microsoft Entra hybrid joined」で�
 
 # デモ5: チケットを確認する
 
-`pc01` で、コンピューターアカウントのチケットを見る
+`pc01` の管理者PowerShellで、SYSTEM（`0x3e7`）のチケットを見る
 
 ```powershell
 klist -li 0x3e7
@@ -564,10 +635,10 @@ klist -li 0x3e7
 
 # まとめ
 
-- 従来のハイブリッド参加は、**デバイスが同期で Entra に届くのを待っていた**
+- 従来の同期ベースの登録は、**デバイス情報が Entra に届くのを待っていた**
 - プレビューでは、**AD の Kerberos チケットを身分証にして、その場で登録できる**
-- 必要なのは **WS2025 の DC と新しい Windows 11**。構成は4つで、クライアントは何もしない
-- **Cloud Sync だけの環境**でもハイブリッド参加できる
+- 必要なのは **対応するWS2025 DC・Windows 11と通信などの前提**。構成は4つ
+- **Connect Syncやデバイス同期待ちを使わずに**ハイブリッド参加できる
 
 ---
 
@@ -588,6 +659,7 @@ klist -li 0x3e7
 # 参考資料
 
 - [Microsoft Entra hybrid join using Microsoft Entra Kerberos (preview)](https://learn.microsoft.com/en-us/entra/identity/devices/how-to-hybrid-join-using-microsoft-entra-kerberos)
+- [Cloud Syncのデバイス同期](https://learn.microsoft.com/en-us/entra/identity/hybrid/cloud-sync/device-sync)
 - [How Microsoft Entra device registration works](https://learn.microsoft.com/en-us/entra/identity/devices/device-registration-how-it-works)
 - [Windows Authentication for Microsoft Entra ID with the incoming trust-based flow](https://learn.microsoft.com/en-us/azure/azure-sql/managed-instance/winauth-azuread-setup-incoming-trust-based-flow)
 - デモ環境の自動構築: [hyperv-nestlab](https://github.com/ebibibi/hyperv-nestlab)
