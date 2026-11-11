@@ -4,7 +4,7 @@
 <div class="box onp" style="left:70px;top:170px;width:820px;height:300px;text-align:left"><b>dc01（Windows Server 2025 / 26100.33650）</b>・AD DS / DNS<br>・Cloud Sync エージェント（ユーザー同期の担当）<br>・TDO: KERBEROS.MICROSOFTONLINE.COM（受信の信頼）<br>・SCP: テナントの案内板<br>・krbtgt_AzureAD / AzureADKerberos（ユーザー認証の仕組み用）</div>
 <div class="box" style="left:70px;top:520px;width:390px;height:170px"><b>pc01</b>Windows 11 26200.9711<br>vTPM / ドメイン参加</div>
 <div class="box" style="left:500px;top:520px;width:390px;height:170px"><b>pc02</b>Windows 11 26200.9711<br>vTPM / ドメイン参加</div>
-<div class="box cloud" style="left:1040px;top:170px;width:490px;height:210px"><b>Cloud Sync 構成</b>ユーザーとグループだけ同期<br>デバイスは同期しない<br>同期の有効化が TDO の前提</div>
+<div class="box cloud" style="left:1040px;top:170px;width:490px;height:210px"><b>Cloud Sync 構成</b>このラボはユーザー同期<br>デバイス同期は未構成<br>同期の有効化が TDO の前提</div>
 <div class="box cloud ok" style="left:1040px;top:430px;width:490px;height:260px"><b>Device Registration Service</b>SPN: adrs/enterpriseregistration<br>.windows.net<br>タグ: KerberosPolicy:<br>ExchangeForJwt</div>
 <div class="note" style="left:70px;top:730px;color:#c62828">Entra Connect Sync は入れていない<br><span style="color:#50627c;font-size:22px">PC の TPM は Hyper-V の仮想 TPM。鍵を守るのは物理チップではなくホスト</span></div>
 </body></html>
