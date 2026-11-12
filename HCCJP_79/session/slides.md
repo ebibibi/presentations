@@ -279,13 +279,16 @@ ADの構成権限はDomain AdminsとEnterprise Admins。TDOはハイブリッド
 
 # 構成するのは4つ
 
-1. **ユーザー同期** を有効化
+1. **テナントの同期** を有効化（TDO構成の前提）
 2. **TDO** を作成
 3. **DRSのSPN・タグ** を設定
 4. **SCP** で登録先を指定
 
 <!--
-同期はConnect SyncまたはCloud Sync。ラボでは同期未有効だとTDO作成に失敗した。
+TDOの公式構成手順には「Hybrid identities synchronized between on-premises AD DS and Microsoft Entra ID」が前提として記載されている。
+ラボではテナントの同期が未有効だとTDO作成に失敗した。ただしテナントのonPremisesSyncEnabledと、個々のユーザーが同期済みであることは別条件。今回ユーザー0件での構成・登録を比較していないため、特定のユーザーの同期がPC登録プロトコルに必須とは断定しない。
+PC登録はSYSTEMとコンピューターアカウントによる処理。同期済みユーザーがPRT・SSOを利用する要件は別に確認する。
+https://learn.microsoft.com/en-us/entra/identity/authentication/configure-microsoft-entra-kerberos-trust#prerequisites
 対応OS・AD参加・通信などの前提を満たしたPCに、今回のラボでは専用の追加設定はしていない。
 既存のKDCプロキシGPOを配布する環境は、公式手順に従って調整する。
 -->
@@ -482,7 +485,7 @@ klist -li 0x3e7
 # 5. まとめと検証範囲
 
 - **デバイスの事前同期は不要**
-- **AD参加・ユーザー同期は継続**
+- **AD参加・DCへの通信は引き続き必要**
 - 現在 **プレビュー**。導入前に要件を確認
 
 今回の検証は **デバイス登録まで**（ユーザーSSO・PRTは未検証）
