@@ -30,11 +30,11 @@ HCCJP 第79回勉強会｜2026年11月13日
 
 # 今日の流れ
 
-1. ハイブリッド参加の仕組み(※従来の方式)
-2. 同期方式とKerberos方式の違い(※新規の方式)
-3. Kerberos方式に必要なもの
-4. **デモ**：デバイス同期を使わずにハイブリッド参加する
-5. 導入時の注意点と、今回のデモで検証した範囲
+1. 同期方式のハイブリッド参加（従来方式）
+2. Kerberos方式のハイブリッド参加（新方式）
+3. Kerberos方式に必要な構成
+4. デモ：構成前と構成後を比べる
+5. まとめと検証範囲
 
 <!--
 ハイブリッド参加はAD参加とEntra登録の両方を持つ状態。
@@ -44,9 +44,24 @@ Cloud Syncにもデバイス同期機能がある。今回のラボはデバイ�
 
 ---
 
+# ハイブリッド参加とは？
+
+- **AD参加済みのPCを、Entra IDにもデバイス登録**
+- ADのアカウントやグループポリシーを引き続き利用
+- Entra IDでもPCを識別し、条件付きアクセスなどに利用
+- 確認：`DomainJoined` と `AzureAdJoined` が **両方 YES**
+
+<!--
+Microsoft Entra hybrid joinedはオンプレミスのAD参加とEntra IDへのデバイス登録を持つ状態。
+条件付きアクセス等の利用には各機能の構成・ライセンスなどが別途必要。
+参考: https://learn.microsoft.com/en-us/entra/identity/devices/concept-hybrid-join
+-->
+
+---
+
 <!-- _class: lead -->
 
-# 1. 同期方式の仕組み(※従来の方式)
+# 1. 同期方式のハイブリッド参加（従来方式）
 
 ---
 
@@ -132,7 +147,7 @@ Cloud Syncにもデバイス同期機能がある。今回のラボはデバイ�
 
 <!-- _class: lead -->
 
-# 2. Kerberos方式の仕組み
+# 2. Kerberos方式のハイブリッド参加（新方式）
 
 EntraがKerberosを話せるようになったことで、<br>
 ADからデバイス情報が同期されるのを待たずに、<br>
@@ -204,7 +219,7 @@ https://learn.microsoft.com/en-us/entra/identity/authentication/configure-micros
 
 <!-- _class: lead -->
 
-# 3. 必要な構成
+# 3. Kerberos方式に必要な構成
 
 ---
 
@@ -452,7 +467,7 @@ klist -li 0x3e7
 
 ---
 
-# まとめ：同期を待たずに登録
+# 5. まとめと検証範囲
 
 - **デバイスの事前同期は不要**
 - **AD参加・ユーザー同期は継続**
