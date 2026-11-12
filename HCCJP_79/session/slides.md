@@ -216,10 +216,14 @@ https://learn.microsoft.com/en-us/entra/identity/authentication/configure-micros
 | 信頼される側 | **AD** |
 | AD側の表示 | **Inbound** |
 
-Entraが **AD発行の紹介チケット** を受け入れる
+**外部ドメインとの信頼関係を結ぶイメージ**
+
+相手は Entra の Kerberos領域。Entraが **AD発行の紹介チケット** を信頼する。
 
 <!--
 TDOはTrusted Domain Object。相手のKerberos領域はKERBEROS.MICROSOFTONLINE.COM。
+外部ドメインとの信頼関係という説明は比喩。通常のADドメインやフォレストを追加するわけではなく、ADがEntraを信頼するという逆向きの意味でもない。
+根拠: https://learn.microsoft.com/en-us/entra/identity/authentication/configure-microsoft-entra-kerberos-trust
 アクセスはADのPCからEntraのサービスへ。信頼の表示方向とは区別する。
 WHfB Cloud Kerberos Trustのユーザー認証とは別の構成。既存のAzureADKerberos等があってもTDOの存在は別途確認する。
 -->
