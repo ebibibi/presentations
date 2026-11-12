@@ -207,6 +207,12 @@ https://learn.microsoft.com/en-us/entra/identity/authentication/configure-micros
 
 ![bg contain](frames/hj_new_05.png)
 
+<!--
+登録に使う認証トークンの取得と、DRSへのデバイス登録を区別する。登録要求にはトークンだけでなく証明書要求・転送公開鍵等を含む。旧方式との主な違いは登録前の本人確認経路であり、全HTTP APIや要求フィールドの同一性を実測したという意味ではない。
+https://learn.microsoft.com/en-us/entra/identity/devices/device-registration-how-it-works
+https://learn.microsoft.com/en-us/entra/identity/devices/how-to-hybrid-join-using-microsoft-entra-kerberos
+-->
+
 ---
 
 <!-- _header: "" -->
