@@ -127,6 +127,12 @@ Microsoft Entra hybrid joinedはオンプレミスのAD参加とEntra IDへの�
 
 ![bg contain](frames/hj_old_07.png)
 
+<!--
+2026-11-12訂正：旧managed syncのDEVICE_AUTO経路は、IDトークン取得→Bearer付き登録とは描かない。Windows dsreg.dll 10.0.26100.9278の静的解析では、内部登録種別DEVICE_AUTO=7がHTTP PUTを選ぶ。署名ClientIdentityとServerAdJoinDataの具体的な構成は、ROADtoolsとAADInternalsの独立したhybrid join実装でも確認した。すべての要求フィールドを今回のWindowsの成功通信からキャプチャして確認したという意味ではない。
+https://github.com/dirkjanm/ROADtools/blob/f5e4df7a8b355cf073cb64f92a01712f0f01bc11/roadlib/roadtools/roadlib/deviceauth.py#L565-L660
+https://github.com/Gerenios/AADInternals/blob/13f207d9ec08761ac85d9fb1311ecb719e25add4/PRT_Utils.ps1#L101-L164
+-->
+
 ---
 
 <!-- _header: "" -->
@@ -208,8 +214,8 @@ https://learn.microsoft.com/en-us/entra/identity/authentication/configure-micros
 ![bg contain](frames/hj_new_05.png)
 
 <!--
-登録に使う認証トークンの取得と、DRSへのデバイス登録を区別する。登録要求にはトークンだけでなく証明書要求・転送公開鍵等を含む。旧方式との主な違いは登録前の本人確認経路であり、全HTTP APIや要求フィールドの同一性を実測したという意味ではない。
-https://learn.microsoft.com/en-us/entra/identity/devices/device-registration-how-it-works
+2026-11-12再訂正：直前の「新旧ともトークン＋登録要求」は不正確だった。Windows dsreg.dll 10.0.26100.9278の静的解析では、内部種別DEVICE_AUTO=7はPUT、DEVICE_AUTO_KERB=15はPOST。Kerberos経路のtokenType=3はAuthorization: apreqヘッダーとして付加される。AP-REQはKerberos認証情報であり、ID/JWT Bearerトークンと同一視しない。wire上のJoinTypeは両経路とも6。JWTへの交換先APIを新設して描く根拠はない。
+この図は同一Windowsモジュールの分岐解析と旧方式の独立実装による裏付けを反映したもので、成功要求のTLS復号キャプチャを新旧で比較した結果ではない。
 https://learn.microsoft.com/en-us/entra/identity/devices/how-to-hybrid-join-using-microsoft-entra-kerberos
 -->
 
