@@ -363,9 +363,10 @@ Cloud Sync自体がデバイスを同期できないという一般論ではな�
 
 # デモ3：TDOを作る
 
-**dc01で実行**／Entraにはlabadminでサインイン
+**dc01のWindows PowerShell 5.1（管理者）で実行**
 
 ```powershell
+Import-Module AzureADHybridAuthenticationManagement
 $domainCred = Get-Credential CORP\Administrator
 Set-AzureADKerberosServer -Domain corp.contoso.local `
     -UserPrincipalName labadmin@hccjplab.onmicrosoft.com `
@@ -377,6 +378,7 @@ Get-ADTrust -Filter * | Select-Object Name, Direction
 確認：**KERBEROS.MICROSOFTONLINE.COM／Inbound**
 
 <!--
+dc01でpowershell.exeを起動し、Windows PowerShell 5.1（PSEdition Desktop）で実行する。今回の環境はpwsh.exe 7.6.9ではSet-AzureADKerberosServerが見つからず、5.1ではモジュール2.4.71.0から取得できることを確認した。Entraにはlabadminでサインインする。
 AD側の資格情報とEntra側のサインインは、それぞれの管理境界を構成するために使う。
 TDOを作った段階ではPCの登録はまだ完了していない。
 -->
@@ -387,7 +389,7 @@ TDOを作った段階ではPCの登録はまだ完了していない。
 
 # デモ3：DRS設定の準備
 
-**dc01の同じPowerShellで続ける**
+**dc01の同じWindows PowerShell 5.1で続ける**
 
 ```powershell
 Connect-Entra -TenantId hccjplab.onmicrosoft.com `
