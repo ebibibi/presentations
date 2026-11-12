@@ -115,7 +115,7 @@ OLD = [
     {"n": "7", "title": "同期後の再試行で、PCがEntraに認証される", "desc": "PCのタスクが再試行する。Entraは同期済みの証明書情報と、PCの秘密鍵による証明を照合する。認証に成功したPCは、登録に使う<b>IDトークン</b>を取得する",
      "lit": ["task", "dsreg", "login"], "good": ["login"], "badge": {"login": "ID トークン"}, "arrows": [("task", "b", "dsreg", "t"), ("dsreg", "r", "login", "b", "証明書で認証")]},
     {"n": "8", "title": "PCがデバイス鍵を作り、DRSへ登録を要求する", "desc": "PCはTPMでデバイス鍵と転送鍵を用意する。デバイス証明書の要求、転送公開鍵、認証で得たIDトークンなどを<b>DRS（デバイス登録サービス）へ送る</b>",
-     "lit": ["tpm", "dsreg", "drs"], "arrows": [("dsreg", "b", "tpm", "r", "鍵"), ("dsreg", "r", "drs", "b", "登録の要求")]},
+     "lit": ["tpm", "dsreg", "drs"], "arrows": [("dsreg", "b", "tpm", "r", "鍵"), ("dsreg", "r", "drs", "b", "トークン＋登録要求")]},
     {"n": "9", "title": "PCがデバイス証明書を受け取り、登録を完了する", "desc": "DRSが発行したデバイス証明書を、PCがローカル証明書ストアへ保存する。登録後は<b>AD参加YES・Entra参加YES</b>となり、ハイブリッド参加が完了する",
      "lit": ["drs", "store", "entra"], "good": ["store", "entra"], "badge": {"store": "デバイス証明書", "entra": "pc01（登録済み）"}, "arrows": [("drs", "b", "store", "r", "証明書を返す")]},
 ]
@@ -129,8 +129,8 @@ NEW = [
      "lit": ["lsa", "kdc", "tdo"], "badge": {"kdc": "紹介チケットを発行", "tdo": "DCが信頼情報を参照"}, "arrows": [("lsa", "r", "kdc", "l", "Kerberos"), ("kdc", "b", "tdo", "t")]},
     {"n": "4", "title": "EntraがPCへDRS宛てのサービスチケットを発行する", "desc": "PCはAD発行の紹介チケットを、KDCプロキシ経由のHTTPSでEntraへ提示する。Entraは<b>DRS宛てのサービスチケット</b> <code>adrs/enterpriseregistration.windows.net</code> を発行する",
      "lit": ["lsa", "ekdc"], "good": ["ekdc"], "arrows": [("lsa", "r", "ekdc", "b", "KDC プロキシ（HTTPS）")]},
-    {"n": "5", "title": "PCがKerberos認証を使い、DRSへ登録を要求する", "desc": "PCはDRSのSPN・タグで有効にしたKerberos認証・トークン交換の経路を使い、DRSへ登録を要求する。<b>Entraにデバイス情報が事前同期されていなくても認証を進められる</b>（内部APIは省略）",
-     "lit": ["dsreg", "drs", "tpm"], "arrows": [("dsreg", "b", "tpm", "r", "鍵"), ("dsreg", "r", "drs", "b", "チケット＋登録の要求")]},
+    {"n": "5", "title": "PCが認証トークンと鍵情報をDRSへ送る", "desc": "Kerberosによる認証・トークン取得の後、認証トークン、証明書要求、転送公開鍵などをDRSへ送る。<b>主な違いは、登録前の本人確認の方法</b>（内部APIは省略）",
+     "lit": ["dsreg", "drs", "tpm"], "arrows": [("dsreg", "b", "tpm", "r", "鍵"), ("dsreg", "r", "drs", "b", "トークン＋登録要求")]},
     {"n": "6", "title": "DRSがデバイスを作り、PCの登録が完了する", "desc": "DRSはEntraにデバイスを作成し、PCへデバイス証明書を返す。PCは証明書を保存して登録を完了する。<b>登録前のデバイス同期待ちはない</b>（ラボでは約7秒／16〜18秒。保証値ではない）",
      "lit": ["drs", "store", "entra"], "good": ["store", "entra"], "badge": {"store": "デバイス証明書", "entra": "pc01（登録済み）"}, "arrows": [("drs", "r", "entra", "l", "作成"), ("drs", "b", "store", "r", "証明書を返す")]},
 ]
